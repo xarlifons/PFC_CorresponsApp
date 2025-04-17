@@ -1,0 +1,23 @@
+meta {
+  name: Registro de Usuario
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/api/auth/register
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "email": "carlesfons@lentoperoviene.com",
+    "password": "contrasenya",
+    "nombre": "carles"
+  }
+}
