@@ -5,31 +5,39 @@ import SelectUnitTypeScreen from "../screens/fase1_negociacion/SelectUnitTypeScr
 import SurveyParametersScreen from "../screens/fase1_negociacion/SurveyParametersScreen";
 import TaskNegotiationThresholdScreen from "../screens/fase1_negociacion/TaskNegotiationThresholdScreen";
 import TaskNegotiationAssignmentScreen from "../screens/fase1_negociacion/TaskNegotiationAssignmentScreen";
+import Fase1RouterScreen from "../screens/fase1_negociacion/Fase1RouterScreen";
+import UnitConfigurationScreen from "../screens/fase1_negociacion/UnitConfigurationScreen";
 
 const Stack = createNativeStackNavigator();
 
 const NegotiationStack = () => {
   return (
-    <Stack.Navigator initialRouteName="SelectUnitTypeScreen">
+    <Stack.Navigator initialRouteName="Fase1RouterScreen">
+      <Stack.Screen
+        name="Fase1RouterScreen"
+        component={Fase1RouterScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="SelectUnitTypeScreen"
         component={SelectUnitTypeScreen}
-        options={{ title: "Tipo de Unidad", headerShown: false }}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="UnitConfigurationScreen"
+        component={UnitConfigurationScreen}
       />
       <Stack.Screen
         name="SurveyParametersScreen"
         component={SurveyParametersScreen}
-        options={{ title: "Preferencias de Tareas" }}
-      />
-      <Stack.Screen
-        name="TaskNegotiationThresholdScreen"
-        component={TaskNegotiationThresholdScreen}
-        options={{ title: "Negociación del Umbral" }}
       />
       <Stack.Screen
         name="TaskNegotiationAssignmentScreen"
         component={TaskNegotiationAssignmentScreen}
-        options={{ title: "Asignación Final" }}
+      />
+      <Stack.Screen
+        name="TaskNegotiationThresholdScreen"
+        component={TaskNegotiationThresholdScreen}
       />
     </Stack.Navigator>
   );

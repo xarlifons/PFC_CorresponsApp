@@ -47,10 +47,33 @@ public class UnidadServiceImpl implements UnidadService {
     public Optional<Unidad> obtenerUnidadPorId(String id) {
         return unidadRepository.findById(id);
     }
+    
+    @Override
+	    public Unidad actualizarEstadoFase1(String unidadId, String nuevoEstado) {
+	        Optional<Unidad> unidadOpt = unidadRepository.findById(unidadId);
+	        if (unidadOpt.isEmpty()) {
+	            throw new RuntimeException("Unidad no encontrada");
+	        }
+	
+	        Unidad unidad = unidadOpt.get();
+	        unidad.setEstadoFase1(nuevoEstado);
+	        return unidadRepository.save(unidad);
+	    }
 
     // Método privado para generar un código aleatorio de 6 caracteres en mayúsculas
     private String generarCodigoAleatorio() {
         return UUID.randomUUID().toString().replaceAll("-", "")
                    .substring(0, 6).toUpperCase();
     }
+    
+    @Override
+    public String obtenerEstadoFase1(String unidadId) {
+        Optional<Unidad> unidadOpt = unidadRepository.findById(unidadId);
+        if (unidadOpt.isEmpty()) {
+            throw new RuntimeException("Unidad no encontrada");
+        }
+
+        return unidadOpt.get().getEstadoFase1();
+    }
+
 }

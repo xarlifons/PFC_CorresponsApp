@@ -1,48 +1,62 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
   StyleSheet,
-  Button,
   TextInput,
   Alert,
+  Button,
   TouchableOpacity,
 } from "react-native";
+import LottieView from "lottie-react-native";
 import { useAuth } from "../../context/AuthContext";
+import { useRedirectByEstadoFase1 } from "../../hooks/useRedirectByEstadoFase1";
 
-export default function SelectUnitTypeScreen({ navigation }) {
-  const { state, logout, crearYAsignarUnidad, unirseUnidadPorCodigo } =
-    useAuth();
+export default function SelectUnitTypeScreen() {
+  const {
+    state,
+    crearYAsignarUnidad,
+    unirseUnidadPorCodigo,
+    actualizarEstadoFase1,
+  } = useAuth();
 
   const [modo, setModo] = useState(null); // 'crear' | 'unirse'
   const [nombreUnidad, setNombreUnidad] = useState("");
   const [codigoAcceso, setCodigoAcceso] = useState("");
+  const [unidadNombre, setUnidadNombre] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [refreshRedirect, setRefreshRedirect] = useState(false);
+  const animationRef = useRef(null);
 
-  // ✅ Redirigir automáticamente si el usuario ya tiene unidad asignada
-  useEffect(() => {
-    console.log("🧠 Verificando unidadAsignada:", state?.user?.unidadAsignada);
-    if (state?.user?.unidadAsignada) {
-      navigation.replace("SurveyParametersScreen");
-    }
-  }, [state?.user?.unidadAsignada]);
+  // 🔁 Redirección automática según estadoFase1
+  useRedirectByEstadoFase1(
+    "momento0",
+    "UnitConfigurationScreen",
+    refreshRedirect
+  );
 
-  const handleLogout = async () => {
-    await logout(); // limpia AsyncStorage y estado global
-  };
+  // ✅ LOG de control del estado de autenticación
+  console.log("🧠 Auth state en render:", state);
+
+  // ✅ Verificamos que state.user exista antes de renderizar
+  if (!state.user) {
+    console.warn("⚠️ Usuario no disponible aún. Mostrando pantalla vacía...");
+    return null;
+  }
 
   const handleCrear = async () => {
     if (!nombreUnidad.trim()) {
-      Alert.alert("Error", "Introduce un nombre para la unidad.");
+      Alert.alert("⚠️ Error", "Introduce un nombre para la unidad.");
       return;
     }
 
     try {
       setLoading(true);
-      await crearYAsignarUnidad(nombreUnidad);
-      // 🔁 La redirección la hará el useEffect
+      const unidad = await crearYAsignarUnidad(nombreUnidad);
+      setUnidadNombre(unidad.nombre);
+      animationRef.current?.play();
     } catch (error) {
-      Alert.alert("Error al crear unidad", error.message);
+      Alert.alert("❌ Error", error.message);
     } finally {
       setLoading(false);
     }
@@ -50,34 +64,46 @@ export default function SelectUnitTypeScreen({ navigation }) {
 
   const handleUnirse = async () => {
     if (!codigoAcceso.trim()) {
-      Alert.alert("Error", "Introduce el código de acceso.");
+      Alert.alert("⚠️ Error", "Introduce el código de acceso.");
       return;
     }
 
     try {
       setLoading(true);
-      await unirseUnidadPorCodigo(codigoAcceso);
-      // 🔁 La redirección la hará el useEffect
+      const unidad = await unirseUnidadPorCodigo(codigoAcceso);
+      setUnidadNombre(unidad.nombre);
+      animationRef.current?.play();
+      // No actualizamos estadoFase1 aquí: ya debe estar en momento1
+      setRefreshRedirect((prev) => !prev); // fuerza ejecución del hook
     } catch (error) {
-      Alert.alert("Error al unirse a la unidad", error.message);
+      Alert.alert("❌ Error", error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleContinuar = async () => {
+    if (modo === "crear") {
+      try {
+        const unidadId = state.user.unidadAsignada;
+        await actualizarEstadoFase1(unidadId, "momento1");
+        setRefreshRedirect((prev) => !prev); // fuerza revalidación del hook
+      } catch (error) {
+        Alert.alert("❌ Error", "No se pudo actualizar el estado.");
+      }
+    } else {
+      // Si viene de unirse, ya está en el estado correcto
+      setRefreshRedirect((prev) => !prev);
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Bienvenido a CorresponsAPP</Text>
-      <Text style={styles.title}>Hola, {state.user.nombre}</Text>
 
-      <View style={{ marginTop: 20 }}>
-        <Button title="Cerrar sesión" color="#d9534f" onPress={handleLogout} />
-      </View>
-
-      {!state.user.unidadAsignada && (
+      {!unidadNombre && (
         <>
           <Text style={styles.subtitle}>¿Qué deseas hacer?</Text>
-
           <View style={styles.buttonRow}>
             <TouchableOpacity
               style={styles.optionButton}
@@ -127,25 +153,41 @@ export default function SelectUnitTypeScreen({ navigation }) {
           )}
         </>
       )}
+
+      {unidadNombre && (
+        <>
+          <LottieView
+            ref={animationRef}
+            source={require("../../assets/animations/fireworks.json")}
+            autoPlay={false}
+            loop={false}
+            style={{ width: 200, height: 200 }}
+          />
+          <Text style={styles.subtitle}>
+            🎉 ¡Te has unido a la unidad **{unidadNombre}**!
+          </Text>
+          <Button title="Continuar" color="#28a745" onPress={handleContinuar} />
+        </>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
     padding: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
   },
   title: {
-    fontSize: 20,
-    marginBottom: 12,
-    textAlign: "center",
+    fontSize: 22,
+    marginBottom: 20,
+    fontWeight: "bold",
   },
   subtitle: {
     fontSize: 16,
-    marginBottom: 10,
+    marginVertical: 12,
     textAlign: "center",
   },
   input: {

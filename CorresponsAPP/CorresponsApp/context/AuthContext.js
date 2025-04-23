@@ -215,8 +215,9 @@ export function AuthProvider({ children }) {
       }
 
       const unidad = await response.json();
+      await asignarUnidad(unidad.id);
 
-      await asignarUnidad(unidad.id); // 💡 reutilizamos función
+      return unidad; // ✅ Ahora se devuelve correctamente
     } catch (error) {
       console.error("❌ Error creando y asignando unidad:", error);
       throw error;
@@ -241,16 +242,15 @@ export function AuthProvider({ children }) {
       }
 
       const unidad = await response.json();
-
-      // Reutilizamos función existente
       await asignarUnidad(unidad.id);
+
+      return unidad; // ✅ También aquí
     } catch (error) {
       console.error("❌ Error al unirse por código:", error);
       throw error;
     }
   };
 
-  // Acción: cerrar sesión
   const logout = async () => {
     try {
       await AsyncStorage.removeItem("token");
@@ -258,6 +258,141 @@ export function AuthProvider({ children }) {
       dispatch({ type: "LOGOUT" });
     } catch (e) {
       console.error("Error borrando datos de sesión: ", e);
+    }
+  };
+
+  const getUnidadById = async (unidadId) => {
+    console.log("📡 getUnidadById -> unidadId:", unidadId);
+    console.log("🔐 Token utilizado:", state.token);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/unidad/${unidadId}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`❌ Error al obtener unidad: ${errorText}`);
+      }
+
+      const unidad = await response.json();
+      return unidad;
+    } catch (error) {
+      console.error("⚠️ Error en getUnidadById:", error.message);
+      throw error;
+    }
+  };
+
+  const getUnidadInfoCompleta = async (unidadId) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/unidad/${unidadId}/info-completa`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${state.token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error al obtener info completa: ${errorText}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("❌ Error en getUnidadInfoCompleta:", error.message);
+      throw error;
+    }
+  };
+
+  const refreshToken = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${state.token}`,
+        },
+      });
+
+      if (!response.ok) throw new Error("Error al renovar token");
+
+      const data = await response.json();
+
+      await AsyncStorage.setItem("user", JSON.stringify(data));
+      dispatch({ type: "LOGIN", payload: { ...data, token: state.token } });
+    } catch (error) {
+      console.error("❌ Error al refrescar token:", error.message);
+      throw error;
+    }
+  };
+
+  const actualizarConfiguracionUnidad = async ({
+    unidadId,
+    modulosActivados,
+    cicloCorresponsabilidad,
+  }) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/unidad/${unidadId}/configurar`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${state.token}`,
+          },
+          body: JSON.stringify({
+            modulosActivados,
+            cicloCorresponsabilidad,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Error al actualizar configuración: ${text}`);
+      }
+
+      console.log("✅ Configuración de unidad actualizada.");
+    } catch (error) {
+      console.error(
+        "❌ Error en actualizarConfiguracionUnidad:",
+        error.message
+      );
+      throw error;
+    }
+  };
+
+  const actualizarEstadoFase1 = async (unidadId, nuevoEstado) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/unidad/${unidadId}/estado-fase1`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${state.token}`,
+          },
+          body: JSON.stringify({ estadoFase1: nuevoEstado }),
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Error al actualizar estadoFase1: ${text}`);
+      }
+
+      console.log("🌀 estadoFase1 actualizado a:", nuevoEstado);
+    } catch (error) {
+      console.error("❌ Error en actualizarEstadoFase1:", error.message);
+      throw error;
     }
   };
 
@@ -271,6 +406,11 @@ export function AuthProvider({ children }) {
         crearYAsignarUnidad,
         asignarUnidad,
         unirseUnidadPorCodigo,
+        getUnidadById,
+        getUnidadInfoCompleta,
+        refreshToken,
+        actualizarConfiguracionUnidad,
+        actualizarEstadoFase1,
       }}
     >
       {children}

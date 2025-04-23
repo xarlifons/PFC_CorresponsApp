@@ -16,6 +16,7 @@ public class Unidad {
     private List<String> miembros; // lista de IDs de usuarios
     private List<String> modulosActivados; 
 	private int cicloCorresponsabilidad = 30; // en días
+	private String estadoFase1 = "momento0";
   
 
     public Unidad() {
@@ -81,5 +82,25 @@ public class Unidad {
 
     public void setCicloCorresponsabilidad(int cicloCorresponsabilidad) {
         this.cicloCorresponsabilidad = cicloCorresponsabilidad;
+    }
+    
+    public String getEstadoFase1() {
+        return estadoFase1;
+    }
+
+    public void setEstadoFase1(String estadoFase1) {
+        this.estadoFase1 = estadoFase1;
+    }
+    
+    public String toString() {
+        return "Unidad{" +
+                "id='" + id + '\'' +
+                ", nombre='" + nombre + '\'' +
+                ", codigoAcceso='" + codigoAcceso + '\'' +
+                ", creadorId='" + creadorId + '\'' +
+                ", miembros=" + miembros +
+                ", modulosActivados=" + modulosActivados +
+                ", estadoFase1='" + estadoFase1 + '\'' +
+                '}';
     }
 }

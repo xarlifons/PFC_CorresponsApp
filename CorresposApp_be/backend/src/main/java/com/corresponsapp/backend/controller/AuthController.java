@@ -49,19 +49,15 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
-    
+   
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(Authentication authentication) {
         try {
-            String email = authentication.getName(); // obtenido del JWT
-            Optional<User> userOpt = authService.getByEmail(email);
+            User user = (User) authentication.getPrincipal(); // Obtenemos el usuario directamente del contexto
+            System.out.println("[/refresh] Usuario autenticado: " + user.getEmail());
 
-            if (userOpt.isEmpty()) {
-                return ResponseEntity.status(401).body("Usuario no encontrado");
-            }
-
-            User user = userOpt.get();
             String newToken = jwtUtil.generateToken(user);
+            System.out.println("[/refresh] ✅ Nuevo token generado correctamente.");
 
             return ResponseEntity.ok(new LoginResponse(
                 newToken,
@@ -71,8 +67,12 @@ public class AuthController {
                 user.getUnidadAsignada()
             ));
         } catch (Exception e) {
+            System.out.println("[/refresh] ❌ Error al renovar token: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("Error al renovar token: " + e.getMessage());
         }
     }
+
+
 
 }
