@@ -334,11 +334,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const actualizarConfiguracionUnidad = async ({
-    unidadId,
-    modulosActivados,
-    cicloCorresponsabilidad,
-  }) => {
+  const actualizarConfiguracionUnidad = async (unidadId, configuracion) => {
     try {
       const response = await fetch(
         `${API_BASE_URL}/api/unidad/${unidadId}/configurar`,
@@ -348,10 +344,7 @@ export function AuthProvider({ children }) {
             "Content-Type": "application/json",
             Authorization: `Bearer ${state.token}`,
           },
-          body: JSON.stringify({
-            modulosActivados,
-            cicloCorresponsabilidad,
-          }),
+          body: JSON.stringify(configuracion),
         }
       );
 

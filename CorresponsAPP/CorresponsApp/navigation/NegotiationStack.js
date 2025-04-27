@@ -7,6 +7,7 @@ import TaskNegotiationThresholdScreen from "../screens/fase1_negociacion/TaskNeg
 import TaskNegotiationAssignmentScreen from "../screens/fase1_negociacion/TaskNegotiationAssignmentScreen";
 import Fase1RouterScreen from "../screens/fase1_negociacion/Fase1RouterScreen";
 import UnitConfigurationScreen from "../screens/fase1_negociacion/UnitConfigurationScreen";
+import CreateTaskScreen from "../screens/fase1_negociacion/CreateTaskScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,8 @@ const NegotiationStack = () => {
         name="UnitConfigurationScreen"
         component={UnitConfigurationScreen}
       />
+      <Stack.Screen name="CreateTaskScreen" component={CreateTaskScreen} />
+
       <Stack.Screen
         name="SurveyParametersScreen"
         component={SurveyParametersScreen}
