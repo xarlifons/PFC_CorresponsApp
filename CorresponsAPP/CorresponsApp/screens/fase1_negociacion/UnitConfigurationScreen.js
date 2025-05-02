@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,6 @@ import {
   Modal,
   FlatList,
 } from "react-native";
-import LottieView from "lottie-react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useRedirectByEstadoFase1 } from "../../hooks/useRedirectByEstadoFase1";
 
@@ -28,12 +27,10 @@ export default function UnitConfigurationScreen({ navigation, route }) {
   const [duracionCiclo, setDuracionCiclo] = useState("30");
   const [tareasUnidad, setTareasUnidad] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalResumenVisible, setModalResumenVisible] = useState(false);
   const [moduloActivo, setModuloActivo] = useState(null);
   const [tareasDelModulo, setTareasDelModulo] = useState([]);
   const [tareasSeleccionadas, setTareasSeleccionadas] = useState([]);
-  const [loading, setLoading] = useState(false);
-
-  const animationRef = useRef(null);
 
   useRedirectByEstadoFase1("momento1", "SurveyParametersScreen");
 
@@ -63,14 +60,14 @@ export default function UnitConfigurationScreen({ navigation, route }) {
     limpieza_especifica: [
       "Limpiar cristales y ventanas",
       "Limpiar paredes y puertas",
-      "Limpiar ducha o bañera",
+      "Limpiar ducha o banera",
       "Limpiar lavabo e inodoro",
-      "Limpiar terraza o balcón",
+      "Limpiar terraza o balcon",
     ],
     cocina_alimentacion: [
       "Cocinar comidas principales",
       "Fregar platos o lavar lavavajillas",
-      "Planificar menú semanal",
+      "Planificar menu semanal",
       "Vaciar alimentos caducados",
       "Gestionar basura y reciclaje",
     ],
@@ -83,33 +80,33 @@ export default function UnitConfigurationScreen({ navigation, route }) {
     ],
     habitaciones_organizacion: [
       "Hacer las camas",
-      "Cambiar sábanas",
+      "Cambiar sabanas",
       "Organizar armarios",
       "Ordenar habitaciones",
     ],
     bano_higiene: [
       "Limpiar inodoro",
       "Limpiar lavabo y espejo",
-      "Limpiar ducha/bañera",
-      "Reponer papel higiénico y jabón",
+      "Limpiar ducha/banera",
+      "Reponer papel higienico y jabon",
       "Cambiar toallas",
     ],
     cuidados_familiares: [
-      "Ayudar higiene personal niños/as",
+      "Ayudar higiene personal ninos/as",
       "Supervisar deberes escolares",
-      "Acompañar a actividades extraescolares",
+      "Acompanhar a actividades extraescolares",
       "Preparar mochilas escolares",
     ],
     mantenimiento_hogar: [
       "Revisar bombillas y fusibles",
       "Realizar arreglos menores",
-      "Revisar electrodomésticos",
+      "Revisar electrodomesticos",
       "Montar o desmontar muebles",
     ],
     plantas_mascotas: [
       "Regar plantas",
       "Podar plantas",
-      "Cuidar jardín",
+      "Cuidar jardin",
       "Sacar mascotas a pasear",
       "Limpiar jaulas o areneros",
     ],
@@ -126,25 +123,20 @@ export default function UnitConfigurationScreen({ navigation, route }) {
     ],
     cuidado_vehiculo: [
       "Llevar coche al taller",
-      "Llenar depósito de gasolina",
-      "Renovar ITV o documentación",
+      "Llenar deposito de gasolina",
+      "Renovar ITV o documentacion",
     ],
   };
 
   useEffect(() => {
     const cargarUnidad = async () => {
-      try {
-        if (state.user?.unidadAsignada) {
-          const info = await getUnidadInfoCompleta(state.user.unidadAsignada);
-          setUnidad(info);
-          if (info?.modulosActivados?.length) {
-            setModulosSeleccionados(info.modulosActivados);
-            setDuracionCiclo(info.cicloCorresponsabilidad?.toString());
-          }
-          animationRef.current?.play();
+      if (state.user?.unidadAsignada) {
+        const info = await getUnidadInfoCompleta(state.user.unidadAsignada);
+        setUnidad(info);
+        if (info?.modulosActivados?.length) {
+          setModulosSeleccionados(info.modulosActivados);
+          setDuracionCiclo(info.cicloCorresponsabilidad?.toString());
         }
-      } catch (error) {
-        console.error("❌ Error al cargar unidad:", error);
       }
     };
     cargarUnidad();
@@ -152,42 +144,80 @@ export default function UnitConfigurationScreen({ navigation, route }) {
 
   useEffect(() => {
     if (route.params?.nuevaTarea) {
-      setTareasUnidad((prev) => [
-        ...prev,
-        { ...route.params.nuevaTarea, personalizada: true },
-      ]);
+      const nueva = route.params.nuevaTarea;
+
+      // 1. Añadir a tareasUnidad (sin duplicados)
+      setTareasUnidad((prev) => {
+        const sinDuplicados = prev.filter((t) => t.id !== nueva.id);
+        return [...sinDuplicados, nueva];
+      });
+
+      // 2. Si modal abierto y es del mismo módulo
+      if (modalVisible && nueva.modulo === moduloActivo) {
+        setTareasDelModulo((prev) => {
+          const sinDuplicados = prev.filter((t) => t.id !== nueva.id);
+          return [...sinDuplicados, nueva];
+        });
+
+        setTareasSeleccionadas((prev) => {
+          if (!prev.some((t) => t.id === nueva.id)) {
+            return [...prev, nueva];
+          }
+          return prev;
+        });
+      }
+
+      navigation.setParams({ nuevaTarea: null }); // limpiar
     }
   }, [route.params?.nuevaTarea]);
 
   const toggleModulo = (moduloId) => {
+    const tareasDeModulo = tareasUnidad.filter(
+      (t) => t.modulo === moduloId || t.moduloId === moduloId
+    );
+    if (tareasDeModulo.length === 0) {
+      setModulosSeleccionados(
+        modulosSeleccionados.filter((m) => m !== moduloId)
+      );
+      return;
+    }
     if (modulosSeleccionados.includes(moduloId)) {
       setModulosSeleccionados(
         modulosSeleccionados.filter((m) => m !== moduloId)
       );
-      setTareasUnidad(tareasUnidad.filter((t) => t.moduloId !== moduloId));
     } else {
       setModulosSeleccionados([...modulosSeleccionados, moduloId]);
-      abrirModal(moduloId);
     }
   };
 
   const abrirModal = (moduloId) => {
     setModuloActivo(moduloId);
-    const tareasIniciales = [
-      ...(TAREAS_POR_MODULO[moduloId] || []).map((nombre) => ({
+
+    const tareasPersonalizadas = tareasUnidad.filter(
+      (t) => t.modulo === moduloId
+    );
+
+    const tareasPredefinidas = (TAREAS_POR_MODULO[moduloId] || []).map(
+      (nombre) => ({
         id: `${moduloId}_${nombre.replace(/\s+/g, "_").toLowerCase()}`,
         nombre,
-        moduloId,
-        definicion: "Pendiente de definir",
-        tiempoEstimado: 30,
-        agrupacionId: moduloId,
-        completada: false,
+        modulo: moduloId,
         personalizada: false,
-      })),
-      ...(tareasUnidad.filter((t) => t.moduloId === moduloId) || []),
-    ];
-    setTareasDelModulo(tareasIniciales);
-    setTareasSeleccionadas(tareasIniciales);
+      })
+    );
+
+    const todasLasTareas = [
+      ...tareasPredefinidas,
+      ...tareasPersonalizadas,
+    ].filter(
+      (t, index, self) => self.findIndex((o) => o.id === t.id) === index
+    );
+
+    // 👇 recuperar las tareas que ya había confirmado el usuario en este módulo
+    const yaSeleccionadas = tareasUnidad.filter((t) => t.modulo === moduloId);
+
+    setTareasDelModulo(todasLasTareas);
+    setTareasSeleccionadas(yaSeleccionadas);
     setModalVisible(true);
   };
 
@@ -201,12 +231,30 @@ export default function UnitConfigurationScreen({ navigation, route }) {
     }
   };
 
+  const seleccionarTodas = () => setTareasSeleccionadas([...tareasDelModulo]);
+  const deseleccionarTodas = () => setTareasSeleccionadas([]);
+
   const confirmarTareasModulo = () => {
     const nuevasTareas = tareasUnidad.filter(
-      (t) => t.moduloId !== moduloActivo
+      (t) => (t.moduloId || t.modulo) !== moduloActivo
     );
     setTareasUnidad([...nuevasTareas, ...tareasSeleccionadas]);
+    if (
+      !modulosSeleccionados.includes(moduloActivo) &&
+      tareasSeleccionadas.length > 0
+    ) {
+      setModulosSeleccionados([...modulosSeleccionados, moduloActivo]);
+    }
     setModalVisible(false);
+  };
+
+  const prepareTareasParaGuardar = () => {
+    return tareasUnidad.map((t) => ({
+      nombre: t.nombre,
+      modulo: t.modulo,
+      tiempoEstimado: t.tiempoEstimado || 0,
+      definicion: t.definicion,
+    }));
   };
 
   const handleGuardarConfiguracion = async () => {
@@ -217,23 +265,16 @@ export default function UnitConfigurationScreen({ navigation, route }) {
       );
       return;
     }
-    setLoading(true);
     try {
-      await actualizarConfiguracionUnidad({
-        unidadId: state.user.unidadAsignada,
+      await actualizarConfiguracionUnidad(state.user.unidadAsignada, {
         modulosActivados: modulosSeleccionados,
         cicloCorresponsabilidad: parseInt(duracionCiclo),
-        tareasUnidad,
+        tareasUnidad: prepareTareasParaGuardar(),
       });
       await actualizarEstadoFase1(state.user.unidadAsignada, "momento2");
-      Alert.alert(
-        "✅ Configuración guardada",
-        "Se ha actualizado correctamente."
-      );
+      setModalResumenVisible(true);
     } catch (error) {
       Alert.alert("❌ Error", error.message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -241,30 +282,8 @@ export default function UnitConfigurationScreen({ navigation, route }) {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Unidad: {unidad.nombre}</Text>
-      <LottieView
-        ref={animationRef}
-        source={require("../../assets/animations/fireworks.json")}
-        autoPlay={false}
-        loop={false}
-        style={styles.lottie}
-      />
-
-      <Text style={styles.subtitle}>Selecciona los módulos:</Text>
-      <View style={styles.modulesContainer}>
-        {MODULOS_DISPONIBLES.map((modulo) => (
-          <TouchableOpacity
-            key={modulo.id}
-            onPress={() => toggleModulo(modulo.id)}
-            style={[
-              styles.moduloButton,
-              modulosSeleccionados.includes(modulo.id) && styles.selectedModulo,
-            ]}
-          >
-            <Text style={styles.moduloText}>{modulo.nombre}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      <Text style={styles.title}>Configuración de la unidad:</Text>
+      <Text style={styles.title}>{unidad.nombre} </Text>
 
       <Text style={styles.subtitle}>Duración del ciclo (días):</Text>
       <TextInput
@@ -274,32 +293,67 @@ export default function UnitConfigurationScreen({ navigation, route }) {
         onChangeText={setDuracionCiclo}
       />
 
-      <Button
-        title={loading ? "Guardando..." : "Guardar configuración"}
-        onPress={handleGuardarConfiguracion}
-        disabled={loading}
-      />
+      <Text style={styles.subtitle}>Selecciona los módulos:</Text>
+      {MODULOS_DISPONIBLES.map((modulo) => (
+        <View key={modulo.id} style={styles.moduloItem}>
+          <TouchableOpacity
+            style={styles.moduloButton}
+            onPress={() => abrirModal(modulo.id)}
+          >
+            <Text style={styles.moduloNombre}>{modulo.nombre}</Text>
+            <Text style={styles.moduloSub}>
+              {
+                tareasUnidad.filter(
+                  (t) => t.modulo === modulo.id || t.moduloId === modulo.id
+                ).length
+              }{" "}
+              tareas
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ))}
 
-      {/* Modal con scroll para muchas tareas */}
+      <TouchableOpacity
+        style={styles.saveButton}
+        onPress={handleGuardarConfiguracion}
+      >
+        <Text style={styles.saveButtonText}>
+          Guardar configuración ({tareasUnidad.length} tareas)
+        </Text>
+      </TouchableOpacity>
+
       <Modal visible={modalVisible} animationType="slide">
         <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>
-            Módulo:{" "}
-            {MODULOS_DISPONIBLES.find((m) => m.id === moduloActivo)?.nombre ||
-              ""}
-          </Text>
+          <Text style={styles.title}>Tareas de: {moduloActivo}</Text>
 
-          <Button
-            title="➕ Crear nueva tarea personalizada"
+          <View style={styles.modalButtonRow}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={seleccionarTodas}
+            >
+              <Text style={styles.actionButtonText}>Seleccionar todas</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={deseleccionarTodas}
+            >
+              <Text style={styles.actionButtonText}>Deseleccionar todas</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={[styles.actionButton, { marginVertical: 12 }]}
             onPress={() => {
               setModalVisible(false);
               navigation.navigate("CreateTaskScreen", {
                 moduloId: moduloActivo,
               });
             }}
-          />
-
-          <Text style={styles.modalSubtitle}>Tareas del módulo:</Text>
+          >
+            <Text style={styles.actionButtonText}>
+              ➕ Crear nueva tarea personalizada
+            </Text>
+          </TouchableOpacity>
 
           <FlatList
             data={tareasDelModulo}
@@ -311,21 +365,79 @@ export default function UnitConfigurationScreen({ navigation, route }) {
                   styles.tareaItem,
                   tareasSeleccionadas.find((t) => t.id === item.id) &&
                     styles.tareaItemSelected,
-                  item.personalizada && styles.tareaItemPersonalizada,
                 ]}
               >
                 <Text>{item.nombre}</Text>
               </TouchableOpacity>
             )}
-            contentContainerStyle={{ paddingBottom: 80 }} // Para que no se superponga con botones
           />
 
-          <Button title="Confirmar selección" onPress={confirmarTareasModulo} />
-          <Button
-            title="Cancelar"
-            color="red"
-            onPress={() => setModalVisible(false)}
-          />
+          <View style={styles.modalFooter}>
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={confirmarTareasModulo}
+            >
+              <Text style={styles.confirmButtonText}>Confirmar</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.confirmButton, { backgroundColor: "#aaa" }]}
+              onPress={() => setModalVisible(false)}
+            >
+              <Text style={styles.confirmButtonText}>Cancelar</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        visible={modalResumenVisible}
+        animationType="slide"
+        transparent={false}
+      >
+        <View style={styles.modalResumenContainer}>
+          <ScrollView contentContainerStyle={{ padding: 24 }}>
+            <Text style={styles.title}>✅ Unidad configurada</Text>
+            <Text style={styles.subtitle}>{unidad?.nombre}</Text>
+
+            <Text style={styles.resumenText}>
+              Duración del ciclo: {duracionCiclo} días
+            </Text>
+            <Text style={styles.resumenText}>
+              Módulos seleccionados: {modulosSeleccionados.length}
+            </Text>
+            <Text style={styles.resumenText}>
+              Tareas totales: {tareasUnidad.length}
+            </Text>
+
+            {modulosSeleccionados.map((moduloId) => (
+              <View key={moduloId} style={styles.moduloResumenItem}>
+                <Text style={styles.moduloResumenTitulo}>
+                  {moduloId.replace(/_/g, " ").toUpperCase()}
+                </Text>
+                {tareasUnidad
+                  .filter((t) => t.modulo === moduloId)
+                  .map((t) => (
+                    <Text key={t.id} style={styles.tareaResumen}>
+                      • {t.nombre}
+                    </Text>
+                  ))}
+              </View>
+            ))}
+
+            <TouchableOpacity
+              style={styles.botonContinuar}
+              onPress={() => {
+                setModalResumenVisible(false);
+                setTimeout(
+                  () => navigation.replace("SurveyParametersScreen"),
+                  0
+                );
+              }}
+            >
+              <Text style={styles.botonContinuarText}>
+                Seguimos con una pequeña encuesta →
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
       </Modal>
     </ScrollView>
@@ -333,46 +445,109 @@ export default function UnitConfigurationScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 24, alignItems: "center" },
-  title: { fontSize: 20, fontWeight: "bold", marginBottom: 16 },
-  subtitle: { fontSize: 16, fontWeight: "600", marginVertical: 8 },
+  container: { padding: 24 },
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 16,
+    textAlign: "center",
+  },
+  subtitle: { fontSize: 16, fontWeight: "600", marginTop: 16 },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 6,
+    borderRadius: 8,
     padding: 10,
-    width: "100%",
+    marginTop: 8,
     marginBottom: 16,
   },
-  modulesContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-  },
+  moduloItem: { marginBottom: 12 },
   moduloButton: {
-    backgroundColor: "#eee",
-    padding: 10,
-    borderRadius: 6,
-    margin: 5,
+    backgroundColor: "#e0e0e0",
+    padding: 16,
+    borderRadius: 12,
   },
-  modalTitle: {
-    fontSize: 22,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 16,
-  },
-  modalSubtitle: {
-    fontSize: 18,
-    fontWeight: "600",
+  moduloNombre: { fontSize: 16, fontWeight: "bold" },
+  moduloSub: { fontSize: 13, color: "#555", marginTop: 4 },
+  saveButton: {
+    backgroundColor: "#007AFF",
+    borderRadius: 10,
+    padding: 14,
     marginTop: 24,
+    alignItems: "center",
+  },
+  saveButtonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+  modalContainer: { flex: 1, padding: 24, backgroundColor: "#fff" },
+  modalButtonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 12,
   },
-
-  selectedModulo: { backgroundColor: "#007AFF" },
-  moduloText: { color: "#000", fontWeight: "bold" },
-  lottie: { width: 160, height: 160, alignSelf: "center", marginBottom: 10 },
-  modalContainer: { flex: 1, padding: 24, backgroundColor: "#fff" },
-  tareaItem: { padding: 10, borderBottomWidth: 1, borderBottomColor: "#ccc" },
+  actionButton: {
+    backgroundColor: "#eee",
+    padding: 10,
+    borderRadius: 8,
+  },
+  actionButtonText: { fontWeight: "600" },
+  tareaItem: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginVertical: 4,
+  },
   tareaItemSelected: { backgroundColor: "#d0f0c0" },
-  tareaItemPersonalizada: { backgroundColor: "#fff8dc" },
+  modalFooter: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 20,
+  },
+  confirmButton: {
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: "#007AFF",
+    width: "45%",
+    alignItems: "center",
+  },
+  confirmButtonText: { color: "#fff", fontWeight: "bold" },
+  modalResumenContainer: {
+    flex: 1,
+    padding: 24,
+    backgroundColor: "#fff",
+    alignItems: "center",
+  },
+  resumenText: {
+    fontSize: 16,
+    marginVertical: 4,
+  },
+  moduloResumenItem: {
+    backgroundColor: "#f4f4f4",
+    borderRadius: 10,
+    padding: 12,
+    marginVertical: 8,
+    width: "100%",
+  },
+  moduloResumenTitulo: {
+    fontWeight: "bold",
+    fontSize: 15,
+    marginBottom: 4,
+    color: "#333",
+  },
+  tareaResumen: {
+    fontSize: 14,
+    color: "#555",
+  },
+  botonContinuar: {
+    marginTop: 24,
+    padding: 14,
+    backgroundColor: "#007AFF",
+    borderRadius: 10,
+    width: "100%",
+    alignItems: "center",
+  },
+  botonContinuarText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
 });

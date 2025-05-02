@@ -164,7 +164,7 @@ export default function SelectUnitTypeScreen() {
             style={{ width: 200, height: 200 }}
           />
           <Text style={styles.subtitle}>
-            🎉 ¡Te has unido a la unidad **{unidadNombre}**!
+            🎉 ¡Te has unido a la unidad {unidadNombre}!
           </Text>
           <Button title="Continuar" color="#28a745" onPress={handleContinuar} />
         </>

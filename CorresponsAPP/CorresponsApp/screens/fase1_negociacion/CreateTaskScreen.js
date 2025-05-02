@@ -4,102 +4,114 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  Button,
   Alert,
-  ScrollView,
+  TouchableOpacity,
 } from "react-native";
 
-export default function CreateTaskScreen({ navigation, route }) {
-  const { moduloId } = route.params; // Recibimos el módulo activo
-
-  const [nombreTarea, setNombreTarea] = useState("");
-  const [definicionTarea, setDefinicionTarea] = useState("");
+export default function CreateTaskScreen({ route, navigation }) {
+  const { moduloId } = route.params;
+  const [nombre, setNombre] = useState("");
+  const [definicion, setDefinicion] = useState("");
   const [tiempoEstimado, setTiempoEstimado] = useState("");
 
-  const handleGuardar = () => {
-    if (
-      !nombreTarea.trim() ||
-      !definicionTarea.trim() ||
-      !tiempoEstimado.trim()
-    ) {
-      Alert.alert("❌ Error", "Debes completar todos los campos obligatorios.");
+  const handleCrearTarea = () => {
+    if (!nombre.trim() || !tiempoEstimado.trim()) {
+      Alert.alert("Campo obligatorio", "Debes indicar un nombre para la tarea");
       return;
     }
 
     const nuevaTarea = {
-      id: `${moduloId}_${nombreTarea
-        .trim()
-        .replace(/\s+/g, "_")
-        .toLowerCase()}_${Date.now()}`,
-      nombre: nombreTarea.trim(),
-      definicion: definicionTarea.trim(),
+      id: `${moduloId}_${nombre.replace(/\s+/g, "_").toLowerCase()}`,
+      nombre,
+      definicion: definicion.trim() || "Definición pendiente",
       tiempoEstimado: parseInt(tiempoEstimado),
-      moduloId: moduloId, // Se asigna automáticamente
-      agrupacionId: moduloId, // Agrupación = módulo para mantener consistencia
-      completada: false,
+      modulo: moduloId,
       personalizada: true,
     };
 
-    navigation.navigate("UnitConfigurationScreen", { nuevaTarea });
+    navigation.goBack();
+    setTimeout(() => {
+      navigation.navigate("UnitConfigurationScreen", { nuevaTarea });
+    }, 100);
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Crear nueva tarea</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Nueva tarea para el módulo:</Text>
+      <Text style={styles.moduleText}>{moduloId}</Text>
 
-      <Text style={styles.label}>Nombre de la tarea:</Text>
+      <Text style={styles.label}>Nombre de la tarea *</Text>
       <TextInput
+        value={nombre}
+        onChangeText={setNombre}
         style={styles.input}
-        placeholder="Introduce el nombre de la tarea"
-        value={nombreTarea}
-        onChangeText={setNombreTarea}
+        placeholder="Ej: Limpiar ventilador de techo"
       />
 
-      <Text style={styles.label}>Definición de la tarea:</Text>
+      <Text style={styles.label}>Definición (opcional)</Text>
       <TextInput
+        value={definicion}
+        onChangeText={setDefinicion}
         style={[styles.input, { height: 100 }]}
-        placeholder="Describe brevemente la tarea"
-        value={definicionTarea}
-        onChangeText={setDefinicionTarea}
         multiline
+        placeholder="Describe la tarea si lo consideras útil"
       />
 
-      <Text style={styles.label}>Tiempo estimado (en minutos):</Text>
+      <Text style={styles.label}>Tiempo estimado (mins) *</Text>
       <TextInput
-        style={styles.input}
-        placeholder="Ejemplo: 20"
-        keyboardType="numeric"
         value={tiempoEstimado}
         onChangeText={setTiempoEstimado}
+        style={styles.input}
+        multiline
+        placeholder="30"
       />
 
-      <Button title="Guardar tarea" onPress={handleGuardar} />
-    </ScrollView>
+      <TouchableOpacity style={styles.botonCrear} onPress={handleCrearTarea}>
+        <Text style={styles.botonTexto}>Crear tarea</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     padding: 24,
-    flexGrow: 1,
+    flex: 1,
     backgroundColor: "#fff",
   },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: "bold",
+    marginBottom: 12,
+  },
+  moduleText: {
+    fontSize: 16,
+    fontStyle: "italic",
+    color: "#333",
     marginBottom: 20,
-    textAlign: "center",
   },
   label: {
-    fontWeight: "600",
+    fontSize: 14,
+    fontWeight: "500",
     marginBottom: 6,
-    marginTop: 16,
   },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    borderRadius: 6,
+    borderRadius: 8,
     padding: 10,
-    marginBottom: 10,
+    marginBottom: 16,
+  },
+  botonCrear: {
+    backgroundColor: "#007AFF",
+    padding: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    marginTop: 10,
+  },
+  botonTexto: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
