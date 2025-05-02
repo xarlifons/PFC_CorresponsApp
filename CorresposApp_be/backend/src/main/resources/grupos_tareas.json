@@ -1,0 +1,180 @@
+[
+  {
+    "id": "limpieza_cotidiana",
+    "nombre": "Limpieza cotidiana",
+    "tareaRepresentativa": "fregar_platos",
+    "tareas": [
+      {
+        "id": "barrer_suelos",
+        "ajusteFrecuencia": 1.0,
+        "ajusteIntensidad": 0.0,
+        "ajusteCargaMental": 0.0
+      },
+      {
+        "id": "aspirar",
+        "ajusteFrecuencia": 1.0,
+        "ajusteIntensidad": 0.5,
+        "ajusteCargaMental": 0.5
+      },
+      {
+        "id": "vaciar_papeleras",
+        "ajusteFrecuencia": 0.9,
+        "ajusteIntensidad": -0.5,
+        "ajusteCargaMental": -0.5
+      },
+      {
+        "id": "fregar_suelos",
+        "ajusteFrecuencia": 0.5,
+        "ajusteIntensidad": 1.0,
+        "ajusteCargaMental": 0.5
+      }
+    ]
+  },
+  {
+    "id": "limpieza_puntual",
+    "nombre": "Limpieza puntual",
+    "tareaRepresentativa": "limpiar_inodoro",
+    "tareas": [
+      {
+        "id": "limpiar_ducha",
+        "ajusteFrecuencia": 1.0,
+        "ajusteIntensidad": 0.2,
+        "ajusteCargaMental": 0.1
+      },
+      {
+        "id": "limpiar_terraza",
+        "ajusteFrecuencia": 0.7,
+        "ajusteIntensidad": 0.5,
+        "ajusteCargaMental": 0.2
+      }
+    ]
+  },
+  {
+    "id": "cocina_alimentos",
+    "nombre": "Cocina y gestión de alimentos",
+    "tareaRepresentativa": "cocinar_comida",
+    "tareas": [
+      {
+        "id": "preparar_desayuno",
+        "ajusteFrecuencia": 1.0,
+        "ajusteIntensidad": -0.3,
+        "ajusteCargaMental": -0.2
+      },
+      {
+        "id": "planificar_menu",
+        "ajusteFrecuencia": 0.4,
+        "ajusteIntensidad": 0.3,
+        "ajusteCargaMental": 0.8
+      }
+    ]
+  },
+  {
+    "id": "lavanderia_ropa",
+    "nombre": "Lavandería y cuidado de ropa",
+    "tareaRepresentativa": "poner_lavadora",
+    "tareas": [
+      {
+        "id": "tender_ropa",
+        "ajusteFrecuencia": 1.0,
+        "ajusteIntensidad": 0.2,
+        "ajusteCargaMental": 0.1
+      },
+      {
+        "id": "planchar_ropa",
+        "ajusteFrecuencia": 0.6,
+        "ajusteIntensidad": 1.2,
+        "ajusteCargaMental": 0.5
+      }
+    ]
+  },
+  {
+    "id": "organizacion_hogar",
+    "nombre": "Organización del hogar",
+    "tareaRepresentativa": "cambiar_sabanas",
+    "tareas": [
+      {
+        "id": "organizar_armarios",
+        "ajusteFrecuencia": 0.7,
+        "ajusteIntensidad": 0.4,
+        "ajusteCargaMental": 0.6
+      }
+    ]
+  },
+  {
+    "id": "cuidados_personas",
+    "nombre": "Cuidados a personas",
+    "tareaRepresentativa": "supervisar_deberes",
+    "tareas": [
+      {
+        "id": "higiene_infantil",
+        "ajusteFrecuencia": 1.0,
+        "ajusteIntensidad": 0.3,
+        "ajusteCargaMental": 0.3
+      },
+      {
+        "id": "acompanar_personas_dependientes",
+        "ajusteFrecuencia": 0.9,
+        "ajusteIntensidad": 0.5,
+        "ajusteCargaMental": 0.8
+      }
+    ]
+  },
+  {
+    "id": "mantenimiento_hogar",
+    "nombre": "Mantenimiento del hogar",
+    "tareaRepresentativa": "arreglar_grifo",
+    "tareas": [
+      {
+        "id": "bombillas",
+        "ajusteFrecuencia": 0.5,
+        "ajusteIntensidad": -0.2,
+        "ajusteCargaMental": -0.3
+      },
+      {
+        "id": "montar_muebles",
+        "ajusteFrecuencia": 0.3,
+        "ajusteIntensidad": 1.5,
+        "ajusteCargaMental": 0.8
+      }
+    ]
+  },
+  {
+    "id": "cuidado_plantas_animales",
+    "nombre": "Cuidado de plantas y animales",
+    "tareaRepresentativa": "regar_plantas",
+    "tareas": [
+      {
+        "id": "limpiar_jaulas",
+        "ajusteFrecuencia": 0.8,
+        "ajusteIntensidad": 0.6,
+        "ajusteCargaMental": 0.4
+      }
+    ]
+  },
+  {
+    "id": "recados_abastecimiento",
+    "nombre": "Recados y abastecimiento",
+    "tareaRepresentativa": "hacer_compra",
+    "tareas": [
+      {
+        "id": "comprar_medicinas",
+        "ajusteFrecuencia": 0.5,
+        "ajusteIntensidad": -0.2,
+        "ajusteCargaMental": 0.1
+      }
+    ]
+  },
+  {
+    "id": "gestion_invisible",
+    "nombre": "Gestión invisible y administración",
+    "tareaRepresentativa": "pagar_factura",
+    "tareas": [
+      {
+        "id": "coordinar_citas",
+        "ajusteFrecuencia": 0.6,
+        "ajusteIntensidad": 0.1,
+        "ajusteCargaMental": 0.4
+      }
+    ]
+  }
+]

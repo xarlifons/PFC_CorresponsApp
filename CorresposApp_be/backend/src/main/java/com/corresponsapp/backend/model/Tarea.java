@@ -16,6 +16,7 @@ public class Tarea {
     private int periodicidad; // Días entre repeticiones
     private float cargaMental; // Escala de 1.0 a 10.0
     private String intensidad; // baja / media / alta
+    private double tiempoEstimado; 
 
     private String asignadoA; // id del usuario
     private boolean completada = false;
@@ -28,7 +29,7 @@ public class Tarea {
     // Constructores
     public Tarea() {}
 
-    public Tarea(String nombre, String definicion, int periodicidad, float cargaMental, String intensidad, String asignadoA, LocalDate fechaProgramada, String unidadId, String modulo, boolean esPlantilla) {
+    public Tarea(String nombre, String definicion, int periodicidad, float cargaMental, String intensidad, String asignadoA, LocalDate fechaProgramada, double tiempoEstimado ,String unidadId, String modulo, boolean esPlantilla) {
         this.nombre = nombre;
         this.definicion = definicion;
         this.periodicidad = periodicidad;
@@ -39,12 +40,25 @@ public class Tarea {
         this.unidadId = unidadId;
         this.modulo = modulo;
         this.esPlantilla = esPlantilla;
+        this.tiempoEstimado = tiempoEstimado;
     }
 
-    // Getters y Setters
+	// Getters y Setters
     public String getId() {
         return id;
     }
+    // Solo para gestionar actualizarTarea() en TareaController
+    public void setId(String id) {
+        this.id = id;
+    }
+    
+    public double getTiempoEstimado() {
+		return tiempoEstimado;
+	}
+
+	public void setTiempoEstimado(double tiempoEstimado) {
+		this.tiempoEstimado = tiempoEstimado;
+	}
 
     public String getNombre() {
         return nombre;

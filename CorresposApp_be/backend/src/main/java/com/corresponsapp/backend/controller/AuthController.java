@@ -53,18 +53,18 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(Authentication authentication) {
         try {
-            User user = (User) authentication.getPrincipal(); // Obtenemos el usuario directamente del contexto
-            System.out.println("[/refresh] Usuario autenticado: " + user.getEmail());
+            User userReg = (User) authentication.getPrincipal(); // Obtenemos el usuario directamente del contexto
+            System.out.println("[/refresh] Usuario autenticado: " + userReg.getEmail());
 
-            String newToken = jwtUtil.generateToken(user);
+            String newToken = jwtUtil.generateToken(userReg);
             System.out.println("[/refresh] ✅ Nuevo token generado correctamente.");
 
             return ResponseEntity.ok(new LoginResponse(
                 newToken,
-                user.getNombre(),
-                user.getEmail(),
-                user.getRole(),
-                user.getUnidadAsignada()
+                userReg.getNombre(),
+                userReg.getEmail(),
+                userReg.getRole(),
+                userReg.getUnidadAsignada()
             ));
         } catch (Exception e) {
             System.out.println("[/refresh] ❌ Error al renovar token: " + e.getMessage());

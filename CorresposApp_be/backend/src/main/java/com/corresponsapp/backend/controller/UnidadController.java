@@ -22,182 +22,146 @@ import java.util.Optional;
 @RequestMapping("/api/unidad")
 public class UnidadController {
 
-    @Autowired
-    private UnidadService unidadService;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UnidadRepository unidadRepository;
+	@Autowired
+	private UnidadService unidadService;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private UnidadRepository unidadRepository;
 
-    // Crear una nueva unidad (userId se obtiene del token)
-    @PostMapping("/crear")
-    public ResponseEntity<?> crearUnidad(@RequestBody Unidad unidad) {
-        try {
-            String userId = obtenerUserIdDesdeToken();
-            Unidad nueva = unidadService.crearUnidad(unidad, userId);
-            return ResponseEntity.ok(nueva);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("❌ Error al crear unidad: " + e.getMessage());
-        }
-    }
+	// Crear una nueva unidad (userId se obtiene del token)
+	@PostMapping("/crear")
+	public ResponseEntity<?> crearUnidad(@RequestBody Unidad unidad) {
+		try {
+			String userId = obtenerUserIdDesdeToken();
+			Unidad nueva = unidadService.crearUnidad(unidad, userId);
+			return ResponseEntity.ok(nueva);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("❌ Error al crear unidad: " + e.getMessage());
+		}
+	}
 
-    // Unirse a una unidad por código
-    @PostMapping("/unirse")
-    public ResponseEntity<?> unirseUnidad(@RequestParam String codigo) {
-        try {
-            String userId = obtenerUserIdDesdeToken();
-            Optional<Unidad> unidad = unidadService.unirseUnidad(codigo, userId);
-            if (unidad.isPresent()) {
-                return ResponseEntity.ok(unidad.get());
-            } else {
-                return ResponseEntity.badRequest().body("❌ No se encontró una unidad con ese código.");
-            }
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("❌ Error al unirse a la unidad: " + e.getMessage());
-        }
-    }
+	// Unirse a una unidad por código
+	@PostMapping("/unirse")
+	public ResponseEntity<?> unirseUnidad(@RequestParam String codigo) {
+		try {
+			String userId = obtenerUserIdDesdeToken();
+			Optional<Unidad> unidad = unidadService.unirseUnidad(codigo, userId);
+			if (unidad.isPresent()) {
+				return ResponseEntity.ok(unidad.get());
+			} else {
+				return ResponseEntity.badRequest().body("❌ No se encontró una unidad con ese código.");
+			}
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("❌ Error al unirse a la unidad: " + e.getMessage());
+		}
+	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerUnidad(@PathVariable String id) {
-        try {
-            Optional<Unidad> unidad = unidadService.obtenerUnidadPorId(id);
-            if (unidad.isPresent()) {
-                return ResponseEntity.ok(unidad.get());
-            } else {
-                return ResponseEntity
-                        .badRequest()
-                        .body("❌ Unidad no encontrada con ID: " + id);
-            }
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("❌ Error al obtener unidad: " + e.getMessage());
-        }
-    }
-   
-    @GetMapping("/{unidadId}/info-completa")
-    public ResponseEntity<?> obtenerInfoCompletaUnidad(@PathVariable String unidadId) {
-        try {
-            Optional<Unidad> unidadOpt = unidadRepository.findById(unidadId);
+	@GetMapping("/{id}")
+	public ResponseEntity<?> obtenerUnidad(@PathVariable String id) {
+		try {
+			Optional<Unidad> unidad = unidadService.obtenerUnidadPorId(id);
+			if (unidad.isPresent()) {
+				return ResponseEntity.ok(unidad.get());
+			} else {
+				return ResponseEntity.badRequest().body("❌ Unidad no encontrada con ID: " + id);
+			}
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("❌ Error al obtener unidad: " + e.getMessage());
+		}
+	}
 
-            if (unidadOpt.isEmpty()) {
-                return ResponseEntity.status(404).body("Unidad no encontrada");
-            }
+	@GetMapping("/{unidadId}/info-completa")
+	public ResponseEntity<?> obtenerInfoCompletaUnidad(@PathVariable String unidadId) {
+		try {
+			Optional<Unidad> unidadOpt = unidadRepository.findById(unidadId);
 
-            Unidad unidad = unidadOpt.get();
+			if (unidadOpt.isEmpty()) {
+				return ResponseEntity.status(404).body("Unidad no encontrada");
+			}
 
-            List<MiembroDTO> miembros = unidad.getMiembros().stream()
-                    .map(userId -> userRepository.findById(userId))
-                    .filter(Optional::isPresent)
-                    .map(opt -> {
-                        User u = opt.get();
-                        return new MiembroDTO(u.getId(), u.getNombre(), u.getEmail());
-                    })
-                    .toList();
+			Unidad unidad = unidadOpt.get();
 
-            UnidadInfoResponse response = new UnidadInfoResponse(
-                    unidad.getNombre(),
-                    unidad.getModulosActivados(),
-                    unidad.getCicloCorresponsabilidad(),
-                    miembros
-            );
+			List<MiembroDTO> miembros = unidad.getMiembros().stream().map(userId -> userRepository.findById(userId))
+					.filter(Optional::isPresent).map(opt -> {
+						User u = opt.get();
+						return new MiembroDTO(u.getId(), u.getNombre(), u.getEmail());
+					}).toList();
 
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error al obtener la información de la unidad: " + e.getMessage());
-        }
-    }
-    
-    @PutMapping("/{unidadId}/estado-fase1")
-    public ResponseEntity<?> actualizarEstadoFase1(
-            @PathVariable String unidadId,
-            @RequestBody EstadoFase1DTO estadoDTO) {
-    	
-    	System.out.println("✅ Se ha accedido correctamente al endpoint /estado-fase1");
-    	Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    	System.out.println("👤 Usuario autenticado desde SecurityContext: " + auth);
-    	System.out.println("🔐 Principal: " + auth.getPrincipal());
-    	
-        try {         
-            Unidad unidadActualizada = unidadService.actualizarEstadoFase1(unidadId, estadoDTO.getEstadoFase1());
-            return ResponseEntity.ok(unidadActualizada);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("❌ Error al actualizar estadoFase1: " + e.getMessage());
-        }
-    }
-    
-    private String obtenerUserIdDesdeToken() {
-    	User userReg = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    	String email = userReg.getEmail();
-        System.out.println("🔐 Email extraído del JWT (principal): " + email); // debug log
-        return userRepository.findByEmail(email)
-        		 .map(user -> {
-                     System.out.println("✅ Usuario encontrado: " + user.getId());
-                     return user.getId();
-                 })
-                 .orElseThrow(() -> {
-                     System.out.println("❌ Usuario NO encontrado con email: " + email);
-                     return new RuntimeException("Usuario no encontrado");
-                 });
-    }
-    
-    @GetMapping("/{unidadId}/estado-fase1")
-    public ResponseEntity<?> obtenerEstadoFase1(@PathVariable String unidadId) {
-        try {
-            String estado = unidadService.obtenerEstadoFase1(unidadId);
-            return ResponseEntity.ok(estado);
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body("❌ Error al obtener estadoFase1: " + e.getMessage());
-        }
-    }
+			UnidadInfoResponse response = new UnidadInfoResponse(unidad.getNombre(), unidad.getModulosActivados(),
+					unidad.getCicloCorresponsabilidad(), miembros);
 
-    @GetMapping("/{unidadId}/miembros")
-    public ResponseEntity<?> obtenerMiembrosDeUnidad(@PathVariable String unidadId) {
-        Optional<Unidad> unidadOpt = unidadRepository.findById(unidadId);
+			return ResponseEntity.ok(response);
+		} catch (Exception e) {
+			return ResponseEntity.status(500).body("Error al obtener la información de la unidad: " + e.getMessage());
+		}
+	}
 
-        if (unidadOpt.isEmpty()) {
-            return ResponseEntity.status(404).body("Unidad no encontrada");
-        }
+	@PutMapping("/{unidadId}/estado-fase1")
+	public ResponseEntity<?> actualizarEstadoFase1(@PathVariable String unidadId,
+			@RequestBody EstadoFase1DTO estadoDTO) {
 
-        Unidad unidad = unidadOpt.get();
-        List<String> idMiembros = unidad.getMiembros();
+		System.out.println("✅ Se ha accedido correctamente al endpoint /estado-fase1");
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		System.out.println("👤 Usuario autenticado desde SecurityContext: " + auth);
+		System.out.println("🔐 Principal: " + auth.getPrincipal());
 
-        List<User> miembros = userRepository.findAllById(idMiembros);
-        return ResponseEntity.ok(miembros);
-    }
-    
-    @PutMapping("/{unidadId}/configurar")
-    public ResponseEntity<?> configurarUnidad(
-            @PathVariable String unidadId,
-            @RequestBody UnidadConfiguracionDTO configuracionDTO) {
+		try {
+			Unidad unidadActualizada = unidadService.actualizarEstadoFase1(unidadId, estadoDTO.getEstadoFase1());
+			return ResponseEntity.ok(unidadActualizada);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("❌ Error al actualizar estadoFase1: " + e.getMessage());
+		}
+	}
 
-        try {
-            Optional<Unidad> unidadOpt = unidadRepository.findById(unidadId);
-            if (unidadOpt.isEmpty()) {
-                return ResponseEntity.status(404).body("Unidad no encontrada");
-            }
+	private String obtenerUserIdDesdeToken() {
+		User userReg = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		String email = userReg.getEmail();
+		System.out.println("🔐 Email extraído del JWT (principal): " + email); // debug log
+		return userRepository.findByEmail(email).map(user -> {
+			System.out.println("✅ Usuario encontrado: " + user.getId());
+			return user.getId();
+		}).orElseThrow(() -> {
+			System.out.println("❌ Usuario NO encontrado con email: " + email);
+			return new RuntimeException("Usuario no encontrado");
+		});
+	}
 
-            Unidad unidad = unidadOpt.get();
+	@GetMapping("/{unidadId}/estado-fase1")
+	public ResponseEntity<?> obtenerEstadoFase1(@PathVariable String unidadId) {
+		try {
+			String estado = unidadService.obtenerEstadoFase1(unidadId);
+			return ResponseEntity.ok(estado);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("❌ Error al obtener estadoFase1: " + e.getMessage());
+		}
+	}
 
-            unidad.setModulosActivados(configuracionDTO.getModulosActivados());
-            unidad.setCicloCorresponsabilidad(configuracionDTO.getCicloCorresponsabilidad());
-            unidad.setEstadoFase1("momento2"); // avanzamos en el flujo
+	@GetMapping("/{unidadId}/miembros")
+	public ResponseEntity<?> obtenerMiembrosDeUnidad(@PathVariable String unidadId) {
+		Optional<Unidad> unidadOpt = unidadRepository.findById(unidadId);
 
-            unidadRepository.save(unidad);
+		if (unidadOpt.isEmpty()) {
+			return ResponseEntity.status(404).body("Unidad no encontrada");
+		}
 
-            return ResponseEntity.ok(unidad);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("❌ Error al configurar unidad: " + e.getMessage());
-        }
-    }
+		Unidad unidad = unidadOpt.get();
+		List<String> idMiembros = unidad.getMiembros();
 
+		List<User> miembros = userRepository.findAllById(idMiembros);
+		return ResponseEntity.ok(miembros);
+	}
+
+	@PutMapping("/{unidadId}/configurar")
+	public ResponseEntity<?> configurarUnidad(@PathVariable String unidadId,
+			@RequestBody UnidadConfiguracionDTO configuracionDTO) {
+		try {
+			String userId = obtenerUserIdDesdeToken(); // usuario autenticado
+			unidadService.configurarUnidad(unidadId, configuracionDTO);
+			return ResponseEntity.ok("✅ Unidad configurada correctamente");
+		} catch (Exception e) {
+			return ResponseEntity.status(400).body("❌ Error al configurar unidad: " + e.getMessage());
+		}
+	}
 
 }

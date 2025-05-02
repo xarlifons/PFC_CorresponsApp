@@ -1,6 +1,5 @@
 package com.corresponsapp.backend.service;
 
-import com.corresponsapp.backend.controller.AuthController;
 import com.corresponsapp.backend.dto.LoginResponse;
 import com.corresponsapp.backend.model.User;
 import com.corresponsapp.backend.repository.UserRepository;

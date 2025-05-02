@@ -1,5 +1,6 @@
 package com.corresponsapp.backend.service;
 
+import com.corresponsapp.backend.dto.UnidadConfiguracionDTO;
 import com.corresponsapp.backend.model.Unidad;
 import java.util.Optional;
 
@@ -9,4 +10,6 @@ public interface UnidadService {
     Optional<Unidad> obtenerUnidadPorId(String id);
     Unidad actualizarEstadoFase1(String unidadId, String nuevoEstado);
     String obtenerEstadoFase1(String unidadId);
+    Unidad configurarUnidad(String unidadId, UnidadConfiguracionDTO configuracionDTO);
+
 }

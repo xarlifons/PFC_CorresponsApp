@@ -1,7 +1,11 @@
 package com.corresponsapp.backend.model;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.corresponsapp.backend.dto.SurveyParametersDTO;
 
 @Document(collection = "users")
 public class User {
@@ -13,9 +17,12 @@ public class User {
     private String email;
     private String password;
     private String role;
-    private String unidadAsignada; 
+    private String unidadAsignada;
+    private List<SurveyParametersDTO> surveyParameters;
+    private String unidadId;
 
-    // Constructor vacío (necesario para Spring y MongoDB)
+
+	// Constructor vacío (necesario para Spring y MongoDB)
     public User() {}
 
     // Constructor con todos los campos
@@ -44,9 +51,18 @@ public class User {
 
     public void setId(String id) {
         this.id = id;
-    }
+    }   
+    
 
-    public String getNombre() {
+    public List<SurveyParametersDTO> getSurveyParameters() {
+		return surveyParameters;
+	}
+
+	public void setSurveyParameters(List<SurveyParametersDTO> surveyParameters) {
+		this.surveyParameters = surveyParameters;
+	}
+
+	public String getNombre() {
         return nombre;
     }
 
@@ -85,6 +101,14 @@ public class User {
     public void setUnidadAsignada(String unidadAsignada) {
         this.unidadAsignada = unidadAsignada;
     }
+    
+    public String getUnidadId() {
+		return unidadId;
+	}
+
+	public void setUnidadId(String unidadId) {
+		this.unidadId = unidadId;
+	}
 
     @Override
     public String toString() {

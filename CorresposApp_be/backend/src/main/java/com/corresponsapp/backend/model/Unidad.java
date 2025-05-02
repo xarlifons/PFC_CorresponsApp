@@ -17,6 +17,7 @@ public class Unidad {
     private List<String> modulosActivados; 
 	private int cicloCorresponsabilidad = 30; // en días
 	private String estadoFase1 = "momento0";
+	private List<Tarea> tareasUnidad;
   
 
     public Unidad() {
@@ -36,7 +37,15 @@ public class Unidad {
         this.id = id;
     }
 
-    public String getNombre() {
+    public List<Tarea> getTareasUnidad() {
+		return tareasUnidad;
+	}
+
+	public void setTareasUnidad(List<Tarea> tareasUnidad) {
+		this.tareasUnidad = tareasUnidad;
+	}
+
+	public String getNombre() {
         return nombre;
     }
 
