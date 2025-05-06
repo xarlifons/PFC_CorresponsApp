@@ -20,6 +20,7 @@ export default function UnitConfigurationScreen({ navigation, route }) {
     getUnidadInfoCompleta,
     actualizarConfiguracionUnidad,
     actualizarEstadoFase1,
+    getModulosYTareas,
   } = useAuth();
 
   const [unidad, setUnidad] = useState(null);
@@ -31,128 +32,40 @@ export default function UnitConfigurationScreen({ navigation, route }) {
   const [moduloActivo, setModuloActivo] = useState(null);
   const [tareasDelModulo, setTareasDelModulo] = useState([]);
   const [tareasSeleccionadas, setTareasSeleccionadas] = useState([]);
+  const [modulosTareas, setModulosTareas] = useState([]); // 🔹 Nuevo estado
 
   useRedirectByEstadoFase1("momento1", "SurveyParametersScreen");
 
-  const MODULOS_DISPONIBLES = [
-    { id: "limpieza_general", nombre: "Limpieza general" },
-    { id: "limpieza_especifica", nombre: "Limpieza específica" },
-    { id: "cocina_alimentacion", nombre: "Cocina y alimentación" },
-    { id: "ropa_lavanderia", nombre: "Ropa y lavandería" },
-    { id: "habitaciones_organizacion", nombre: "Habitaciones y organización" },
-    { id: "bano_higiene", nombre: "Baño e higiene" },
-    { id: "cuidados_familiares", nombre: "Cuidados familiares" },
-    { id: "mantenimiento_hogar", nombre: "Mantenimiento del hogar" },
-    { id: "plantas_mascotas", nombre: "Cuidado de plantas y mascotas" },
-    { id: "recados_abastecimiento", nombre: "Recados y abastecimiento" },
-    { id: "gestion_invisible", nombre: "Gestión invisible" },
-    { id: "cuidado_vehiculo", nombre: "Cuidado del vehículo" },
-  ];
-
-  const TAREAS_POR_MODULO = {
-    limpieza_general: [
-      "Barrer y fregar suelos",
-      "Limpiar el polvo de muebles",
-      "Pasar aspiradora",
-      "Ventilar habitaciones",
-      "Vaciar papeleras",
-    ],
-    limpieza_especifica: [
-      "Limpiar cristales y ventanas",
-      "Limpiar paredes y puertas",
-      "Limpiar ducha o banera",
-      "Limpiar lavabo e inodoro",
-      "Limpiar terraza o balcon",
-    ],
-    cocina_alimentacion: [
-      "Cocinar comidas principales",
-      "Fregar platos o lavar lavavajillas",
-      "Planificar menu semanal",
-      "Vaciar alimentos caducados",
-      "Gestionar basura y reciclaje",
-    ],
-    ropa_lavanderia: [
-      "Poner lavadoras",
-      "Tender ropa",
-      "Planchar ropa",
-      "Doblar y guardar ropa",
-      "Revisar ropa sucia/acumulada",
-    ],
-    habitaciones_organizacion: [
-      "Hacer las camas",
-      "Cambiar sabanas",
-      "Organizar armarios",
-      "Ordenar habitaciones",
-    ],
-    bano_higiene: [
-      "Limpiar inodoro",
-      "Limpiar lavabo y espejo",
-      "Limpiar ducha/banera",
-      "Reponer papel higienico y jabon",
-      "Cambiar toallas",
-    ],
-    cuidados_familiares: [
-      "Ayudar higiene personal ninos/as",
-      "Supervisar deberes escolares",
-      "Acompanhar a actividades extraescolares",
-      "Preparar mochilas escolares",
-    ],
-    mantenimiento_hogar: [
-      "Revisar bombillas y fusibles",
-      "Realizar arreglos menores",
-      "Revisar electrodomesticos",
-      "Montar o desmontar muebles",
-    ],
-    plantas_mascotas: [
-      "Regar plantas",
-      "Podar plantas",
-      "Cuidar jardin",
-      "Sacar mascotas a pasear",
-      "Limpiar jaulas o areneros",
-    ],
-    recados_abastecimiento: [
-      "Hacer la compra",
-      "Comprar medicamentos",
-      "Sacar la basura",
-    ],
-    gestion_invisible: [
-      "Planificar calendario familiar",
-      "Coordinar citas y eventos",
-      "Revisar y pagar facturas",
-      "Hacer gestiones administrativas",
-    ],
-    cuidado_vehiculo: [
-      "Llevar coche al taller",
-      "Llenar deposito de gasolina",
-      "Renovar ITV o documentacion",
-    ],
-  };
-
   useEffect(() => {
-    const cargarUnidad = async () => {
-      if (state.user?.unidadAsignada) {
-        const info = await getUnidadInfoCompleta(state.user.unidadAsignada);
-        setUnidad(info);
-        if (info?.modulosActivados?.length) {
-          setModulosSeleccionados(info.modulosActivados);
-          setDuracionCiclo(info.cicloCorresponsabilidad?.toString());
+    const cargarDatos = async () => {
+      try {
+        const [unidadData, modulosData] = await Promise.all([
+          getUnidadInfoCompleta(state.user.unidadAsignada),
+          getModulosYTareas(),
+        ]);
+        setUnidad(unidadData);
+        setModulosTareas(modulosData);
+        if (unidadData?.modulosActivados?.length) {
+          setModulosSeleccionados(unidadData.modulosActivados);
+          setDuracionCiclo(unidadData.cicloCorresponsabilidad?.toString());
         }
+      } catch (error) {
+        Alert.alert("❌ Error al cargar datos", error.message);
       }
     };
-    cargarUnidad();
+    if (state.user?.unidadAsignada) {
+      cargarDatos();
+    }
   }, [state.user?.unidadAsignada]);
 
   useEffect(() => {
     if (route.params?.nuevaTarea) {
       const nueva = route.params.nuevaTarea;
-
-      // 1. Añadir a tareasUnidad (sin duplicados)
       setTareasUnidad((prev) => {
         const sinDuplicados = prev.filter((t) => t.id !== nueva.id);
         return [...sinDuplicados, nueva];
       });
 
-      // 2. Si modal abierto y es del mismo módulo
       if (modalVisible && nueva.modulo === moduloActivo) {
         setTareasDelModulo((prev) => {
           const sinDuplicados = prev.filter((t) => t.id !== nueva.id);
@@ -167,7 +80,7 @@ export default function UnitConfigurationScreen({ navigation, route }) {
         });
       }
 
-      navigation.setParams({ nuevaTarea: null }); // limpiar
+      navigation.setParams({ nuevaTarea: null });
     }
   }, [route.params?.nuevaTarea]);
 
@@ -197,14 +110,13 @@ export default function UnitConfigurationScreen({ navigation, route }) {
       (t) => t.modulo === moduloId
     );
 
-    const tareasPredefinidas = (TAREAS_POR_MODULO[moduloId] || []).map(
-      (nombre) => ({
-        id: `${moduloId}_${nombre.replace(/\s+/g, "_").toLowerCase()}`,
-        nombre,
-        modulo: moduloId,
-        personalizada: false,
-      })
-    );
+    const modulo = modulosTareas.find((m) => m.id === moduloId);
+    const tareasPredefinidas = (modulo?.tareas || []).map((nombre) => ({
+      id: `${moduloId}_${nombre.replace(/\s+/g, "_").toLowerCase()}`,
+      nombre,
+      modulo: moduloId,
+      personalizada: false,
+    }));
 
     const todasLasTareas = [
       ...tareasPredefinidas,
@@ -213,7 +125,6 @@ export default function UnitConfigurationScreen({ navigation, route }) {
       (t, index, self) => self.findIndex((o) => o.id === t.id) === index
     );
 
-    // 👇 recuperar las tareas que ya había confirmado el usuario en este módulo
     const yaSeleccionadas = tareasUnidad.filter((t) => t.modulo === moduloId);
 
     setTareasDelModulo(todasLasTareas);
@@ -283,7 +194,7 @@ export default function UnitConfigurationScreen({ navigation, route }) {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Configuración de la unidad:</Text>
-      <Text style={styles.title}>{unidad.nombre} </Text>
+      <Text style={styles.title}>{unidad.nombre}</Text>
 
       <Text style={styles.subtitle}>Duración del ciclo (días):</Text>
       <TextInput
@@ -294,7 +205,7 @@ export default function UnitConfigurationScreen({ navigation, route }) {
       />
 
       <Text style={styles.subtitle}>Selecciona los módulos:</Text>
-      {MODULOS_DISPONIBLES.map((modulo) => (
+      {modulosTareas.map((modulo) => (
         <View key={modulo.id} style={styles.moduloItem}>
           <TouchableOpacity
             style={styles.moduloButton}

@@ -389,6 +389,168 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // const enviarParametrosEncuesta = async (respuestas) => {
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/api/encuesta/parametros`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${state.token}`,
+  //       },
+  //       body: JSON.stringify(respuestas),
+  //     });
+
+  //     if (!response.ok) {
+  //       const errorText = await response.text();
+  //       throw new Error(`Error al enviar encuesta: ${errorText}`);
+  //     }
+
+  //     console.log("✅ Encuesta enviada correctamente");
+  //   } catch (error) {
+  //     console.error("❌ Error en enviarParametrosEncuesta:", error.message);
+  //     throw error;
+  //   }
+  // };
+
+  const enviarParametrosEncuesta = async (respuestas) => {
+    try {
+      const respuestasNormalizadas = respuestas.map((r) => ({
+        grupo: r.grupo,
+        periodicidad: r.periodicidad,
+        intensidad: r.intensidad / 10,
+        cargaMental: r.cargaMental / 10,
+      }));
+
+      const response = await fetch(`${API_BASE_URL}/api/encuesta/parametros`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+        body: JSON.stringify(respuestasNormalizadas),
+      });
+
+      console.log("📥 Código de respuesta:", response.status);
+
+      const errorText = await response.text();
+
+      if (!response.ok) {
+        console.error("💥 Respuesta del backend:", errorText);
+        throw new Error(`(${response.status}) ${errorText}`);
+      }
+
+      console.log("✅ Encuesta enviada correctamente");
+    } catch (error) {
+      console.error("❌ Error en enviarParametrosEncuesta:", error.message);
+      throw error;
+    }
+  };
+
+  const getConsensoFase1 = async (unidadId) => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/unidad/${unidadId}/consenso-fase1`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${state.token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Error al obtener consenso fase 1: ${text}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("❌ Error en getConsensoFase1:", error.message);
+      throw error;
+    }
+  };
+
+  const getModulosYTareas = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/modulos-tareas`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Error al obtener módulos y tareas: ${text}`);
+      }
+
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        const modulosArray = Object.values(data);
+        return modulosArray;
+      }
+      return data;
+    } catch (error) {
+      console.error("❌ Error en getModulosYTareas:", error.message);
+      throw error;
+    }
+  };
+
+  const getGruposIniciales = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/modulos-tareas/grupos-iniciales`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${state.token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Error al obtener grupos de encuesta: ${text}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("❌ Error en getGruposIniciales:", error.message);
+      throw error;
+    }
+  };
+
+  const getGruposTareas = async () => {
+    try {
+      const response = await fetch(
+        `${API_BASE_URL}/api/modulos-tareas/grupos-tareas`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${state.token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Error al obtener grupos de tareas: ${text}`);
+      }
+
+      const data = await response.json();
+      return Object.values(data); // Convertimos de {id: {...}} a [{...}, {...}]
+    } catch (error) {
+      console.error("❌ Error en getGruposTareas:", error.message);
+      throw error;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -404,6 +566,11 @@ export function AuthProvider({ children }) {
         refreshToken,
         actualizarConfiguracionUnidad,
         actualizarEstadoFase1,
+        enviarParametrosEncuesta,
+        getConsensoFase1,
+        getModulosYTareas,
+        getGruposIniciales,
+        getGruposTareas,
       }}
     >
       {children}
