@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import com.corresponsapp.backend.dto.SurveyParametersDTO;
 
@@ -18,8 +19,12 @@ public class User {
     private String password;
     private String role;
     private String unidadAsignada;
+    
+    @Field("surveyParameters")
     private List<SurveyParametersDTO> surveyParameters;
     private String unidadId;
+    private Double umbralLimpieza;
+
 
 
 	// Constructor vacío (necesario para Spring y MongoDB)
@@ -108,6 +113,14 @@ public class User {
 
 	public void setUnidadId(String unidadId) {
 		this.unidadId = unidadId;
+	}
+	
+	public Double getUmbralLimpieza() {
+		return umbralLimpieza;
+	}
+
+	public void setUmbralLimpieza(Double umbralLimpieza) {
+		this.umbralLimpieza = umbralLimpieza;
 	}
 
     @Override

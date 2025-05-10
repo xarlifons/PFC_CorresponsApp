@@ -1,5 +1,6 @@
 package com.corresponsapp.backend.service;
 
+import com.corresponsapp.backend.dto.SurveyParametersDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -22,7 +23,7 @@ public class GrupoTareasLoader {
 
     public static class TareaDelGrupo {
         public String id;
-        public double ajusteFrecuencia;
+        public double ajustePeriodicidad;
         public double ajusteIntensidad;
         public double ajusteCargaMental;
     }
@@ -53,6 +54,27 @@ public class GrupoTareasLoader {
             throw new RuntimeException("❌ Error al cargar grupos_tareas.json", e);
         }
     }
+    
+    public Map<String, SurveyParametersDTO> propagarParametrosDesdeRepresentativas(List<SurveyParametersDTO> respuestasUsuario) {
+        Map<String, SurveyParametersDTO> resultado = new HashMap<>();
+
+        for (SurveyParametersDTO respuesta : respuestasUsuario) {
+            GrupoTareas grupo = gruposById.get(respuesta.getGrupo());
+            if (grupo == null) continue;
+
+            for (TareaDelGrupo tarea : grupo.tareas) {
+                double periodicidad = Math.max(0.5, respuesta.getPeriodicidad() * tarea.ajustePeriodicidad);
+                double intensidad = Math.min(10, Math.max(0, respuesta.getIntensidad() + tarea.ajusteIntensidad));
+                double cargaMental = Math.min(10, Math.max(0, respuesta.getCargaMental() + tarea.ajusteCargaMental));
+
+                resultado.put(tarea.id, new SurveyParametersDTO(
+                    tarea.id, periodicidad, cargaMental, intensidad
+                ));
+            }
+        }
+        return resultado;
+    }
+
 
     public String obtenerGrupoDeTarea(String tareaId) {
         return tareaToGrupo.get(tareaId);

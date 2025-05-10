@@ -14,5 +14,5 @@ public interface UserRepository extends MongoRepository<User, String> {
     // Saber si un email ya está registrado (para validación en el registro)
     boolean existsByEmail(String email);
     
-    List<User> findByUnidadId(String unidadId);
+    List<User> findByUnidadAsignada(String unidadId);
 }

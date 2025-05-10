@@ -15,6 +15,8 @@ import { useRedirectByEstadoFase1 } from "../../hooks/useRedirectByEstadoFase1";
 
 const { height, width } = Dimensions.get("window");
 const CARD_SIZE = width * 0.24;
+// Altura total que queremos reservar para el botón + márgenes
+const BUTTON_AREA_HEIGHT = 80;
 
 export default function TaskNegotiationAssignmentScreen({ navigation }) {
   const {
@@ -44,6 +46,7 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
         const config = await getUnidadConfiguracion(state.user.unidadAsignada);
         const info = await getUnidadInfoCompleta(state.user.unidadAsignada);
 
+        // Inicializa las zonas
         const init = { unassigned: [] };
         config.tareasUnidad.forEach((t) => {
           init.unassigned.push({ ...t });
@@ -60,7 +63,10 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
             onPanResponderMove: Animated.event(
               [
                 null,
-                { dx: panRefs.current[t.id].x, dy: panRefs.current[t.id].y },
+                {
+                  dx: panRefs.current[t.id].x,
+                  dy: panRefs.current[t.id].y,
+                },
               ],
               { useNativeDriver: false }
             ),
@@ -90,7 +96,6 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
             },
           });
         });
-
         (info.miembros || []).forEach((m) => (init[m.id] = []));
         setZones(init);
         setMembers(info.miembros || []);
@@ -132,7 +137,7 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
     );
   }
 
-  // Orden de filas según número de miembros
+  // Definir orden de filas según número de miembros
   let filasOrder;
   if (members.length === 2) {
     filasOrder = [members[0].id, "unassigned", members[1].id];
@@ -146,7 +151,9 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
     filasOrder = ["unassigned", ...members.map((m) => m.id)];
   }
 
-  const ROW_HEIGHT = (height - 80 /* botón */ - 32) / filasOrder.length;
+  // Reducimos un poco el factor para dejar más espacio
+  const ROW_HEIGHT =
+    ((height - BUTTON_AREA_HEIGHT - 32) / filasOrder.length) * 0.7;
 
   const renderRow = (zoneId) => {
     const label =
@@ -171,7 +178,13 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={{
+            flexGrow: 1,
+            justifyContent: "flex-start", // bajas las tarjetas
+            alignItems: "flex-end", // y las dejas a la izquierda
+            paddingHorizontal: 4,
+            marginBottom: 4,
+          }}
         >
           {tasks.map((task) => (
             <Animated.View
@@ -192,7 +205,13 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {filasOrder.map((zoneId) => renderRow(zoneId))}
+      <ScrollView
+        style={[styles.rowsContainer, { marginBottom: BUTTON_AREA_HEIGHT }]}
+        showsVerticalScrollIndicator={false}
+      >
+        {filasOrder.map((zoneId) => renderRow(zoneId))}
+      </ScrollView>
+
       <TouchableOpacity style={styles.saveButton} onPress={onSave}>
         <Text style={styles.saveText}>Guardar asignaciones y finalizar</Text>
       </TouchableOpacity>
@@ -204,8 +223,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 8,
-    paddingBottom: 500, // deja espacio para el botón
     backgroundColor: "#fff",
+  },
+  rowsContainer: {
+    flexGrow: 1,
   },
   loadingContainer: {
     flex: 1,
@@ -214,16 +235,17 @@ const styles = StyleSheet.create({
   },
   row: {
     marginBottom: 8,
-    backgroundColor: "#fafafa",
     borderRadius: 6,
     padding: 4,
+    overflow: "visible",
   },
   unassignedRow: {
     backgroundColor: "#b3d4fc",
   },
   userRow: {
-    borderWidth: 2, // borde grueso
-    borderColor: "#2D6A4F", // mismo color de botón para armonía
+    backgroundColor: "#fafafa",
+    borderWidth: 2,
+    borderColor: "#2D6A4F",
   },
   rowTitle: {
     fontWeight: "bold",
@@ -244,6 +266,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#e0f7fa",
     borderRadius: 4,
     elevation: 2,
+    zIndex: 10,
   },
   cardText: {
     textAlign: "center",

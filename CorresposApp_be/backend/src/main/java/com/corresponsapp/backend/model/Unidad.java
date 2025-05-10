@@ -3,6 +3,8 @@ package com.corresponsapp.backend.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.corresponsapp.backend.dto.ConsensoUmbralLimpiezaUnidad;
+
 import java.util.List;
 
 @Document(collection = "unidades")
@@ -18,9 +20,11 @@ public class Unidad {
 	private int cicloCorresponsabilidad = 30; // en días
 	private String estadoFase1 = "momento0";
 	private List<Tarea> tareasUnidad;
+	private List<ConsensoUmbralLimpiezaUnidad> consensoUnidad;
+	private List<ConsensoUmbralLimpiezaUnidad> consensoInicial;
   
 
-    public Unidad() {
+	public Unidad() {
 		super();
 	}
     
@@ -101,15 +105,29 @@ public class Unidad {
         this.estadoFase1 = estadoFase1;
     }
     
-    public String toString() {
-        return "Unidad{" +
-                "id='" + id + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", codigoAcceso='" + codigoAcceso + '\'' +
-                ", creadorId='" + creadorId + '\'' +
-                ", miembros=" + miembros +
-                ", modulosActivados=" + modulosActivados +
-                ", estadoFase1='" + estadoFase1 + '\'' +
-                '}';
-    }
+    public List<ConsensoUmbralLimpiezaUnidad> getConsensoInicial() {
+		return consensoInicial;
+	}
+
+	public void setConsensoInicial(List<ConsensoUmbralLimpiezaUnidad> consensoInicial) {
+		this.consensoInicial = consensoInicial;
+	}
+	
+	public List<ConsensoUmbralLimpiezaUnidad> getConsensoUnidad() {
+		return consensoUnidad;
+	}
+
+	public void setConsensoUnidad(List<ConsensoUmbralLimpiezaUnidad> consensoUnidad) {
+		this.consensoUnidad = consensoUnidad;
+	}
+
+
+    
+    @Override
+	public String toString() {
+		return "Unidad [id=" + id + ", nombre=" + nombre + ", codigoAcceso=" + codigoAcceso + ", creadorId=" + creadorId
+				+ ", miembros=" + miembros + ", modulosActivados=" + modulosActivados + ", cicloCorresponsabilidad="
+				+ cicloCorresponsabilidad + ", estadoFase1=" + estadoFase1 + ", tareasUnidad=" + tareasUnidad
+				+ ", consensoUnidad=" + consensoUnidad + "]";
+	}
 }

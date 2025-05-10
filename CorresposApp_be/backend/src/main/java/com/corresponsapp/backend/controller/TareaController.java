@@ -3,6 +3,10 @@ package com.corresponsapp.backend.controller;
 import com.corresponsapp.backend.model.Tarea;
 import com.corresponsapp.backend.service.TareaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -47,5 +51,15 @@ public class TareaController {
     @DeleteMapping("/{id}")
     public void eliminarTarea(@PathVariable String id) {
         tareaService.eliminarTarea(id);
+    }
+    
+    @GetMapping("/correspondencias")
+    public ResponseEntity<Resource> getCorrespondencias() {
+        // Lee el fichero de classpath (src/main/resources)
+        Resource resource = new ClassPathResource("correspondencia_tareasgrupos_modulos.json");
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(resource);
     }
 }

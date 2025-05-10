@@ -7,12 +7,13 @@ public class UnidadConfiguracionDTO {
     private List<String> modulosActivados;
     private int cicloCorresponsabilidad;
     private List<TareaUnidadDTO> tareasUnidad;  // Ahora lista de TareaUnidadDTO (no de Tarea completa)
+    private String estadoFase1;
 
     public UnidadConfiguracionDTO() {
         super();
     }
 
-    public List<String> getModulosActivados() {
+	public List<String> getModulosActivados() {
         return modulosActivados;
     }
 
@@ -35,4 +36,18 @@ public class UnidadConfiguracionDTO {
     public void setTareasUnidad(List<TareaUnidadDTO> tareasUnidad) {
         this.tareasUnidad = tareasUnidad;
     }
+    public String getEstadoFase1() {
+		return estadoFase1;
+	}
+
+	public void setEstadoFase1(String estadoFase1) {
+		this.estadoFase1 = estadoFase1;
+	}
+
+	@Override
+	public String toString() {
+		return "UnidadConfiguracionDTO [modulosActivados=" + modulosActivados + ", cicloCorresponsabilidad="
+				+ cicloCorresponsabilidad + ", tareasUnidad=" + tareasUnidad + ", estadoFase1=" + estadoFase1 + "]";
+	}
+	
 }

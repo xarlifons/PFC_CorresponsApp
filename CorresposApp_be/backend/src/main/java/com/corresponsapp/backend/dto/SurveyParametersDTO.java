@@ -1,6 +1,11 @@
 package com.corresponsapp.backend.dto;
 
-public class SurveyParametersDTO {
+import java.io.Serializable;
+
+public class SurveyParametersDTO implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
+	
     private String grupo;
     private double periodicidad; // en días
     private double cargaMental;  // 0.0 - 10.0

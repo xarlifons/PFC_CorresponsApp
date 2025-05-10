@@ -24,7 +24,7 @@ public class Tarea {
 
     private String unidadId; // La unidad a la que pertenece
     private String modulo;   // Nombre del módulo (Limpieza, Cocina, etc.)
-    private boolean esPlantilla = false; // Si es una tarea base común para todas las unidades
+    private boolean esPlantilla; // Si es una tarea base común para todas las unidades
 
     // Constructores
     public Tarea() {}

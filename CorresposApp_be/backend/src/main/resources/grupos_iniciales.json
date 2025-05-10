@@ -1,0 +1,12 @@
+[
+  { "grupo": "limpieza_cotidiana", "tarea": "barrer_y_fregar_suelos" },
+  { "grupo": "cocina_alimentos", "tarea": "fregar_platos_o_lavar_lavavajillas" },
+  { "grupo": "lavanderia_ropa", "tarea": "poner_lavadoras" },
+  { "grupo": "recados_abastecimiento", "tarea": "hacer_la_compra" },
+  { "grupo": "cuidados_personas", "tarea": "ayudar_higiene_personal_ninos_as" },
+  { "grupo": "organizacion_hogar", "tarea": "ordenar_habitaciones" },
+  { "grupo": "limpieza_general", "tarea": "limpiar_ducha_y_bañera" },
+  { "grupo": "gestion_invisible", "tarea": "coordinar_citas_y_eventos" },
+  { "grupo": "mantenimiento_hogar", "tarea": "montar_o_desmontar_muebles" },
+  { "grupo": "cuidado_plantas_animales", "tarea": "regar_plantas" }
+]

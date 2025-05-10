@@ -1,5 +1,7 @@
 package com.corresponsapp.backend.service;
 
+import com.corresponsapp.backend.dto.ConsensoUmbralLimpiezaUnidad;
+import com.corresponsapp.backend.dto.SurveyParametersDTO;
 import com.corresponsapp.backend.dto.TareaUnidadDTO;
 import com.corresponsapp.backend.dto.UnidadConfiguracionDTO;
 import com.corresponsapp.backend.model.Tarea;
@@ -18,9 +20,13 @@ public class UnidadServiceImpl implements UnidadService {
     private final TareaPlantillaService tareaPlantillaService;
 
     @Autowired
-    public UnidadServiceImpl(UnidadRepository unidadRepository, TareaPlantillaService tareaPlantillaService) {
+    private SurveyService surveyService;
+
+    @Autowired
+    public UnidadServiceImpl(UnidadRepository unidadRepository, TareaPlantillaService tareaPlantillaService, SurveyService surveyService) {
         this.unidadRepository = unidadRepository;
         this.tareaPlantillaService = tareaPlantillaService;
+        this.surveyService = surveyService;
     }
 
     @Override
@@ -103,5 +109,34 @@ public class UnidadServiceImpl implements UnidadService {
         return UUID.randomUUID().toString().replaceAll("-", "")
                    .substring(0, 6).toUpperCase();
     }
+    
+    @Override
+    public void guardarConsensoInicial(String unidadId, List<ConsensoUmbralLimpiezaUnidad> consenso) {
+        Unidad unidad = unidadRepository.findById(unidadId)
+            .orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
 
+        unidad.setConsensoInicial(consenso);
+        unidadRepository.save(unidad);
+
+        System.out.println("✅ Consenso de umbral de limpieza guardado para unidad: " + unidadId);
+    }
+    
+    @Override
+    public Map<String, SurveyParametersDTO> obtenerConsensoFase1(String unidadId) {
+    	
+        return surveyService.calcularPromediosPorTarea(unidadId);
+    }
+    
+    public void guardarConsensoFinal(String unidadId, List<ConsensoUmbralLimpiezaUnidad> consensoFinal) {
+        Unidad unidad = unidadRepository.findById(unidadId)
+            .orElseThrow(() -> new RuntimeException("Unidad no encontrada con ID: " + unidadId));
+
+        // Asigna la lista de consenso a la unidad
+        unidad.setConsensoUnidad(consensoFinal);
+
+        // Avanza el estado de fase 1 a momento4
+        unidad.setEstadoFase1("momento4");
+
+        unidadRepository.save(unidad);
+    }
 }
