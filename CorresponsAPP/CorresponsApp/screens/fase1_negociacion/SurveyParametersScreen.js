@@ -11,10 +11,10 @@ import Slider from "@react-native-community/slider";
 import { useAuth } from "../../context/AuthContext";
 import { useRedirectByEstadoFase1 } from "../../hooks/useRedirectByEstadoFase1";
 
-export default function SurveyParamsScreen() {
+export default function SurveyParametersScreen() {
   const {
     state,
-    enviarParametrosEncuesta,
+    enviarEncuestaYRecibirUmbral,
     actualizarEstadoFase1,
     getUnidadInfoCompleta,
     logout,
@@ -47,6 +47,7 @@ export default function SurveyParamsScreen() {
         setGrupos(data);
         const respuestasIniciales = data.map((g) => ({
           grupo: g.grupo,
+          tarea: g.tarea,
           periodicidad: 1,
           intensidad: 5,
           cargaMental: 5,
@@ -74,45 +75,57 @@ export default function SurveyParamsScreen() {
     setRespuestas(nuevas);
   };
 
-  const calcularUmbral = () => {
-    const total = respuestas.length;
-    const suma = respuestas.reduce(
-      (acc, r) => {
-        acc.periodicidad += r.periodicidad;
-        acc.intensidad += r.intensidad;
-        acc.cargaMental += r.cargaMental;
-        return acc;
-      },
-      { periodicidad: 0, intensidad: 0, cargaMental: 0 }
-    );
-    const valor = (
-      (suma.intensidad + suma.cargaMental + (30 - suma.periodicidad)) /
-      total /
-      2
-    ).toFixed(1);
-    return { valor };
-  };
+  // const handleEnviar = async () => {
+  //   try {
+  //     setIsEnviando(true);
+  //     console.log(
+  //       "🧾 Aqui la respuestas a enviar:",
+  //       JSON.stringify(respuestas, null, 2)
+  //     );
+  //     await enviarParametrosEncuesta(respuestas);
+  //     await actualizarEstadoFase1(state.user.unidadAsignada, "momento2");
+
+  //     setTimeout(async () => {
+  //       const info = await getUnidadInfoCompleta(state.user.unidadAsignada);
+  //       const umbral = await enviarEncuestaYRecibirUmbral(respuestas);
+  //       setUnidadInfo(info);
+  //       setUmbral({ umbral });
+  //       setEncuestaRegistrada(true);
+  //       setShowResumen(true);
+  //       setIsEnviando(false);
+  //     }, 800);
+  //   } catch (error) {
+  //     Alert.alert("❌ Error", error.message);
+  //     setIsEnviando(false);
+  //   }
+  // };
 
   const handleEnviar = async () => {
     try {
       setIsEnviando(true);
       console.log(
-        "🧾 Aqui la respuestas a enviar:",
+        "🧾 Respuestas a enviar:",
         JSON.stringify(respuestas, null, 2)
       );
-      await enviarParametrosEncuesta(respuestas);
+
+      // ✔️ 1) llama sólo al endpoint que guarda y devuelve el umbral
+      const umbralBackend = await enviarEncuestaYRecibirUmbral(respuestas);
+      console.log("📊 Umbral recibido del backend:", umbralBackend);
+
+      // ✔️ 2) actualiza el estadoFase1 en el servidor
       await actualizarEstadoFase1(state.user.unidadAsignada, "momento2");
 
-      setTimeout(async () => {
-        const info = await getUnidadInfoCompleta(state.user.unidadAsignada);
-        setUnidadInfo(info);
-        setUmbral(calcularUmbral());
-        setEncuestaRegistrada(true);
-        setShowResumen(true);
-        setIsEnviando(false);
-      }, 800);
+      // ✔️ 3) recupera la info de la unidad (para el resumen)
+      const info = await getUnidadInfoCompleta(state.user.unidadAsignada);
+
+      // ✔️ 4) actualiza estado local para renderizar el resumen
+      setUnidadInfo(info);
+      setUmbral({ valor: umbralBackend.toFixed(1) });
+      setShowResumen(true);
     } catch (error) {
+      console.error("❌ Error en handleEnviar:", error);
       Alert.alert("❌ Error", error.message);
+    } finally {
       setIsEnviando(false);
     }
   };

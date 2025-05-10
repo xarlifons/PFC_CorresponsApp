@@ -35,12 +35,12 @@ const NegotiationStack = () => {
         component={SurveyParametersScreen}
       />
       <Stack.Screen
-        name="TaskNegotiationAssignmentScreen"
-        component={TaskNegotiationAssignmentScreen}
-      />
-      <Stack.Screen
         name="TaskNegotiationThresholdScreen"
         component={TaskNegotiationThresholdScreen}
+      />
+      <Stack.Screen
+        name="TaskNegotiationAssignmentScreen"
+        component={TaskNegotiationAssignmentScreen}
       />
     </Stack.Navigator>
   );

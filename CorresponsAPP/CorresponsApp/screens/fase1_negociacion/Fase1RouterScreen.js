@@ -39,13 +39,13 @@ export default function Fase1RouterScreen() {
               navigation.replace("SurveyParametersScreen");
               break;
             case "momento3":
-              navigation.replace("TaskNegotiationAssignmentScreen");
-              break;
-            case "momento4":
               navigation.replace("TaskNegotiationThresholdScreen");
               break;
-            case "finalizado":
-              // navigation.replace("ExecutionTabs");
+            case "momento4":
+              navigation.replace("TaskNegotiationAssignmentScreen");
+              break;
+            case "completada":
+              navigation.replace("ExecutionDashboardScreen");
               break;
             default:
               console.warn("⚠️ Estado de Fase 1 no reconocido:", estado);

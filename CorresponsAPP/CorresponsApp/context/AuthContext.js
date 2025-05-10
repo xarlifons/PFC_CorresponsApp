@@ -551,6 +551,103 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const getCorrespondencias = async () => {
+    const res = await fetch(`${API_BASE_URL}/api/tareas/correspondencias`, {
+      headers: { Authorization: `Bearer ${state.token}` },
+    });
+    if (!res.ok) throw new Error(await res.text());
+    return res.json();
+  };
+
+  // Obtiene módulos, tareasUnidad y estadoFase1
+  const getUnidadConfiguracion = async (unidadId) => {
+    const response = await fetch(`${API_BASE_URL}/api/unidad/${unidadId}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${state.token}`,
+      },
+    });
+    +(
+      // --- NUEVO: inspeccionamos status y body ---
+      console.log("📝 getUnidadConfiguracion → status:", response.status)
+    );
+    const raw = await response.text();
+    console.log("📝 getUnidadConfiguracion → body:", raw);
+
+    if (!response.ok) {
+      // incluimos el status en el error
+      throw new Error(
+        `Error al obtener configuración de unidad (status ${response.status}): ${raw}`
+      );
+    }
+    // Si aquí llega, raw es JSON válido
+    return JSON.parse(raw);
+    // if (!response.ok) {
+    //   const text = await response.text();
+    //   throw new Error(`Error al obtener configuración de unidad: ${text}`);
+    // }
+    // return response.json(); // { modulosActivados, cicloCorresponsabilidad, tareasUnidad, estadoFase1 }
+  };
+
+  const getEstadoFase1 = async (unidadId) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/unidad/${unidadId}/estado-fase1`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      const msg = await response.text();
+      throw new Error(`Error al obtener estadoFase1: ${msg}`);
+    }
+    // si tu endpoint devuelve { estadoFase1: "momentoX" }:
+    const { estadoFase1 } = await response.json();
+    return estadoFase1;
+  };
+
+  const enviarEncuestaYRecibirUmbral = async (respuestas) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/encuesta/parametros/devolver`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+        body: JSON.stringify(respuestas),
+      }
+    );
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`(${response.status}) ${text}`);
+    }
+    const { umbralLimpieza } = await response.json();
+    return umbralLimpieza;
+  };
+
+  const guardarConsensoFinal = async (unidadId, consensoFinal) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/unidad/${unidadId}/consenso-final`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+        body: JSON.stringify(consensoFinal),
+      }
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`(${response.status}) ${errorText}`);
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -571,6 +668,11 @@ export function AuthProvider({ children }) {
         getModulosYTareas,
         getGruposIniciales,
         getGruposTareas,
+        getCorrespondencias,
+        getUnidadConfiguracion,
+        getEstadoFase1,
+        enviarEncuestaYRecibirUmbral,
+        guardarConsensoFinal,
       }}
     >
       {children}

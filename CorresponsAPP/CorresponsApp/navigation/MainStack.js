@@ -2,6 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth } from "../context/AuthContext";
 import NegotiationStack from "./NegotiationStack";
+import ExecutionDashboardScreen from "../screens/fase2_ejecucion/ExecutionDashboardScreen";
 //import ExecutionTabs from "./ExecutionTabs";
 
 const Stack = createNativeStackNavigator();
@@ -24,7 +25,10 @@ export default function MainStack() {
         component={NegotiationStack}
         options={{ headerShown: false }}
       />
-      {/* Aquí añadiremos otras pantallas privadas */}
+      <Stack.Screen
+        name="ExecutionDashboardScreen"
+        component={ExecutionDashboardScreen}
+      />
     </Stack.Navigator>
   );
 }
