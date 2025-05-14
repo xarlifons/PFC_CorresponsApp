@@ -2,9 +2,12 @@ package com.corresponsapp.backend.service;
 
 import com.corresponsapp.backend.dto.ConsensoUmbralLimpiezaUnidad;
 import com.corresponsapp.backend.dto.SurveyParametersDTO;
+import com.corresponsapp.backend.dto.TareaInstanciaDTO;
 import com.corresponsapp.backend.dto.UnidadConfiguracionDTO;
+import com.corresponsapp.backend.model.Tarea;
 import com.corresponsapp.backend.model.Unidad;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,8 +20,11 @@ public interface UnidadService {
     String obtenerEstadoFase1(String unidadId);
     Unidad configurarUnidad(String unidadId, UnidadConfiguracionDTO configuracionDTO);
     void guardarConsensoInicial(String unidadId, List<ConsensoUmbralLimpiezaUnidad> consenso);
-    Map<String, SurveyParametersDTO> obtenerConsensoFase1(String unidadId);
+    Map<String, SurveyParametersDTO> obtenerConsensoInicial(String unidadId);
     void guardarConsensoFinal(String unidadId, List<ConsensoUmbralLimpiezaUnidad> consensoFinal);
+    List<Tarea> generarInstancias(String unidadId, List<TareaInstanciaDTO> dtos, int cicloDias, LocalDate startDate
+        );
+	List<Tarea> obtenerTareasInstanciadas(String unidadId);
 
 
 }

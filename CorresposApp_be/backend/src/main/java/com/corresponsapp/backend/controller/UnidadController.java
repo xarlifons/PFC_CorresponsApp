@@ -4,6 +4,7 @@ import com.corresponsapp.backend.dto.ConsensoUmbralLimpiezaUnidad;
 import com.corresponsapp.backend.dto.EstadoFase1DTO;
 import com.corresponsapp.backend.dto.MiembroDTO;
 import com.corresponsapp.backend.dto.SurveyParametersDTO;
+import com.corresponsapp.backend.dto.TareaInstanciaDTO;
 import com.corresponsapp.backend.dto.TareaUnidadDTO;
 import com.corresponsapp.backend.dto.UnidadConfiguracionDTO;
 import com.corresponsapp.backend.dto.UnidadInfoResponse;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import com.corresponsapp.backend.repository.UserRepository;
 import com.corresponsapp.backend.repository.UnidadRepository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -93,8 +95,13 @@ public class UnidadController {
                     // casteo/redondeo double → int
                     tDto.setTiempoEstimado((int) Math.round(t.getTiempoEstimado()));
                     tDto.setDefinicion(t.getDefinicion());
-                    tDto.setEsPlantilla(t.isEsPlantilla());
+                    tDto.setEsPlantilla(t.getEsPlantilla());
+                    tDto.setPeriodicidad(t.getPeriodicidad());
+                    tDto.setIntensidad(t.getIntensidad());
+                    tDto.setCargaMental(t.getCargaMental());
+                    
                     lista.add(tDto);
+                    
                 }
             }
             dto.setTareasUnidad(lista);
@@ -159,8 +166,8 @@ public class UnidadController {
 		System.out.println("🔐 Principal: " + auth.getPrincipal());
 
 		try {
-			Unidad unidadActualizada = unidadService.actualizarEstadoFase1(unidadId, estadoDTO.getEstadoFase1());
-			return ResponseEntity.ok(unidadActualizada);
+			Unidad unidadActualizadaEstadoFae1 = unidadService.actualizarEstadoFase1(unidadId, estadoDTO.getEstadoFase1());
+			return ResponseEntity.ok(unidadActualizadaEstadoFae1);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body("❌ Error al actualizar estadoFase1: " + e.getMessage());
 		}
@@ -201,7 +208,7 @@ public class UnidadController {
 	public ResponseEntity<?> configurarUnidad(@PathVariable String unidadId,
 			@RequestBody UnidadConfiguracionDTO configuracionDTO) {
 		try {
-			String userId = obtenerUserIdDesdeToken(); // usuario autenticado
+			//String userId = obtenerUserIdDesdeToken(); // usuario autenticado
 			unidadService.configurarUnidad(unidadId, configuracionDTO);
 			return ResponseEntity.ok("✅ Unidad configurada correctamente");
 		} catch (Exception e) {
@@ -210,10 +217,10 @@ public class UnidadController {
 	}
 	
 	@GetMapping("/{unidadId}/consenso-fase1")
-	public ResponseEntity<?> obtenerConsensoFase1(@PathVariable String unidadId) {
+	public ResponseEntity<?> obtenerConsensoInicial(@PathVariable String unidadId) {
 	    try {
 	        System.out.println("📥 Petición recibida para consenso fase1 de unidad: " + unidadId);
-	        Map<String, SurveyParametersDTO> consenso = unidadService.obtenerConsensoFase1(unidadId);
+	        Map<String, SurveyParametersDTO> consenso = unidadService.obtenerConsensoInicial(unidadId);
 	        System.out.println("✅ Consenso generado con " + consenso.size() + " tareas.");
 	        return ResponseEntity.ok(consenso);
 	    } catch (Exception e) {
@@ -223,15 +230,18 @@ public class UnidadController {
 	    }
 	}
 	
-	@PostMapping("/{unidadId}/consenso-fase1")
-	public ResponseEntity<?> guardarConsensoFase1(
-	        @PathVariable String unidadId,
-	        @RequestBody List<ConsensoUmbralLimpiezaUnidad> consenso) {
+	@PostMapping("/{unidadId}/consenso-inicial")
+	public ResponseEntity<?> guardarConsensoInicial(
+	    @PathVariable String unidadId,
+	    @RequestBody List<ConsensoUmbralLimpiezaUnidad> consensoInicial
+	) {
 	    try {
-	        unidadService.guardarConsensoInicial(unidadId, consenso);
-	        return ResponseEntity.ok("✅ Consenso fase 1 guardado correctamente");
+	        unidadService.guardarConsensoInicial(unidadId, consensoInicial);
+	        return ResponseEntity.ok("✅ Consenso inicial guardado correctamente");
 	    } catch (Exception e) {
-	        return ResponseEntity.status(500).body("❌ Error al guardar consenso fase 1: " + e.getMessage());
+	        return ResponseEntity
+	            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+	            .body("❌ Error al guardar consenso inicial: " + e.getMessage());
 	    }
 	}
 
@@ -247,9 +257,52 @@ public class UnidadController {
 	         return ResponseEntity.ok("✅ Consenso final guardado correctamente");
 	     } catch (Exception e) {
 	         return ResponseEntity
-	             .status(HttpStatus.BAD_REQUEST)
+	        		 .status(HttpStatus.BAD_REQUEST)
 	             .body("❌ Error al guardar consenso final: " + e.getMessage());
 	     }
 	 }
+	 
+	 /**
+	     * Crea instancias de Tarea para todo el ciclo de corresponsabilidad
+	     * a partir del consenso final.
+	     */
+	    @PostMapping("/{unidadId}/tareas/instanciar")
+	    public ResponseEntity<List<Tarea>> instanciarTareas(
+	            @PathVariable String unidadId,
+	            @RequestBody List<TareaInstanciaDTO> dtos
+	    ) {
+	        try {
+	            // 1) Recupera los días de ciclo desde la unidad
+	            Unidad unidad = unidadService.obtenerUnidadPorId(unidadId)
+	                                  .orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
+	            int ciclo = unidad.getCicloCorresponsabilidad();
+
+	            // 2) Llama al servicio
+	            List<Tarea> creadas = unidadService.generarInstancias(
+	                unidadId,
+	                dtos,
+	                ciclo,
+	                LocalDate.now()   // o usa unidad.getStartDate() si lo tienes
+	            );
+
+	            // 3) Devuelve 200 + lista de instancias
+	            return ResponseEntity.ok(creadas);
+	        } catch (Exception e) {
+	            return ResponseEntity
+	                .status(HttpStatus.BAD_REQUEST)
+	                .body(null);
+	        }
+	    }
+	    
+	    @GetMapping("/{unidadId}/tareas/instanciadas")
+	    public ResponseEntity<List<Tarea>> getTareasInstanciadasDesdeUnidad(@PathVariable String unidadId) {
+	        try {
+	            List<Tarea> instanciadas = unidadService.obtenerTareasInstanciadas(unidadId);
+	            return ResponseEntity.ok(instanciadas);
+	        } catch (Exception e) {
+	            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+	        }
+	    }
+
 
 }

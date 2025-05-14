@@ -4,7 +4,9 @@ import java.util.List;
 
 public class UnidadInfoResponse {
 
-    private String nombre;
+	private String id;
+
+	private String nombre;
     private List<String> modulosActivados;
     private int cicloCorresponsabilidad;
     private List<MiembroDTO> miembros;
@@ -16,6 +18,14 @@ public class UnidadInfoResponse {
         this.cicloCorresponsabilidad = duracionCicloDias;
         this.miembros = miembros;
     }
+    
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getNombre() {
 		return nombre;

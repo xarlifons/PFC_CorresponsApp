@@ -6,6 +6,7 @@ public class SurveyParametersDTO implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
+	private String unidadId;
     private String grupo;
     private double periodicidad; // en días
     private double cargaMental;  // 0.0 - 10.0
@@ -49,7 +50,15 @@ public class SurveyParametersDTO implements Serializable {
         return intensidad;
     }
 
-    public void setIntensidad(double intensidad) {
+    public String getUnidadId() {
+		return unidadId;
+	}
+
+	public void setUnidadId(String unidadId) {
+		this.unidadId = unidadId;
+	}
+
+	public void setIntensidad(double intensidad) {
         this.intensidad = intensidad;
     }
 }

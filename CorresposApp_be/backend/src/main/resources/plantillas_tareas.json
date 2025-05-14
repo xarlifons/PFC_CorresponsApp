@@ -1,240 +1,198 @@
 {
-  "limpieza_general_barrer_y_fregar_suelos": {
-    "definicion": "Barrer y fregar todos los suelos de la casa con productos adecuados.",
-    "tiempoEstimado": 40
-  },
-  "limpieza_general_limpiar_el_polvo_de_muebles_y_superficies": {
-    "definicion": "Eliminar el polvo de muebles, estanterías y superficies visibles.",
-    "tiempoEstimado": 30
-  },
-  "limpieza_general_limpiar_cristales_y_ventanas": {
-    "definicion": "Limpiar cristales de ventanas y puertas para garantizar visibilidad y limpieza.",
-    "tiempoEstimado": 45
-  },
-  "limpieza_general_pasar_aspiradora_alfombras_tapicerías": {
-    "definicion": "Pasar la aspiradora en alfombras, sofás y tapicerías para eliminar suciedad y ácaros.",
-    "tiempoEstimado": 35
-  },
-  "limpieza_general_limpiar_paredes_y_puertas": {
-    "definicion": "Quitar manchas y polvo de paredes y puertas.",
-    "tiempoEstimado": 30
-  },
-  "limpieza_general_ventilar_habitaciones": {
-    "definicion": "Abrir ventanas y renovar el aire de todas las habitaciones.",
-    "tiempoEstimado": 10
-  },
-  "limpieza_general_vaciar_papeleras": {
-    "definicion": "Vaciar las papeleras de la casa y colocar nuevas bolsas.",
-    "tiempoEstimado": 10
-  },
-
-  "cocina_alimentacion_cocinar_las_comidas_principales": {
-    "definicion": "Preparar el desayuno, comida o cena según el menú semanal.",
-    "tiempoEstimado": 60
-  },
-  "cocina_alimentacion_preparar_meriendas_o_desayunos": {
-    "definicion": "Preparar meriendas o desayunos para el grupo familiar.",
-    "tiempoEstimado": 20
-  },
-  "cocina_alimentacion_planificar_el_menú_semanal": {
-    "definicion": "Organizar las comidas de la semana considerando variedad y nutrición.",
-    "tiempoEstimado": 25
-  },
-  "cocina_alimentacion_fregar_platos_o_cargar_lavar_lavavajillas": {
-    "definicion": "Lavar a mano los platos o cargar y vaciar el lavavajillas.",
-    "tiempoEstimado": 20
-  },
-  "cocina_alimentacion_limpiar_la_encimera_y_zona_de_cocina": {
-    "definicion": "Limpiar encimeras, fogones, vitrocerámica y salpicaderos.",
-    "tiempoEstimado": 15
-  },
-  "cocina_alimentacion_revisar_y_vaciar_alimentos_caducados": {
-    "definicion": "Revisar fechas de caducidad y desechar alimentos vencidos.",
-    "tiempoEstimado": 10
-  },
-  "cocina_alimentacion_gestionar_la_basura_orgánica_y_reciclaje": {
-    "definicion": "Clasificar residuos y sacarlos a los contenedores correspondientes.",
-    "tiempoEstimado": 15
-  },
-
-  "ropa_lavandería_poner_lavadoras": {
-    "definicion": "Clasificar ropa y poner la lavadora con el programa adecuado.",
-    "tiempoEstimado": 15
-  },
-  "ropa_lavandería_tender_ropa": {
-    "definicion": "Colgar la ropa recién lavada para su secado.",
-    "tiempoEstimado": 20
-  },
-  "ropa_lavandería_planchar_ropa": {
-    "definicion": "Planchar la ropa y doblarla o colgarla.",
-    "tiempoEstimado": 40
-  },
-  "ropa_lavandería_doblar_y_guardar_ropa": {
-    "definicion": "Doblar la ropa limpia y guardarla en su lugar.",
-    "tiempoEstimado": 25
-  },
-  "ropa_lavandería_revisar_ropa_sucia_acumulada": {
-    "definicion": "Comprobar si hay ropa pendiente de lavar.",
-    "tiempoEstimado": 10
-  },
-  "ropa_lavandería_reparar_ropa": {
-    "definicion": "Coser botones, arreglar cremalleras y otros pequeños arreglos.",
-    "tiempoEstimado": 30
-  },
-
-  "habitaciones_organización_hacer_las_camas": {
-    "definicion": "Tender o hacer todas las camas de la casa.",
-    "tiempoEstimado": 10
-  },
-  "habitaciones_organización_cambiar_sábanas": {
-    "definicion": "Cambiar las sábanas de todas las camas.",
-    "tiempoEstimado": 20
-  },
-  "habitaciones_organización_organizar_armarios": {
-    "definicion": "Reordenar el contenido de los armarios.",
-    "tiempoEstimado": 40
-  },
-  "habitaciones_organización_ordenar_habitaciones": {
-    "definicion": "Recoger objetos, juguetes y mantener el orden general.",
-    "tiempoEstimado": 20
-  },
-
-  "baño_e_higiene_limpiar_el_inodoro": {
-    "definicion": "Desinfectar el inodoro con productos adecuados.",
-    "tiempoEstimado": 10
-  },
-  "baño_e_higiene_limpiar_lavabo_y_espejo": {
-    "definicion": "Limpiar lavabo, grifería y espejo del baño.",
-    "tiempoEstimado": 15
-  },
-  "baño_e_higiene_limpiar_ducha_bañera": {
-    "definicion": "Lavar la ducha o bañera eliminando restos de jabón y cal.",
-    "tiempoEstimado": 20
-  },
-  "baño_e_higiene_reponer_papel_higiénico_y_jabón": {
-    "definicion": "Reponer consumibles básicos del baño como jabón y papel.",
-    "tiempoEstimado": 5
-  },
-  "baño_e_higiene_cambiar_toallas": {
-    "definicion": "Retirar toallas sucias y colocar limpias.",
-    "tiempoEstimado": 5
-  },
-  "baño_e_higiene_revisar_productos_de_higiene_y_reponer": {
-    "definicion": "Revisar gel, champú y productos de aseo y reponerlos si faltan.",
-    "tiempoEstimado": 5
-  },
-
-  "cuidados_personales_y_familiares_ayudar_a_niños_as_con_higiene_personal": {
-    "definicion": "Apoyar a niños/as en la higiene diaria (ducha, cepillado, etc.).",
-    "tiempoEstimado": 20
-  },
-  "cuidados_personales_y_familiares_supervisar_deberes_escolares": {
-    "definicion": "Supervisar la realización de tareas escolares.",
-    "tiempoEstimado": 30
-  },
-  "cuidados_personales_y_familiares_acompañar_a_extraescolares_médico": {
-    "definicion": "Llevar a niños/as a actividades o al médico.",
-    "tiempoEstimado": 60
-  },
-  "cuidados_personales_y_familiares_preparar_mochilas_ropa_escolar": {
-    "definicion": "Preparar uniformes, mochilas y materiales para el colegio.",
-    "tiempoEstimado": 15
-  },
-  "cuidados_personales_y_familiares_acompañar_a_personas_mayores_dependientes": {
-    "definicion": "Acompañar y atender a personas mayores o dependientes.",
-    "tiempoEstimado": 45
-  },
-  "mantenimiento_general_revisar_bombillas_fusibles": {
-    "definicion": "Revisar iluminación y elementos eléctricos básicos.",
-    "tiempoEstimado": 10
-  },
-  "mantenimiento_general_arreglos_menores": {
-    "definicion": "Realizar arreglos sencillos como grifos o bisagras.",
-    "tiempoEstimado": 30
-  },
-  "mantenimiento_general_revisar_electrodomésticos": {
-    "definicion": "Verificar funcionamiento de electrodomésticos comunes.",
-    "tiempoEstimado": 15
-  },
-  "mantenimiento_general_llamar_al_técnico_cuando_se_necesita": {
-    "definicion": "Contactar con técnicos y gestionar reparaciones.",
-    "tiempoEstimado": 10
-  },
-  "mantenimiento_general_montar_desmontar_muebles": {
-    "definicion": "Montaje y desmontaje de mobiliario básico.",
-    "tiempoEstimado": 60
-  },
-
-  "cuidado_de_plantas_regar_plantas": {
-    "definicion": "Regar plantas de interior y/o exterior según necesidad.",
-    "tiempoEstimado": 10
-  },
-  "cuidado_de_plantas_podar_o_cuidar_plantas": {
-    "definicion": "Realizar poda o cuidados preventivos en plantas.",
-    "tiempoEstimado": 15
-  },
-  "cuidado_de_plantas_cuidar_jardín": {
-    "definicion": "Mantener el jardín limpio y ordenado.",
-    "tiempoEstimado": 30
-  },
-
-  "cuidado_de_mascotas_sacar_a_pasear_mascotas": {
-    "definicion": "Pasear a las mascotas y atender sus necesidades.",
-    "tiempoEstimado": 20
-  },
-  "cuidado_de_mascotas_limpiar_jaulas_areneros": {
-    "definicion": "Limpiar y desinfectar espacios de mascotas.",
-    "tiempoEstimado": 20
-  },
-
-  "tareas_del_exterior_y_recados_limpiar_terraza_balcón": {
-    "definicion": "Limpiar suelos y muebles de terraza o balcón.",
-    "tiempoEstimado": 30
-  },
-  "tareas_del_exterior_y_recados_sacar_la_basura_a_contenedor": {
-    "definicion": "Retirar y llevar la basura a su contenedor.",
-    "tiempoEstimado": 10
-  },
-  "tareas_del_exterior_y_recados_comprar_medicamentos": {
-    "definicion": "Ir a la farmacia a por medicamentos.",
-    "tiempoEstimado": 20
-  },
-  "tareas_del_exterior_y_recados_hacer_la_compra": {
-    "definicion": "Realizar la compra básica del hogar.",
-    "tiempoEstimado": 45
-  },
-
-  "gestión_del_hogar_y_tareas_invisibles_planificar_el_calendario_familiar": {
-    "definicion": "Coordinar actividades familiares y planificarlas en calendario.",
-    "tiempoEstimado": 20
-  },
-  "gestión_del_hogar_y_tareas_invisibles_coordinar_citas_y_eventos": {
-    "definicion": "Reservar, organizar y confirmar citas médicas, escolares, etc.",
-    "tiempoEstimado": 15
-  },
-  "gestión_del_hogar_y_tareas_invisibles_revisar_y_pagar_facturas": {
-    "definicion": "Verificar y pagar facturas domésticas.",
-    "tiempoEstimado": 15
-  },
-  "gestión_del_hogar_y_tareas_invisibles_hacer_gestiones_administrativas": {
-    "definicion": "Realizar trámites bancarios, seguros o documentación.",
-    "tiempoEstimado": 25
-  },
-
-  "otras_fuera_del_hogar_llevar_vehículo_al_taller": {
-    "definicion": "Llevar el vehículo al taller o revisión periódica.",
-    "tiempoEstimado": 45
-  },
-  "otras_fuera_del_hogar_llenar_depósito_del_coche": {
-    "definicion": "Repostar combustible del vehículo.",
-    "tiempoEstimado": 15
-  },
-  "otras_fuera_del_hogar_renovar_itv_o_documentación_del_vehículo": {
-    "definicion": "Pasar la ITV o renovar papeles del coche.",
-    "tiempoEstimado": 30
-  },
-  "otras_fuera_del_hogar_atención_comunidad_de_vecinos": {
-    "definicion": "Participar en gestiones o reuniones de comunidad.",
-    "tiempoEstimado": 30
-  }
+    "limpieza_general_barrer_y_fregar_suelos": {
+        "definicion": "Barrer polvo y suciedad del suelo y fregarlo con agua y productos de limpieza.",
+        "tiempoEstimado": 30
+    },
+    "limpieza_general_limpiar_el_polvo_de_muebles": {
+        "definicion": "Quitar cuidadosamente el polvo acumulado sobre muebles, estanterías, marcos y objetos decorativos.",
+        "tiempoEstimado": 35
+    },
+    "limpieza_general_pasar_aspiradora": {
+        "definicion": "Usar la aspiradora para limpiar alfombras, tapicería, suelos y rincones con suciedad.",
+        "tiempoEstimado": 20
+    },
+    "limpieza_especifica_limpiar_cristales_y_ventanas": {
+        "definicion": "Limpiar los cristales de ventanas y puertas para eliminar marcas, polvo y huellas.",
+        "tiempoEstimado": 30
+    },
+    "limpieza_especifica_limpiar_paredes_y_puertas": {
+        "definicion": "Eliminar manchas, polvo y marcas de paredes y puertas con paño húmedo y productos.",
+        "tiempoEstimado": 30
+    },
+    "limpieza_especifica_limpiar_terraza_o_balcon": {
+        "definicion": "Barrer, fregar y organizar la terraza o balcón incluyendo barandillas y muebles exteriores.",
+        "tiempoEstimado": 30
+    },
+    "limpieza_especifica_organizar_armarios": {
+        "definicion": "Revisar, ordenar y reorganizar armarios retirando ropa vieja y aprovechando mejor el espacio.",
+        "tiempoEstimado": 20
+    },
+    "cocina_alimentacion_cocinar_comidas": {
+        "definicion": "Preparar platos principales diarios como comidas al mediodía, según menú o planificación semanal.",
+        "tiempoEstimado": 20
+    },
+    "cocina_alimentacion_cocinar_cenas": {
+        "definicion": "Elaborar cenas nutritivas y ligeras para la familia, adaptadas a horarios y gustos.",
+        "tiempoEstimado": 20
+    },
+    "cocina_alimentacion_fregar_platos_o_poner_lavavajillas": {
+        "definicion": "Lavar platos a mano o cargar y descargar el lavavajillas tras cada comida principal.",
+        "tiempoEstimado": 35
+    },
+    "cocina_alimentacion_planificar_menu_semanal": {
+        "definicion": "Diseñar las comidas de la semana equilibrando nutrición, presupuesto y tiempo de preparación.",
+        "tiempoEstimado": 25
+    },
+    "cocina_alimentacion_retirar_alimentos_caducados": {
+        "definicion": "Revisar fechas de productos en despensa o frigorífico y desechar alimentos vencidos.",
+        "tiempoEstimado": 25
+    },
+    "ropa_lavanderia_poner_lavadoras": {
+        "definicion": "Separar ropa, elegir programa adecuado, poner detergente y activar la lavadora doméstica.",
+        "tiempoEstimado": 20
+    },
+    "ropa_lavanderia_tender_ropa": {
+        "definicion": "Sacar la ropa húmeda de la lavadora y colgarla extendida para su secado adecuado.",
+        "tiempoEstimado": 20
+    },
+    "ropa_lavanderia_planchar_ropa": {
+        "definicion": "Eliminar arrugas planchando camisas, pantalones u otras prendas con plancha doméstica convencional.",
+        "tiempoEstimado": 20
+    },
+    "ropa_lavanderia_doblar_y_guardar_ropa": {
+        "definicion": "Doblar correctamente la ropa limpia y colocarla organizada en cajones o armarios correspondientes.",
+        "tiempoEstimado": 30
+    },
+    "ropa_lavanderia_revisar_ropa_sucia_acumulada": {
+        "definicion": "Comprobar cestas de ropa sucia y planificar lavadoras según volumen, colores y tejidos.",
+        "tiempoEstimado": 30
+    },
+    "habitaciones_organizacion_hacer_las_camas": {
+        "definicion": "Estirar sábanas, colocar almohadas y organizar la cama para mantenerla presentable diariamente.",
+        "tiempoEstimado": 25
+    },
+    "habitaciones_organizacion_ventilar_habitaciones": {
+        "definicion": "Abrir ventanas por unos minutos para renovar el aire en dormitorios y salones.",
+        "tiempoEstimado": 20
+    },
+    "habitaciones_organizacion_vaciar_papeleras": {
+        "definicion": "Recoger bolsas de papelera en habitaciones y sustituir por nuevas para mantener limpieza.",
+        "tiempoEstimado": 20
+    },
+    "habitaciones_organizacion_cambiar_sabanas": {
+        "definicion": "Retirar sábanas usadas, colocar sábanas limpias y revisar el estado del colchón.",
+        "tiempoEstimado": 20
+    },
+    "habitaciones_organizacion_ordenar_habitaciones": {
+        "definicion": "Recoger objetos, doblar ropa y reorganizar espacio visual en dormitorios o habitaciones comunes.",
+        "tiempoEstimado": 20
+    },
+    "bano_higiene_limpiar_inodoro": {
+        "definicion": "Desinfectar el interior y exterior del inodoro utilizando productos específicos y guantes adecuados.",
+        "tiempoEstimado": 20
+    },
+    "bano_higiene_limpiar_lavabo_y_espejo": {
+        "definicion": "Eliminar suciedad y restos de cal del lavabo y limpiar el espejo del baño.",
+        "tiempoEstimado": 30
+    },
+    "bano_higiene_limpiar_ducha_o_bañera": {
+        "definicion": "Frotar paredes y base de la ducha o bañera para eliminar restos de jabón.",
+        "tiempoEstimado": 30
+    },
+    "bano_higiene_reponer_papel_higienico_y_jabon": {
+        "definicion": "Verificar y reponer papel higiénico, jabón de manos y productos básicos de baño.",
+        "tiempoEstimado": 35
+    },
+    "bano_higiene_cambiar_toallas": {
+        "definicion": "Recoger toallas sucias, colocar limpias y asegurarse de que estén correctamente colgadas.",
+        "tiempoEstimado": 20
+    },
+    "cuidados_familiares_ayudar_higiene_personal_ninosas": {
+        "definicion": "Supervisar y ayudar a niños/as en ducharse, cepillarse dientes y aseo personal diario.",
+        "tiempoEstimado": 30
+    },
+    "cuidados_familiares_supervisar_deberes_escolares": {
+        "definicion": "Acompañar a niños/as mientras hacen deberes, resolver dudas y verificar el trabajo final.",
+        "tiempoEstimado": 25
+    },
+    "cuidados_familiares_acompañar_a_actividades_extraescolares": {
+        "definicion": "Llevar y recoger a los niños a sus actividades deportivas, culturales o educativas regulares.",
+        "tiempoEstimado": 30
+    },
+    "cuidados_familiares_cuidados_a_mayores": {
+        "definicion": "Atender las necesidades básicas y emocionales de personas mayores en el entorno doméstico.",
+        "tiempoEstimado": 25
+    },
+    "cuidados_familiares_preparar_mochilas_escolares": {
+        "definicion": "Revisar tareas, ropa, libros y preparar la mochila completa para el día siguiente escolar.",
+        "tiempoEstimado": 25
+    },
+    "mantenimiento_hogar_revisar_bombillas_y_fusibles": {
+        "definicion": "Comprobar funcionamiento de bombillas y fusibles, reemplazar si están fundidos o dañados.",
+        "tiempoEstimado": 30
+    },
+    "mantenimiento_hogar_montar_o_desmontar_muebles": {
+        "definicion": "Armar o desarmar muebles básicos como estanterías, sillas o mesas con herramientas simples.",
+        "tiempoEstimado": 30
+    },
+    "plantas_mascotas_regar_plantas": {
+        "definicion": "Aplicar agua a macetas o jardín teniendo en cuenta la cantidad y frecuencia recomendadas.",
+        "tiempoEstimado": 20
+    },
+    "plantas_mascotas_podar_plantas": {
+        "definicion": "Cortar ramas o hojas secas para favorecer el crecimiento sano de las plantas domésticas.",
+        "tiempoEstimado": 20
+    },
+    "plantas_mascotas_cuidar_jardin": {
+        "definicion": "Quitar maleza, limpiar hojas secas y mantener en buen estado el jardín doméstico.",
+        "tiempoEstimado": 20
+    },
+    "plantas_mascotas_sacar_mascotas_a_pasear": {
+        "definicion": "Llevar a las mascotas a pasear asegurando ejercicio, higiene y contacto con exteriores.",
+        "tiempoEstimado": 30
+    },
+    "plantas_mascotas_limpiar_jaulas_o_areneros": {
+        "definicion": "Vaciar, desinfectar y rellenar las jaulas, areneros o espacios de descanso de mascotas.",
+        "tiempoEstimado": 30
+    },
+    "recados_abastecimiento_hacer_la_compra": {
+        "definicion": "Ir al supermercado para comprar productos necesarios para la despensa y limpieza doméstica.",
+        "tiempoEstimado": 25
+    },
+    "recados_abastecimiento_comprar_el_pan": {
+        "definicion": "Comprar pan fresco a diario o según costumbre familiar en tienda cercana o panadería.",
+        "tiempoEstimado": 25
+    },
+    "recados_abastecimiento_comprar_medicamentos": {
+        "definicion": "Acudir a farmacia y adquirir medicamentos o productos sanitarios con o sin receta médica.",
+        "tiempoEstimado": 20
+    },
+    "recados_abastecimiento_gestionar_basura_y_reciclaje": {
+        "definicion": "Separar residuos domésticos y llevarlos al contenedor correspondiente según normativa local.",
+        "tiempoEstimado": 30
+    },
+    "gestion_invisible_coordinar_citas_y_eventos": {
+        "definicion": "Organizar y confirmar citas médicas, escolares u otros eventos familiares importantes.",
+        "tiempoEstimado": 30
+    },
+    "gestion_invisible_revisar_y_pagar_facturas": {
+        "definicion": "Comprobar facturas del hogar y realizar el pago correspondiente antes del vencimiento.",
+        "tiempoEstimado": 30
+    },
+    "gestion_invisible_hacer_gestiones_administrativas": {
+        "definicion": "Realizar trámites administrativos como seguros, bancos, documentación familiar o renovaciones.",
+        "tiempoEstimado": 25
+    },
+    "cuidado_vehiculo_llenar_deposito_de_gasolina": {
+        "definicion": "Conducir hasta estación de servicio y repostar el combustible necesario en el vehículo.",
+        "tiempoEstimado": 30
+    },
+    "cuidado_vehiculo_llevar_coche_al_taller": {
+        "definicion": "Trasladar el coche al taller mecánico para revisión, reparación o mantenimiento rutinario.",
+        "tiempoEstimado": 30
+    },
+    "cuidado_vehiculo_renovar_itv_o_documentacion": {
+        "definicion": "Acudir a cita de ITV o renovar la documentación obligatoria del vehículo particular.",
+        "tiempoEstimado": 30
+    }
 }

@@ -1,117 +1,338 @@
 [
-  {
-    "id": "limpieza_cotidiana",
-    "nombre": "Limpieza cotidiana",
-    "tareaRepresentativa": "barrer_y_fregar_suelos",
-    "tareas": [
-      { "id": "fregar_platos_o_lavar_lavavajillas", "ajustePeriodicidad": 1.0, "ajusteIntensidad": 0,   "ajusteCargaMental": 0   },
-      { "id": "pasar_aspiradora",                "ajustePeriodicidad": 0.5, "ajusteIntensidad": 0,   "ajusteCargaMental": -0.5 },
-      { "id": "vaciar_papeleras",                "ajustePeriodicidad": 0.4, "ajusteIntensidad": -2,  "ajusteCargaMental": -1  },
-      { "id": "barrer_y_fregar_suelos",          "ajustePeriodicidad": 0.6, "ajusteIntensidad": 1,   "ajusteCargaMental": 0   },
-      { "id": "limpiar_el_polvo_de_muebles",     "ajustePeriodicidad": 0.5, "ajusteIntensidad": 0,   "ajusteCargaMental": 0   },
-      { "id": "ventilar_habitaciones",           "ajustePeriodicidad": 0.5, "ajusteIntensidad": 0,   "ajusteCargaMental": 0   }
-    ]
-  },
-  {
-    "id": "cocina_alimentos",
-    "nombre": "Cocina y gestión de alimentos",
-    "tareaRepresentativa": "cocinar_comidas_principales",
-    "tareas": [
-      { "id": "cocinar_comidas_principales", "ajustePeriodicidad": 1.0, "ajusteIntensidad": 0,    "ajusteCargaMental": 0   },
-      { "id": "planificar_menu_semanal",     "ajustePeriodicidad": 0.2, "ajusteIntensidad": -1.5, "ajusteCargaMental": 2   },
-      { "id": "vaciar_alimentos_caducados",  "ajustePeriodicidad": 0.1, "ajusteIntensidad": -2,   "ajusteCargaMental": 1   },
-      { "id": "gestionar_basura_y_reciclaje","ajustePeriodicidad": 0.3, "ajusteIntensidad": -1,   "ajusteCargaMental": -0.5},
-      { "id": "fregar_platos_o_lavar_lavavajillas", "ajustePeriodicidad": 0.5, "ajusteIntensidad": 0, "ajusteCargaMental": 0 }
-    ]
-  },
-  {
-    "id": "lavanderia_ropa",
-    "nombre": "Lavandería y cuidado de ropa",
-    "tareaRepresentativa": "poner_lavadoras",
-    "tareas": [
-      { "id": "poner_lavadoras",          "ajustePeriodicidad": 1.0, "ajusteIntensidad": 0,  "ajusteCargaMental": 0   },
-      { "id": "tender_ropa",              "ajustePeriodicidad": 1.0, "ajusteIntensidad": -0.5,"ajusteCargaMental": -0.5},
-      { "id": "planchar_ropa",            "ajustePeriodicidad": 0.3, "ajusteIntensidad": 2,   "ajusteCargaMental": 1   },
-      { "id": "doblar_y_guardar_ropa",    "ajustePeriodicidad": 1.0, "ajusteIntensidad": -1,  "ajusteCargaMental": 0   },
-      { "id": "revisar_ropa_sucia_acumulada", "ajustePeriodicidad": 0.2, "ajusteIntensidad": -1.5, "ajusteCargaMental": 0.5}
-    ]
-  },
-  {
-    "id": "recados_abastecimiento",
-    "nombre": "Recados y abastecimiento",
-    "tareaRepresentativa": "hacer_la_compra",
-    "tareas": [
-      { "id": "hacer_la_compra",  "ajustePeriodicidad": 1.0, "ajusteIntensidad": 0,   "ajusteCargaMental": 0   },
-      { "id": "comprar_medicamentos", "ajustePeriodicidad": 0.3, "ajusteIntensidad": -1,   "ajusteCargaMental": 0.5 },
-      { "id": "sacar_la_basura",   "ajustePeriodicidad": 0.5, "ajusteIntensidad": -1,  "ajusteCargaMental": -0.5 }
-    ]
-  },
-  {
-    "id": "cuidados_personas",
-    "nombre": "Cuidados a personas",
-    "tareaRepresentativa": "ayudar_higiene_personal_ninos_as",
-    "tareas": [
-	  { "id": "supervisar_deberes_escolares", "ajustePeriodicidad": 1.0, "ajusteIntensidad": 0,   "ajusteCargaMental": 0   },
-      { "id": "ayudar_higiene_personal_ninos_as",   "ajustePeriodicidad": 0.7, "ajusteIntensidad": 1,   "ajusteCargaMental": 0.5 },
-      { "id": "acompanhar_a_actividades_extraescolares","ajustePeriodicidad": 0.8, "ajusteIntensidad": -1,  "ajusteCargaMental": 1   },
-      { "id": "preparar_mochilas_escolares",        "ajustePeriodicidad": 0.6, "ajusteIntensidad": -1,  "ajusteCargaMental": 1   },
-      { "id": "supervisar_deberes_escolares",       "ajustePeriodicidad": 0.5, "ajusteIntensidad": 0,   "ajusteCargaMental": 0   }
-    ]
-  },
-  {
-    "id": "organizacion_hogar",
-    "nombre": "Organización del hogar",
-    "tareaRepresentativa": "ordenar_habitaciones",
-    "tareas": [
-      { "id": "hacer_las_camas",              "ajustePeriodicidad": 1.2, "ajusteIntensidad": -1,  "ajusteCargaMental": -0.5},
-      { "id": "cambiar_sabanas",              "ajustePeriodicidad": 0.3, "ajusteIntensidad": 1,   "ajusteCargaMental": 0   },
-      { "id": "organizar_armarios",           "ajustePeriodicidad": 0.2, "ajusteIntensidad": 0.5, "ajusteCargaMental": 1   },
-      { "id": "ordenar_habitaciones",         "ajustePeriodicidad": 0.8, "ajusteIntensidad": -0.5,"ajusteCargaMental": -0.5}
-    ]
-  },
-  {
-    "id": "limpieza_general",
-    "nombre": "Limpieza general",
-    "tareaRepresentativa": "limpiar_ducha_y_bañera",
-    "tareas": [
-      { "id": "limpiar_inodoro",               "ajustePeriodicidad": 1.0, "ajusteIntensidad": 0,    "ajusteCargaMental": 0   },
-      { "id": "limpiar_ducha_y_bañera",        "ajustePeriodicidad": 0.6, "ajusteIntensidad": 1,    "ajusteCargaMental": 0   },
-      { "id": "limpiar_terraza_o_balcon",      "ajustePeriodicidad": 0.2, "ajusteIntensidad": 2,    "ajusteCargaMental": 1   },
-      { "id": "limpiar_cristales_y_ventanas",  "ajustePeriodicidad": 0.5, "ajusteIntensidad": 0,    "ajusteCargaMental": 0   },
-      { "id": "limpiar_paredes_y_puertas",     "ajustePeriodicidad": 0.5, "ajusteIntensidad": 0,    "ajusteCargaMental": 0   }
-    ]
-  },
-  {
-    "id": "mantenimiento_hogar",
-    "nombre": "Mantenimiento del hogar",
-    "tareaRepresentativa": "revisar_bombillas_y_fusibles",
-    "tareas": [
-      { "id": "revisar_bombillas_y_fusibles",   "ajustePeriodicidad": 0.2, "ajusteIntensidad": -1, "ajusteCargaMental": 1   },
-      { "id": "revisar_electrodomesticos",      "ajustePeriodicidad": 0.3, "ajusteIntensidad": 1,  "ajusteCargaMental": 0   },
-      { "id": "montar_o_desmontar_muebles",      "ajustePeriodicidad": 0.1, "ajusteIntensidad": 3,  "ajusteCargaMental": 1   }
-    ]
-  },
-  {
-    "id": "cuidado_plantas_animales",
-    "nombre": "Cuidado de plantas y animales",
-    "tareaRepresentativa": "regar_plantas",
-    "tareas": [
-      { "id": "regar_plantas",               "ajustePeriodicidad": 1.0, "ajusteIntensidad": -1, "ajusteCargaMental": -0.5},
-      { "id": "podar_plantas",               "ajustePeriodicidad": 0.4, "ajusteIntensidad": 0.5,"ajusteCargaMental": 0.5 },
-      { "id": "cuidar_jardin",               "ajustePeriodicidad": 0.3, "ajusteIntensidad": 1.5,"ajusteCargaMental": 1   },
-      { "id": "sacar_mascotas_a_pasear",     "ajustePeriodicidad": 1.2, "ajusteIntensidad": 0,  "ajusteCargaMental": 0.5 },
-      { "id": "limpiar_jaulas_o_areneros",   "ajustePeriodicidad": 0.5, "ajusteIntensidad": 1,  "ajusteCargaMental": 0.5 }
-    ]
-  },
-  {
-    "id": "gestion_invisible",
-    "nombre": "Gestión invisible",
-    "tareaRepresentativa": "planificar_calendario_familiar",
-    "tareas": [
-      { "id": "planificar_calendario_familiar",   "ajustePeriodicidad": 0.3, "ajusteIntensidad": -2,  "ajusteCargaMental": 2   },
-      { "id": "coordinar_citas_y_eventos",       "ajustePeriodicidad": 0.4, "ajusteIntensidad": -1.5,"ajusteCargaMental": 1.5 },
-      { "id": "revisar_y_pagar_facturas",        "ajustePeriodicidad": 0.3, "ajusteIntensidad": -1,  "ajusteCargaMental": 2   },
-      { "id": "hacer_gestiones_administrativas", "ajustePeriodicidad": 0.2, "ajusteIntensidad": -0.5,"ajusteCargaMental": 2   }
-    ]
-  }
+   {
+      "id":"actividades_diarias",
+      "nombre":"Actividades diarias",
+      "tareaRepresentativa":"hacer_las_camas",
+      "tareas":[
+         {
+            "id":"barrer_y_fregar_suelos",
+            "ajustePeriodicidad":0.6,
+            "ajusteIntensidad":1,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"limpiar_el_polvo_de_muebles",
+            "ajustePeriodicidad":0.5,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"cocinar_comidas",
+            "ajustePeriodicidad":1.0,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"cocinar_cenas",
+            "ajustePeriodicidad":1.0,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"hacer_las_camas",
+            "ajustePeriodicidad":1.2,
+            "ajusteIntensidad":-1,
+            "ajusteCargaMental":-0.5
+         },
+         {
+            "id":"ventilar_habitaciones",
+            "ajustePeriodicidad":0.5,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"supervisar_deberes_escolares",
+            "ajustePeriodicidad":1.0,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"reponer_papel_higienico_y_jabon",
+            "ajustePeriodicidad":1.0,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"ayudar_higiene_personal_ninos_as",
+            "ajustePeriodicidad":0.7,
+            "ajusteIntensidad":1,
+            "ajusteCargaMental":0.5
+         },
+         {
+            "id":"sacar_mascotas_a_pasear",
+            "ajustePeriodicidad":1.2,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0.5
+         },
+         {
+            "id":"fregar_platos_o_poner_lavavajillas",
+            "ajustePeriodicidad":0.5,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0
+         }
+      ]
+   },
+   {
+      "id":"actividad_semanal_1s",
+      "nombre":"Actividades semanales",
+      "tareaRepresentativa":"cambiar_sabanas",
+      "tareas":[
+         {
+            "id":"Cambiar toallas",
+            "ajustePeriodicidad":1.0,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"planchar_ropa",
+            "ajustePeriodicidad":0.3,
+            "ajusteIntensidad":2,
+            "ajusteCargaMental":1
+         },
+         {
+            "id":"doblar_y_guardar_ropa",
+            "ajustePeriodicidad":1.0,
+            "ajusteIntensidad":-1,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"revisar_ropa_sucia_acumulada",
+            "ajustePeriodicidad":0.2,
+            "ajusteIntensidad":-1.5,
+            "ajusteCargaMental":0.5
+         },
+         {
+            "id":"cambiar_sabanas",
+            "ajustePeriodicidad":0.3,
+            "ajusteIntensidad":1,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"limpiar_ducha_o_bañera",
+            "ajustePeriodicidad":0.2,
+            "ajusteIntensidad":-1.5,
+            "ajusteCargaMental":0.5
+         },
+         {
+            "id":"preparar_mochilas_escolares",
+            "ajustePeriodicidad":0.6,
+            "ajusteIntensidad":-1,
+            "ajusteCargaMental":1
+         },
+         {
+            "id":"revisar_y_pagar_facturas",
+            "ajustePeriodicidad":0.3,
+            "ajusteIntensidad":-1,
+            "ajusteCargaMental":2
+         },
+         {
+            "id":"comprar_medicamentos",
+            "ajustePeriodicidad":0.3,
+            "ajusteIntensidad":-1,
+            "ajusteCargaMental":0.5
+         }
+      ]
+   },
+   {
+      "id":"actividad_semanal_2s",
+      "nombre":"Actividades semanales 2xS",
+      "tareaRepresentativa":"poner_lavadoras",
+      "tareas":[
+         {
+            "id":"gestionar_basura_y_reciclaje",
+            "ajustePeriodicidad":0.5,
+            "ajusteIntensidad":-1,
+            "ajusteCargaMental":-0.5
+         },
+         {
+            "id":"limpiar_lavabo_y_espejo",
+            "ajustePeriodicidad":0.2,
+            "ajusteIntensidad":-1.5,
+            "ajusteCargaMental":0.5
+         },
+         {
+            "id":"ordenar_habitaciones",
+            "ajustePeriodicidad":0.8,
+            "ajusteIntensidad":-0.5,
+            "ajusteCargaMental":-0.5
+         },
+         {
+            "id":"poner_lavadoras",
+            "ajustePeriodicidad":1.0,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"tender_ropa",
+            "ajustePeriodicidad":1.0,
+            "ajusteIntensidad":-0.5,
+            "ajusteCargaMental":-0.5
+         },
+         {
+            "id":"coordinar_citas_y_eventos",
+            "ajustePeriodicidad":0.4,
+            "ajusteIntensidad":-1.5,
+            "ajusteCargaMental":1.5
+         },
+         {
+            "id":"regar_plantas",
+            "ajustePeriodicidad":1.0,
+            "ajusteIntensidad":-1,
+            "ajusteCargaMental":-0.5
+         }
+      ]
+   },
+   {
+      "id":"actividad_semanal_3s",
+      "nombre":"Actividades semanales 3 o + xS",
+      "tareaRepresentativa":"comprar_el_pan",
+      "tareas":[
+         {
+            "id":"pasar_aspiradora",
+            "ajustePeriodicidad":0.5,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":-0.5
+         },
+         {
+            "id":"limpiar_inodoro",
+            "ajustePeriodicidad":1.0,
+            "ajusteIntensidad":-0.5,
+            "ajusteCargaMental":-0.5
+         },
+         {
+            "id":"hacer_la_compra",
+            "ajustePeriodicidad":1.0,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"comprar_el_pan",
+            "ajustePeriodicidad":0.5,
+            "ajusteIntensidad":-1,
+            "ajusteCargaMental":-0.5
+         },
+         {
+            "id":"vaciar_papeleras",
+            "ajustePeriodicidad":0.4,
+            "ajusteIntensidad":-2,
+            "ajusteCargaMental":-1
+         }
+      ]
+   },
+   {
+      "id":"actividad_quincenal_mensual",
+      "nombre":"Actividades quincenales o mensuales",
+      "tareaRepresentativa":"retirar_alimentos_caducados",
+      "tareas":[
+         {
+            "id":"planificar_menu_semanal",
+            "ajustePeriodicidad":0.2,
+            "ajusteIntensidad":-1.5,
+            "ajusteCargaMental":2
+         },
+         {
+            "id":"limpiar_cristales_y_ventanas",
+            "ajustePeriodicidad":0.5,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"limpiar_paredes_y_puertas",
+            "ajustePeriodicidad":0.5,
+            "ajusteIntensidad":0,
+            "ajusteCargaMental":0
+         },
+         {
+            "id":"limpiar_terraza_o_balcon",
+            "ajustePeriodicidad":0.2,
+            "ajusteIntensidad":2,
+            "ajusteCargaMental":1
+         },
+         {
+            "id":"organizar_armarios",
+            "ajustePeriodicidad":0.2,
+            "ajusteIntensidad":0.5,
+            "ajusteCargaMental":1
+         },
+         {
+            "id":"retirar_alimentos_caducados",
+            "ajustePeriodicidad":0.1,
+            "ajusteIntensidad":-2,
+            "ajusteCargaMental":1
+         },
+         {
+            "id":"revisar_bombillas_y_fusibles",
+            "ajustePeriodicidad":0.2,
+            "ajusteIntensidad":-1,
+            "ajusteCargaMental":1
+         },
+         {
+            "id":"cuidar_jardin",
+            "ajustePeriodicidad":0.3,
+            "ajusteIntensidad":1.5,
+            "ajusteCargaMental":1
+         },
+         {
+            "id":"podar_plantas",
+            "ajustePeriodicidad":0.4,
+            "ajusteIntensidad":0.5,
+            "ajusteCargaMental":0.5
+         },
+         {
+            "id":"hacer_gestiones_administrativas",
+            "ajustePeriodicidad":0.2,
+            "ajusteIntensidad":-0.5,
+            "ajusteCargaMental":2
+         },
+         {
+            "id":"montar_o_desmontar_muebles",
+            "ajustePeriodicidad":0.1,
+            "ajusteIntensidad":3,
+            "ajusteCargaMental":1
+         },
+         {
+            "id":"llevar_coche_al_taller",
+            "ajustePeriodicidad":0.1,
+            "ajusteIntensidad":3,
+            "ajusteCargaMental":1
+         },
+         {
+            "id":"Renovar_ITV_o_documentacion",
+            "ajustePeriodicidad":0.1,
+            "ajusteIntensidad":3,
+            "ajusteCargaMental":1
+         }
+      ]
+   },
+   {
+      "id":"actividad_a_medida",
+      "nombre":"Actividades a demanda",
+      "tareaRepresentativa":"hacer_la_compra",
+      "tareas":[
+         {
+            "id":"cuidados_a_mayores",
+            "ajustePeriodicidad":0.6,
+            "ajusteIntensidad":-1,
+            "ajusteCargaMental":1
+         },
+         {
+            "id":"llenar_deposito_de_gasolina",
+            "ajustePeriodicidad":0.4,
+            "ajusteIntensidad":-2,
+            "ajusteCargaMental":-1
+         },
+         {
+            "id":"acompañar_a_actividades_extraescolares",
+            "ajustePeriodicidad":0.8,
+            "ajusteIntensidad":-1,
+            "ajusteCargaMental":1
+         },
+         {
+            "id":"limpiar_jaulas_o_areneros",
+            "ajustePeriodicidad":0.5,
+            "ajusteIntensidad":1,
+            "ajusteCargaMental":0.5
+         }
+      ]
+   }
 ]

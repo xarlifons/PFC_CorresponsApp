@@ -1,6 +1,8 @@
 package com.corresponsapp.backend.controller;
 
 import com.corresponsapp.backend.dto.SurveyParametersDTO;
+import com.corresponsapp.backend.model.Unidad;
+import com.corresponsapp.backend.repository.UnidadRepository;
 import com.corresponsapp.backend.service.SurveyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,12 +11,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/encuesta")
 public class SurveyController {
 
     private final SurveyService surveyService;
+    private UnidadRepository unidadRepository;
 
     @Autowired
     public SurveyController(SurveyService surveyService) {
@@ -27,10 +31,12 @@ public class SurveyController {
         return ResponseEntity.ok("Encuesta guardada correctamente");
     }
     
-    @PostMapping("/parametros/devolver")
-    public ResponseEntity<Map<String, Double>> procesarParametros(@RequestBody List<SurveyParametersDTO> respuestas) {
+    @PostMapping("/parametros/devolver/{unidadId}")
+    public ResponseEntity<Map<String, Double>> procesarParametros(@PathVariable String unidadId, 
+    		@RequestBody List<SurveyParametersDTO> respuestas) {
         try {
-            double umbral = surveyService.guardarYDevolverParametrosUsuario(respuestas);
+        	       	
+            double umbral = surveyService.guardarYDevolverParametrosUsuario(respuestas, unidadId);
             return ResponseEntity.ok(Map.of("umbralLimpieza", umbral));
         } catch (Exception e) {
             return ResponseEntity

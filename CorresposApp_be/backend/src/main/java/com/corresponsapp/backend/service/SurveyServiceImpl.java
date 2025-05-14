@@ -1,9 +1,12 @@
 package com.corresponsapp.backend.service;
 
 import com.corresponsapp.backend.dto.SurveyParametersDTO;
+import com.corresponsapp.backend.model.Unidad;
 import com.corresponsapp.backend.model.User;
+import com.corresponsapp.backend.repository.UnidadRepository;
 import com.corresponsapp.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -18,50 +21,56 @@ public class SurveyServiceImpl implements SurveyService {
 
     private final UserRepository userRepository;
     private final GrupoTareasLoader grupoTareasLoader;
+    private UnidadRepository unidadRepository;
+    
+    public SurveyServiceImpl(UserRepository userRepository, GrupoTareasLoader grupoTareasLoader,
+			UnidadRepository unidadRepository) {
+		super();
+		this.userRepository = userRepository;
+		this.grupoTareasLoader = grupoTareasLoader;
+		this.unidadRepository = unidadRepository;
+	}
 
-    @Autowired
-    public SurveyServiceImpl(UserRepository userRepository, GrupoTareasLoader grupoTareasLoader) {
-        this.userRepository = userRepository;
-        this.grupoTareasLoader = grupoTareasLoader;
-    }
+	
 
     @Override
     public void guardarParametrosUsuario(List<SurveyParametersDTO> respuestas) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (!(principal instanceof User usuario)) {
-            throw new RuntimeException("Principal no es del tipo esperado User");
-        }
-
-        System.out.println("✅ Usuario autenticado: " + usuario.getEmail());
-
-        usuario.setSurveyParameters(respuestas);
-
-        double umbral = calcularUmbralLimpieza(respuestas);
-        usuario.setUmbralLimpieza(umbral);
-
-        userRepository.save(usuario);
-
-        System.out.println("📩 Encuesta guardada para: " + usuario.getEmail());
-        System.out.println("✅ Umbral de limpieza calculado y guardado: " + umbral);
+    	System.out.println("Si ves este log, es que el metodo  guardarParametrosUsuario de la calse SurveyServiceImpl es necesario, vea a verlo. Es posible que falte la unidadId") ;
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//
+//        if (!(principal instanceof User usuario)) {
+//            throw new RuntimeException("Principal no es del tipo esperado User");
+//        }
+//
+//        System.out.println("✅ Usuario autenticado: " + usuario.getEmail());
+//
+//        usuario.setSurveyParameters(respuestas);
+//
+//        double umbral = calcularUmbralLimpieza(respuestas);
+//        usuario.setUmbralLimpieza(umbral);
+//
+//        userRepository.save(usuario);
+//
+//        System.out.println("📩 Encuesta guardada para: " + usuario.getEmail());
+//        System.out.println("✅ Umbral de limpieza calculado y guardado: " + umbral);
     }
     
     @Override
-    public double guardarYDevolverParametrosUsuario(List<SurveyParametersDTO> respuestas) {
+    public double guardarYDevolverParametrosUsuario(List<SurveyParametersDTO> respuestas, String unidadId) {
         // reutiliza tu save + cálculo
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (!(principal instanceof User usuario)) {
             throw new RuntimeException("Principal no es del tipo esperado User");
         }
         usuario.setSurveyParameters(respuestas);
-        double umbral = calcularUmbralLimpieza(respuestas);
+        double umbral = calcularUmbralLimpieza(respuestas, unidadId);
         usuario.setUmbralLimpieza(umbral);
         userRepository.save(usuario);
         return umbral;
     }
 
     
-    private double calcularUmbralLimpieza(List<SurveyParametersDTO> respuestas) {
+    private double calcularUmbralLimpieza(List<SurveyParametersDTO> respuestas, String unidadId) {
         double promedioIntensidad = respuestas.stream()
             .mapToDouble(SurveyParametersDTO::getIntensidad)
             .average()
@@ -76,18 +85,30 @@ public class SurveyServiceImpl implements SurveyService {
             .mapToDouble(SurveyParametersDTO::getPeriodicidad)
             .average()
             .orElse(0.0);
+        
+        Optional<Unidad> unidadOpt = unidadRepository.findById(unidadId);
 
-        // Normaliza la periodicidad: 0.5 días (muy frecuente) = 10, 30 días (poco frecuente) = 0
-        double periodicidadNormalizada = (1.0 - ((promedioPeriodicidad - 0.5) / (30.0 - 0.5))) * 10.0;
+        if (unidadOpt.isPresent()) {
+            int cicloCorresponsabilidad = unidadOpt.get().getCicloCorresponsabilidad();
+            double cicloCorresponsabilidadDouble = cicloCorresponsabilidad;
+   
+         // Normaliza la periodicidad: 0.5 días (muy frecuente) = 10, 30 días (poco frecuente) = 0
+            double periodicidadNormalizada = (1.0 - ((promedioPeriodicidad - 0.5) / (cicloCorresponsabilidadDouble - 0.5))) * 10.0;
 
-        // Calcula el umbral como media ponderada (puedes ajustar los pesos si lo deseas)
-        double umbral = (
-            0.5 * periodicidadNormalizada +     // Más peso a la predisposición
-            0.25 * (10.0 - promedioIntensidad) + // A menor esfuerzo, más umbral
-            0.25 * (10.0 - promedioCargaMental)  // A menor carga mental, más umbral
-        );
+            // Calcula el umbral como media ponderada (puedes ajustar los pesos si lo deseas)
+            double umbral = (
+                0.5 * periodicidadNormalizada +     // Más peso a la predisposición
+                0.25 * (10.0 - promedioIntensidad) + // A menor esfuerzo, más umbral
+                0.25 * (10.0 - promedioCargaMental)  // A menor carga mental, más umbral
+            );
 
-        return Math.round(umbral * 10.0) / 10.0; // Redondeado a 1 decimal
+            return Math.round(umbral * 10.0) / 10.0; // Redondeado a 1 decimal
+        } else {
+        	System.out.println("⚠️ No se encontró la unidad con id " + unidadId + "El umbral enviado no es correcto ");
+            double promedioFacke = 0.0;
+        	return promedioFacke;  
+        }
+        
     }
 
     

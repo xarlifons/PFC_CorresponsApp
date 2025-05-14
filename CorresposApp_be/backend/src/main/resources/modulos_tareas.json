@@ -1,126 +1,123 @@
 [
-  {
-    "id": "limpieza_general",
-    "nombre": "Limpieza general",
-    "tareas": [
-      "Barrer y fregar suelos",
-      "Limpiar el polvo de muebles",
-      "Pasar aspiradora",
-      "Ventilar habitaciones",
-      "Vaciar papeleras"
-    ]
-  },
-  {
-    "id": "limpieza_especifica",
-    "nombre": "Limpieza específica",
-    "tareas": [
-      "Limpiar cristales y ventanas",
-      "Limpiar paredes y puertas",
-      "Limpiar ducha o banera",
-      "Limpiar lavabo e inodoro",
-      "Limpiar terraza o balcon"
-    ]
-  },
-  {
-    "id": "cocina_alimentacion",
-    "nombre": "Cocina y alimentación",
-    "tareas": [
-      "Cocinar comidas principales",
-      "Fregar platos o lavar lavavajillas",
-      "Planificar menu semanal",
-      "Vaciar alimentos caducados",
-      "Gestionar basura y reciclaje"
-    ]
-  },
-  {
-    "id": "ropa_lavanderia",
-    "nombre": "Ropa y lavandería",
-    "tareas": [
-      "Poner lavadoras",
-      "Tender ropa",
-      "Planchar ropa",
-      "Doblar y guardar ropa",
-      "Revisar ropa sucia/acumulada"
-    ]
-  },
-  {
-    "id": "habitaciones_organizacion",
-    "nombre": "Habitaciones y organización",
-    "tareas": [
-      "Hacer las camas",
-      "Cambiar sabanas",
-      "Organizar armarios",
-      "Ordenar habitaciones"
-    ]
-  },
-  {
-    "id": "bano_higiene",
-    "nombre": "Baño e higiene",
-    "tareas": [
-      "Limpiar inodoro",
-      "Limpiar lavabo y espejo",
-      "Limpiar ducha/banera",
-      "Reponer papel higienico y jabon",
-      "Cambiar toallas"
-    ]
-  },
-  {
-    "id": "cuidados_familiares",
-    "nombre": "Cuidados familiares",
-    "tareas": [
-      "Ayudar higiene personal ninos/as",
-      "Supervisar deberes escolares",
-      "Acompanhar a actividades extraescolares",
-      "Preparar mochilas escolares"
-    ]
-  },
-  {
-    "id": "mantenimiento_hogar",
-    "nombre": "Mantenimiento del hogar",
-    "tareas": [
-      "Revisar bombillas y fusibles",
-      "Realizar arreglos menores",
-      "Revisar electrodomesticos",
-      "Montar o desmontar muebles"
-    ]
-  },
-  {
-    "id": "plantas_mascotas",
-    "nombre": "Cuidado de plantas y mascotas",
-    "tareas": [
-      "Regar plantas",
-      "Podar plantas",
-      "Cuidar jardin",
-      "Sacar mascotas a pasear",
-      "Limpiar jaulas o areneros"
-    ]
-  },
-  {
-    "id": "recados_abastecimiento",
-    "nombre": "Recados y abastecimiento",
-    "tareas": [
-      "Hacer la compra",
-      "Comprar medicamentos",
-      "Sacar la basura"
-    ]
-  },
-  {
-    "id": "gestion_invisible",
-    "nombre": "Gestión invisible",
-    "tareas": [
-      "Planificar calendario familiar",
-      "Coordinar citas y eventos",
-      "Revisar y pagar facturas",
-      "Hacer gestiones administrativas"
-    ]
-  },
-  {
-    "id": "cuidado_vehiculo",
-    "nombre": "Cuidado del vehículo",
-    "tareas": [
-      "Llevar coche al taller",
-      "Llenar deposito de gasolina",
-      "Renovar ITV o documentacion"
-    ]
-  }
+   {
+      "id":"limpieza_general",
+      "nombre":"Limpieza general",
+      "tareas":[
+         "Barrer y fregar suelos",
+         "Limpiar el polvo de muebles",
+         "Pasar aspiradora"
+      ]
+   },
+   {
+      "id":"limpieza_especifica",
+      "nombre":"Limpieza específica",
+      "tareas":[
+         "Limpiar cristales y ventanas",
+         "Limpiar paredes y puertas",
+         "Limpiar terraza o balcon",
+         "Organizar armarios"
+      ]
+   },
+   {
+      "id":"cocina_alimentacion",
+      "nombre":"Cocina y alimentación",
+      "tareas":[
+         "Cocinar comidas",
+         "Cocinar cenas",
+         "Fregar platos o poner lavavajillas",
+         "Planificar menu semanal",
+         "Retirar alimentos caducados"
+      ]
+   },
+   {
+      "id":"ropa_lavanderia",
+      "nombre":"Ropa y lavandería",
+      "tareas":[
+         "Poner lavadoras",
+         "Tender ropa",
+         "Planchar ropa",
+         "Doblar y guardar ropa",
+         "Revisar ropa sucia acumulada"
+      ]
+   },
+   {
+      "id":"habitaciones_organizacion",
+      "nombre":"Habitaciones y organización",
+      "tareas":[
+         "Hacer las camas",
+         "Ventilar habitaciones",
+         "Vaciar papeleras",
+         "Cambiar sabanas",
+         "Ordenar habitaciones"
+      ]
+   },
+   {
+      "id":"bano_higiene",
+      "nombre":"Baño e higiene",
+      "tareas":[
+         "Limpiar inodoro",
+         "Limpiar lavabo y espejo",
+         "Limpiar ducha o bañera",
+         "Reponer papel higienico y jabon",
+         "Cambiar toallas"
+      ]
+   },
+   {
+      "id":"cuidados_familiares",
+      "nombre":"Cuidados familiares",
+      "tareas":[
+         "Ayudar higiene personal ninos/as",
+         "Supervisar deberes escolares",
+         "Acompañar a actividades extraescolares",
+         "Cuidados a mayores",
+         "Preparar mochilas escolares"
+      ]
+   },
+   {
+      "id":"mantenimiento_hogar",
+      "nombre":"Mantenimiento del hogar",
+      "tareas":[
+         "Revisar bombillas y fusibles",
+         "Montar o desmontar muebles"
+      ]
+   },
+   {
+      "id":"plantas_mascotas",
+      "nombre":"Cuidado de plantas y mascotas",
+      "tareas":[
+         "Regar plantas",
+         "Podar plantas",
+         "Cuidar jardin",
+         "Sacar mascotas a pasear",
+         "Limpiar jaulas o areneros"
+      ]
+   },
+   {
+      "id":"recados_abastecimiento",
+      "nombre":"Recados y abastecimiento",
+      "tareas":[
+         "Hacer la compra",
+         "Comprar el pan",
+         "Comprar medicamentos",
+         "Gestionar basura y reciclaje"
+      ]
+   },
+   {
+      "id":"gestion_invisible",
+      "nombre":"Gestión invisible",
+      "tareas":[
+         "Coordinar citas y eventos",
+         "Revisar y pagar facturas",
+         "Hacer gestiones administrativas"
+      ]
+   },
+   {
+      "id":"cuidado_vehiculo",
+      "nombre":"Cuidado del vehículo",
+      "tareas":[
+         "Llenar deposito de gasolina",
+         "Llevar coche al taller",
+         "Renovar ITV o documentacion"
+      ]
+   }
 ]

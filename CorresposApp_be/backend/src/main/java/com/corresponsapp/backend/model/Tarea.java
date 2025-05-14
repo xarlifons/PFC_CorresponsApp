@@ -13,9 +13,9 @@ public class Tarea {
 
     private String nombre;
     private String definicion;
-    private int periodicidad; // Días entre repeticiones
+    private float periodicidad; // Días entre repeticiones
     private float cargaMental; // Escala de 1.0 a 10.0
-    private String intensidad; // baja / media / alta
+    private float intensidad; // baja / media / alta
     private double tiempoEstimado; 
 
     private String asignadoA; // id del usuario
@@ -29,7 +29,7 @@ public class Tarea {
     // Constructores
     public Tarea() {}
 
-    public Tarea(String nombre, String definicion, int periodicidad, float cargaMental, String intensidad, String asignadoA, LocalDate fechaProgramada, double tiempoEstimado ,String unidadId, String modulo, boolean esPlantilla) {
+    public Tarea(String nombre, String definicion, float periodicidad, float cargaMental, float intensidad, String asignadoA, LocalDate fechaProgramada, double tiempoEstimado ,String unidadId, String modulo, boolean esPlantilla) {
         this.nombre = nombre;
         this.definicion = definicion;
         this.periodicidad = periodicidad;
@@ -76,11 +76,11 @@ public class Tarea {
         this.definicion = definicion;
     }
 
-    public int getPeriodicidad() {
+    public float getPeriodicidad() {
         return periodicidad;
     }
 
-    public void setPeriodicidad(int periodicidad) {
+    public void setPeriodicidad(float periodicidad) {
         this.periodicidad = periodicidad;
     }
 
@@ -92,11 +92,11 @@ public class Tarea {
         this.cargaMental = cargaMental;
     }
 
-    public String getIntensidad() {
+    public float getIntensidad() {
         return intensidad;
     }
 
-    public void setIntensidad(String intensidad) {
+    public void setIntensidad(float intensidad) {
         this.intensidad = intensidad;
     }
 
@@ -140,7 +140,7 @@ public class Tarea {
         this.modulo = modulo;
     }
 
-    public boolean isEsPlantilla() {
+    public boolean getEsPlantilla() {
         return esPlantilla;
     }
 

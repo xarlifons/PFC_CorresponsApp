@@ -11,6 +11,11 @@ public class TareaUnidadDTO {
     private int tiempoEstimado;
     private String definicion;
     private boolean esPlantilla;
+    private String asignadoA; 
+    
+    private float periodicidad;
+    private float intensidad;
+    private float cargaMental;
 	
     
 
@@ -18,10 +23,8 @@ public class TareaUnidadDTO {
         super();
     }
 
-
-
-    public TareaUnidadDTO(String id, String nombre, String modulo, int tiempoEstimado, String definicion,
-			boolean esPlantilla) {
+	public TareaUnidadDTO(String id, String nombre, String modulo, int tiempoEstimado, String definicion,
+			boolean esPlantilla, String asignadoA) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -29,6 +32,23 @@ public class TareaUnidadDTO {
 		this.tiempoEstimado = tiempoEstimado;
 		this.definicion = definicion;
 		this.esPlantilla = esPlantilla;
+		this.asignadoA = asignadoA;
+	}
+
+
+	public TareaUnidadDTO(String id, String nombre, String modulo, int tiempoEstimado, String definicion,
+			boolean esPlantilla, String asignadoA, float periodicidad, float intensidad, float cargaMental) {
+		super();
+		this.id = id;
+		this.nombre = nombre;
+		this.modulo = modulo;
+		this.tiempoEstimado = tiempoEstimado;
+		this.definicion = definicion;
+		this.esPlantilla = esPlantilla;
+		this.asignadoA = asignadoA;
+		this.periodicidad = periodicidad;
+		this.intensidad = intensidad;
+		this.cargaMental = cargaMental;
 	}
 
 
@@ -82,12 +102,43 @@ public class TareaUnidadDTO {
 		this.esPlantilla = esPlantilla;
 	}
 
+	public String getAsignadoA() {
+		return asignadoA;
+	}
+
+
+	public void setAsignadoA(String asignadoA) {
+		this.asignadoA = asignadoA;
+	}
+
+	public float getPeriodicidad() {
+		return periodicidad;
+	}
+
+	public void setPeriodicidad(float periodicidad) {
+		this.periodicidad = periodicidad;
+	}
+
+	public double getIntensidad() {
+		return intensidad;
+	}
+
+	public void setIntensidad(float intensidad) {
+		this.intensidad = intensidad;
+	}
+
+	public double getCargaMental() {
+		return cargaMental;
+	}
+
+	public void setCargaMental(float cargaMental) {
+		this.cargaMental = cargaMental;
+	}
+
 	@Override
-    public String toString() {
-        return "TareaUnidadDTO{" +
-                "id='" + id + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", modulo='" + modulo + '\'' +
-                '}';
-    }
+	public String toString() {
+		return "TareaUnidadDTO [id=" + id + ", nombre=" + nombre + ", modulo=" + modulo + ", tiempoEstimado="
+				+ tiempoEstimado + ", definicion=" + definicion + ", esPlantilla=" + esPlantilla + ", asignadoA="
+				+ asignadoA + "]";
+	}
 }
