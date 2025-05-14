@@ -610,9 +610,9 @@ export function AuthProvider({ children }) {
     return estadoFase1;
   };
 
-  const enviarEncuestaYRecibirUmbral = async (respuestas) => {
+  const enviarEncuestaYRecibirUmbral = async (unidadId, respuestas) => {
     const response = await fetch(
-      `${API_BASE_URL}/api/encuesta/parametros/devolver`,
+      `${API_BASE_URL}/api/encuesta/parametros/devolver/${unidadId}`,
       {
         method: "POST",
         headers: {
@@ -648,6 +648,88 @@ export function AuthProvider({ children }) {
     }
   };
 
+  // GET la media de encuesta por grupo
+  const getInitialConsensus = async (unidadId) => {
+    const res = await fetch(
+      `${API_BASE_URL}/api/encuesta/promedios/${unidadId}`,
+      { headers: { Authorization: `Bearer ${state.token}` } }
+    );
+    if (!res.ok) throw new Error(await res.text());
+    return res.json(); // Map<grupoId, SurveyParametersDTO>
+  };
+
+  // POST para persistir ese consenso en la unidad
+  const persistInitialConsensus = async (unidadId, consensoList) => {
+    const res = await fetch(
+      `${API_BASE_URL}/api/unidad/${unidadId}/consenso-inicial`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+        body: JSON.stringify(consensoList), // List<ConsensoUmbralLimpiezaUnidad>
+      }
+    );
+    if (!res.ok) throw new Error(await res.text());
+  };
+
+  const guardarConsensoInicial = async (unidadId) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/unidad/${unidadId}/consenso-inicial`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`(${response.status}) ${errorText}`);
+    }
+  };
+
+  const instanciarTareas = async (unidadId, instances) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/unidad/${unidadId}/tareas/instanciar`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+        body: JSON.stringify(instances),
+      }
+    );
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(`(${response.status}) ${text}`);
+    }
+    return response.json(); // devuelve la lista de Tarea instanciadas
+  };
+
+  const getTareasInstanciadas = async (unidadId) => {
+    const response = await fetch(
+      `${API_BASE_URL}/api/unidad/${unidadId}/tareas/instanciadas`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`(${response.status}) ${errorText}`);
+    }
+
+    return await response.json(); // Lista de tareas instanciadas
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -673,6 +755,11 @@ export function AuthProvider({ children }) {
         enviarParametrosEncuesta,
         enviarEncuestaYRecibirUmbral,
         guardarConsensoFinal,
+        guardarConsensoInicial,
+        getInitialConsensus,
+        persistInitialConsensus,
+        instanciarTareas,
+        getTareasInstanciadas,
       }}
     >
       {children}

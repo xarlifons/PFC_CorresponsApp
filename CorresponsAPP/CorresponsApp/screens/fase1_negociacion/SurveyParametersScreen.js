@@ -19,6 +19,8 @@ export default function SurveyParametersScreen() {
     getUnidadInfoCompleta,
     logout,
     getGruposIniciales,
+    getInitialConsensus,
+    persistInitialConsensus,
   } = useAuth();
 
   const [grupos, setGrupos] = useState([]);
@@ -27,120 +29,66 @@ export default function SurveyParametersScreen() {
   const [unidadInfo, setUnidadInfo] = useState(null);
   const [showResumen, setShowResumen] = useState(false);
   const [refreshRedirect, setRefreshRedirect] = useState(false);
-  const [encuestaRegistrada, setEncuestaRegistrada] = useState(false);
   const [isEnviando, setIsEnviando] = useState(false);
 
+  // Redirige a TaskNegotiationThresholdScreen cuando estadoFase1 = "momento2"
   const redirect = useRedirectByEstadoFase1(
     "momento2",
     "TaskNegotiationThresholdScreen",
     refreshRedirect
   );
 
+  // Carga inicial de grupos de encuesta
   useEffect(() => {
-    const cargarGrupos = async () => {
+    (async () => {
       try {
         const data = await getGruposIniciales();
-        if (!Array.isArray(data)) {
-          throw new Error("El formato recibido no es una lista de grupos.");
-        }
-        console.log("📥 Grupos recibidos:", data);
+        if (!Array.isArray(data)) throw new Error("Formato inesperado");
         setGrupos(data);
-        const respuestasIniciales = data.map((g) => ({
-          grupo: g.grupo,
-          tarea: g.tarea,
-          periodicidad: 1,
-          intensidad: 5,
-          cargaMental: 5,
-        }));
-        setRespuestas(respuestasIniciales);
-      } catch (error) {
-        console.log("🔍 Detalles del error en getGruposIniciales:", error);
-        const mensaje =
-          error?.message ||
-          (typeof error === "string" ? error : JSON.stringify(error)) ||
-          "Error desconocido";
-        console.error("❌ Error en getGruposIniciales:", mensaje);
-        Alert.alert(
-          "❌ Error",
-          `Error al obtener grupos de encuesta: ${mensaje}`
+        setRespuestas(
+          data.map((g) => ({
+            grupo: g.grupo,
+            tarea: g.tarea,
+            periodicidad: 1,
+            intensidad: 5,
+            cargaMental: 5,
+          }))
         );
+      } catch (e) {
+        Alert.alert("❌ Error al cargar grupos", e.message);
       }
-    };
-    cargarGrupos();
+    })();
   }, []);
 
+  // Maneja el cambio de sliders
   const handleSliderChange = (index, campo, valor) => {
-    const nuevas = [...respuestas];
-    nuevas[index][campo] = valor;
-    setRespuestas(nuevas);
+    const copy = [...respuestas];
+    copy[index][campo] = valor;
+    setRespuestas(copy);
   };
 
-  // const handleEnviar = async () => {
-  //   try {
-  //     setIsEnviando(true);
-  //     console.log(
-  //       "🧾 Aqui la respuestas a enviar:",
-  //       JSON.stringify(respuestas, null, 2)
-  //     );
-  //     await enviarParametrosEncuesta(respuestas);
-  //     await actualizarEstadoFase1(state.user.unidadAsignada, "momento2");
-
-  //     setTimeout(async () => {
-  //       const info = await getUnidadInfoCompleta(state.user.unidadAsignada);
-  //       const umbral = await enviarEncuestaYRecibirUmbral(respuestas);
-  //       setUnidadInfo(info);
-  //       setUmbral({ umbral });
-  //       setEncuestaRegistrada(true);
-  //       setShowResumen(true);
-  //       setIsEnviando(false);
-  //     }, 800);
-  //   } catch (error) {
-  //     Alert.alert("❌ Error", error.message);
-  //     setIsEnviando(false);
-  //   }
-  // };
-
+  // 1) Envía encuesta y recibe umbral, muestra resumen (pero no avanza fase aún)
   const handleEnviar = async () => {
     try {
       setIsEnviando(true);
-      console.log(
-        "🧾 Respuestas a enviar:",
-        JSON.stringify(respuestas, null, 2)
+      const rawUmbral = await enviarEncuestaYRecibirUmbral(
+        state.user.unidadAsignada,
+        respuestas
       );
-
-      // ✔️ 1) llama sólo al endpoint que guarda y devuelve el umbral
-      const umbralBackend = await enviarEncuestaYRecibirUmbral(respuestas);
-      console.log("📊 Umbral recibido del backend:", umbralBackend);
-
-      // ✔️ 2) actualiza el estadoFase1 en el servidor
-      await actualizarEstadoFase1(state.user.unidadAsignada, "momento2");
-
-      // ✔️ 3) recupera la info de la unidad (para el resumen)
       const info = await getUnidadInfoCompleta(state.user.unidadAsignada);
-
-      // ✔️ 4) actualiza estado local para renderizar el resumen
       setUnidadInfo(info);
-      setUmbral({ valor: umbralBackend.toFixed(1) });
+      setUmbral(rawUmbral.toFixed(1)); // Guardamos primitivo
       setShowResumen(true);
-    } catch (error) {
-      console.error("❌ Error en handleEnviar:", error);
-      Alert.alert("❌ Error", error.message);
+    } catch (e) {
+      Alert.alert("❌ Error al enviar encuesta", e.message);
     } finally {
       setIsEnviando(false);
     }
   };
 
-  const handleRefrescar = async () => {
-    try {
-      const info = await getUnidadInfoCompleta(state.user.unidadAsignada);
-      setUnidadInfo(info);
-    } catch (error) {
-      Alert.alert("❌ Error al refrescar", error.message);
-    }
-  };
-
+  // 2) Pantalla de resumen con umbral y botón para avanzar
   if (showResumen && unidadInfo) {
-    const respuestasConfirmadas = unidadInfo.miembros.filter(
+    const responded = unidadInfo.miembros.filter(
       (u) => u.surveyParameters?.length > 0
     ).length;
     const total = unidadInfo.miembros.length;
@@ -151,49 +99,52 @@ export default function SurveyParametersScreen() {
 
         <View style={styles.umbralCard}>
           <Text style={styles.umbralTitle}>Tu umbral de limpieza</Text>
-          <Text style={styles.umbralValor}>{umbral.valor} / 100</Text>
+          <Text style={styles.umbralValor}>{umbral} / 100</Text>
         </View>
 
         <Text style={styles.subtitle}>
-          👥 En tu unidad hay {total} persona(s).
-          {"\n"}📝 Han respondido: {respuestasConfirmadas} / {total}
+          👥 En tu unidad hay {total} personas.
+          {"\n"}📝 Han respondido: {responded} / {total}
         </Text>
 
         <Button
           title="💬 Vamos a por el consenso en las tareas"
           onPress={async () => {
             try {
+              const mapa = await getInitialConsensus(state.user.unidadAsignada);
+              const lista = Object.entries(mapa).map(([grupoId, dto]) => ({
+                grupoId,
+                periodicidad: dto.periodicidad,
+                intensidad: dto.intensidad,
+                cargaMental: dto.cargaMental,
+              }));
+              await persistInitialConsensus(state.user.unidadAsignada, lista);
               await actualizarEstadoFase1(
                 state.user.unidadAsignada,
                 "momento3"
               );
               setRefreshRedirect((prev) => !prev);
-            } catch (error) {
-              Alert.alert(
-                "❌ Error",
-                "No se pudo avanzar al siguiente momento."
-              );
+            } catch (e) {
+              Alert.alert("❌ Error", e.message);
             }
           }}
-          disabled={respuestasConfirmadas < total}
-          color={respuestasConfirmadas < total ? "#ccc" : "#007AFF"}
+          disabled={responded < total}
+          color={responded < total ? "#ccc" : "#007AFF"}
         />
-
-        {respuestasConfirmadas < total && (
-          <Text style={{ color: "#888", marginTop: 10, textAlign: "center" }}>
+        {responded < total && (
+          <Text style={styles.waitText}>
             Aún faltan personas por completar la encuesta.
           </Text>
         )}
 
-        <View style={{ marginTop: 20 }}>
+        <View style={styles.actions}>
           <Button
-            title="🔄 Refrescar datos"
-            onPress={handleRefrescar}
+            title="🔄 Volver a encuesta"
+            onPress={() => setShowResumen(false)}
             color="#888"
           />
         </View>
-
-        <View style={{ marginTop: 20 }}>
+        <View style={styles.actions}>
           <Button title="Cerrar sesión" onPress={logout} color="tomato" />
         </View>
         {redirect}
@@ -201,25 +152,16 @@ export default function SurveyParametersScreen() {
     );
   }
 
+  // 3) Render sliders antes de enviar
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>📋 ¿Cómo ves tú las tareas del hogar?</Text>
-      <Text style={styles.intro}>
-        Esta encuesta es rápida y sencilla:
-        {"\n"}Solo te pediremos tu opinión sobre 10 tareas representativas del
-        hogar.
-        {"\n\n"}Por cada tarea, dinos tres cosas:
-        {"\n\n"}🕒 Con qué periodicidad crees que debería hacerse esa tarea
-        {"\n"}💥 Qué esfuerzo te genera la realización de esta tarea.
-        {"\n"}🧠 Qué carga mental supone tenerla en cuenta o recordarla (no
-        realizarla).
-        {"\n\n"}Tus respuestas nos ayudarán a conocer tu umbral de limpieza.
-      </Text>
+      <Text style={styles.intro}>Ajusta estos parámetros para cada tarea:</Text>
 
-      {grupos.map((g, index) => (
+      {grupos.map((g, i) => (
         <View key={g.grupo} style={styles.card}>
           <Text style={styles.groupTitle}>
-            {index + 1}. {g.tarea}
+            {i + 1}. {g.tarea}
           </Text>
 
           <Text style={styles.sliderLabel}>📅 Periodicidad</Text>
@@ -227,32 +169,30 @@ export default function SurveyParametersScreen() {
             minimumValue={0.5}
             maximumValue={30}
             step={0.5}
-            value={respuestas[index]?.periodicidad || 1}
-            onValueChange={(v) => handleSliderChange(index, "periodicidad", v)}
+            value={respuestas[i].periodicidad}
+            onValueChange={(v) => handleSliderChange(i, "periodicidad", v)}
           />
-          <Text>
-            🕒 Cada {respuestas[index]?.periodicidad?.toFixed(1)} días
-          </Text>
+          <Text>Cada {respuestas[i].periodicidad.toFixed(1)} días</Text>
 
           <Text style={styles.sliderLabel}>💥 Esfuerzo</Text>
           <Slider
             minimumValue={0}
             maximumValue={10}
             step={1}
-            value={respuestas[index]?.intensidad || 5}
-            onValueChange={(v) => handleSliderChange(index, "intensidad", v)}
+            value={respuestas[i].intensidad}
+            onValueChange={(v) => handleSliderChange(i, "intensidad", v)}
           />
-          <Text>{respuestas[index]?.intensidad?.toFixed(0)} / 10</Text>
+          <Text>{respuestas[i].intensidad.toFixed(0)} / 10</Text>
 
           <Text style={styles.sliderLabel}>🧠 Carga mental</Text>
           <Slider
             minimumValue={0}
             maximumValue={10}
             step={1}
-            value={respuestas[index]?.cargaMental || 5}
-            onValueChange={(v) => handleSliderChange(index, "cargaMental", v)}
+            value={respuestas[i].cargaMental}
+            onValueChange={(v) => handleSliderChange(i, "cargaMental", v)}
           />
-          <Text>{respuestas[index]?.cargaMental?.toFixed(0)} / 10</Text>
+          <Text>{respuestas[i].cargaMental.toFixed(0)} / 10</Text>
         </View>
       ))}
 
@@ -266,11 +206,7 @@ export default function SurveyParametersScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 24,
-    alignItems: "center",
-    backgroundColor: "#fff",
-  },
+  container: { padding: 24, backgroundColor: "#fff" },
   centeredContainer: {
     flex: 1,
     justifyContent: "center",
@@ -280,9 +216,9 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 22,
-    marginBottom: 12,
     fontWeight: "bold",
     textAlign: "center",
+    marginBottom: 12,
   },
   intro: {
     fontSize: 14,
@@ -293,6 +229,32 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 16,
     textAlign: "center",
+  },
+  umbralCard: {
+    backgroundColor: "#E6F4EA",
+    padding: 24,
+    borderRadius: 16,
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  umbralTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#2D6A4F",
+    marginBottom: 10,
+  },
+  umbralValor: {
+    fontSize: 48,
+    fontWeight: "bold",
+    color: "#1B4332",
+  },
+  waitText: {
+    color: "#888",
+    marginTop: 10,
+    textAlign: "center",
+  },
+  actions: {
+    marginTop: 16,
   },
   card: {
     marginBottom: 24,
@@ -309,29 +271,5 @@ const styles = StyleSheet.create({
   sliderLabel: {
     marginTop: 12,
     fontSize: 14,
-  },
-  umbralCard: {
-    backgroundColor: "#E6F4EA",
-    padding: 24,
-    borderRadius: 16,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 4,
-    marginVertical: 20,
-    width: "100%",
-  },
-  umbralTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#2D6A4F",
-    marginBottom: 10,
-  },
-  umbralValor: {
-    fontSize: 48,
-    fontWeight: "bold",
-    color: "#1B4332",
   },
 });

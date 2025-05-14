@@ -84,24 +84,24 @@ export default function UnitConfigurationScreen({ navigation, route }) {
     }
   }, [route.params?.nuevaTarea]);
 
-  const toggleModulo = (moduloId) => {
-    const tareasDeModulo = tareasUnidad.filter(
-      (t) => t.modulo === moduloId || t.moduloId === moduloId
-    );
-    if (tareasDeModulo.length === 0) {
-      setModulosSeleccionados(
-        modulosSeleccionados.filter((m) => m !== moduloId)
-      );
-      return;
-    }
-    if (modulosSeleccionados.includes(moduloId)) {
-      setModulosSeleccionados(
-        modulosSeleccionados.filter((m) => m !== moduloId)
-      );
-    } else {
-      setModulosSeleccionados([...modulosSeleccionados, moduloId]);
-    }
-  };
+  // const toggleModulo = (moduloId) => {
+  //   const tareasDeModulo = tareasUnidad.filter(
+  //     (t) => t.modulo === moduloId || t.moduloId === moduloId
+  //   );
+  //   if (tareasDeModulo.length === 0) {
+  //     setModulosSeleccionados(
+  //       modulosSeleccionados.filter((m) => m !== moduloId)
+  //     );
+  //     return;
+  //   }
+  //   if (modulosSeleccionados.includes(moduloId)) {
+  //     setModulosSeleccionados(
+  //       modulosSeleccionados.filter((m) => m !== moduloId)
+  //     );
+  //   } else {
+  //     setModulosSeleccionados([...modulosSeleccionados, moduloId]);
+  //   }
+  // };
 
   const abrirModal = (moduloId) => {
     setModuloActivo(moduloId);

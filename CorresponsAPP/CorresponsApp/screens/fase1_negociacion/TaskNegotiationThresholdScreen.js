@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../context/AuthContext";
@@ -14,7 +15,7 @@ import { useRedirectByEstadoFase1 } from "../../hooks/useRedirectByEstadoFase1";
 export default function TaskNegotiationThresholdScreen({ navigation }) {
   const {
     state,
-    getConsensoFase1,
+    getInitialConsensus,
     getModulosYTareas,
     getCorrespondencias,
     getUnidadConfiguracion,
@@ -42,62 +43,45 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
     (async () => {
       setLoading(true);
       try {
-        const [consData, modData, corr, uni] = await Promise.all([
-          getConsensoFase1(state.user.unidadAsignada),
+        // Usamos getInitialConsensus en lugar de guardarConsensoInicial
+        const [initCons, modData, corr, uni] = await Promise.all([
+          getInitialConsensus(state.user.unidadAsignada),
           getModulosYTareas(),
           getCorrespondencias(),
           getUnidadConfiguracion(state.user.unidadAsignada),
         ]);
         setTotalTask(uni.tareasUnidad.length);
 
-        // sólo módulos activos
         const activos = modData.filter((m) =>
           uni.modulosActivados.includes(m.id)
         );
 
-        // construimos cada módulo
-        const builtModulo = activos.map((mod) => {
-          // Plantillas: las tareasUnidad que vienen marcadas esPlantilla y pertenecen a este módulo
+        const built = activos.map((mod) => {
+          // Para plantillas, usamos el grupoId
           const plantilla = uni.tareasUnidad
             .filter((t) => t.esPlantilla && t.modulo === mod.id)
             .map((t) => {
-              // extraemos el grupo_id tras "<mod.id>_"
-              const gid = t.id.startsWith(`${mod.id}_`)
-                ? t.id.slice(mod.id.length + 1)
-                : t.id;
-              // buscamos la descripción en correspondencias
-              const entry = corr.find((c) => c.grupo_id === gid);
-              const nombre = entry?.modulo_tarea || t.nombre;
-              const datos = consData[gid] || {
+              const datos = initCons[mod.id] || {
                 periodicidad: 1,
                 intensidad: 5,
                 cargaMental: 5,
               };
-              return { id: gid, nombre, datos, esPlantilla: true };
+              return { id: t.id, nombre: t.nombre, datos, esPlantilla: true };
             });
 
-          // Custom: las tareasUnidad creadas a mano
           const custom = uni.tareasUnidad
             .filter((t) => !t.esPlantilla && t.modulo === mod.id)
             .map((t) => {
-              const gid = t.id;
-              const datos = consData[gid] || {
+              const datos = initCons[mod.id] || {
                 periodicidad: 1,
                 intensidad: 5,
                 cargaMental: 5,
               };
-              return {
-                id: gid,
-                nombre: t.nombre,
-                datos,
-                esPlantilla: false,
-              };
+              return { id: t.id, nombre: t.nombre, datos, esPlantilla: false };
             });
 
-          // Unimos sin necesidad de dedupe extra
           const tareas = [...plantilla, ...custom];
 
-          // Inicializamos los valores sólo la primera vez
           tareas.forEach((t) => {
             if (!values[t.id]) values[t.id] = t.datos;
           });
@@ -105,23 +89,22 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
           return { ...mod, tareas };
         });
 
-        setConsenso(consData);
-        setModules(builtModulo);
+        setConsenso(initCons);
+        setModules(built);
         setValues({ ...values });
       } catch (e) {
         console.error(e);
+        Alert.alert("Error al cargar datos", e.message);
       } finally {
         setLoading(false);
       }
     })();
   }, [state.user?.unidadAsignada]);
 
-  // progresión
   const totalModules = modules.length;
   const doneModules = Object.values(completed).filter((v) => v).length;
   const progress = totalModules ? doneModules / totalModules : 0;
 
-  // increment / decrement
   const inc = (taskId, field) =>
     setValues({
       ...values,
@@ -146,21 +129,17 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
 
   const saveConsensus = async () => {
     try {
-      // 1) Construimos el payload con la forma { tareaId, grupoId, periodicidad, intensidad, cargaMental }
       const payload = modules.flatMap((mod) =>
         mod.tareas.map((t) => ({
-          tareaId: t.id, // usa t.id
-          grupoId: mod.id, // o si tienes otro campo de grupo: t.esPlantilla ? t.id : mod.id
+          tareaId: t.id,
+          grupoId: mod.id,
           periodicidad: values[t.id].periodicidad,
           intensidad: values[t.id].intensidad,
           cargaMental: values[t.id].cargaMental,
         }))
       );
 
-      // 2) Guardar consenso final en la unidad
       await guardarConsensoFinal(state.user.unidadAsignada, payload);
-
-      // 3) Actualizar estadoFase1 (si no lo hace el backend)
       await actualizarEstadoFase1(state.user.unidadAsignada, "momento4");
       setRefreshRedirect((prev) => !prev);
     } catch (error) {
@@ -184,13 +163,9 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
       keyExtractor={(m) => m.id}
       ListHeaderComponent={
         <>
-          <Text style={styles.title}>
-            Consenso del Umbral de limpieza inicial
-          </Text>
+          <Text style={styles.title}>Consenso inicial de tareas por grupo</Text>
           <Text style={styles.subtitle}>
-            Ahora ya has contestado la encuesta y hemos extraído tu umbral de
-            limpieza. Vamos a consensuar el Umbral de limpieza de la vivienda.
-            Para ello, revisad las {totalTasks} tareas de la unidad.
+            Revisad las {totalTasks} tareas según el umbral consensuado.
           </Text>
           <View style={styles.progressBarBg}>
             <View style={[styles.progressBarFg, { flex: progress }]} />
@@ -225,7 +200,6 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
                 <View key={t.id} style={styles.taskRow}>
                   <Text style={styles.taskName}>{t.nombre}</Text>
 
-                  {/* Periodicidad */}
                   <View style={styles.paramRow}>
                     <Text style={styles.paramLabel}>Periodicidad</Text>
                     <View style={styles.stepper}>
@@ -247,7 +221,6 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
                     </View>
                   </View>
 
-                  {/* Intensidad -> Esfuerzo */}
                   <View style={styles.paramRow}>
                     <Text style={styles.paramLabel}>Esfuerzo</Text>
                     <View style={styles.stepper}>
@@ -269,7 +242,6 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
                     </View>
                   </View>
 
-                  {/* Carga mental */}
                   <View style={styles.paramRow}>
                     <Text style={styles.paramLabel}>Carga mental</Text>
                     <View style={styles.stepper}>
@@ -322,16 +294,8 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 16,
-    backgroundColor: "#fff",
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
+  container: { padding: 16, backgroundColor: "#fff" },
+  loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   title: {
     fontSize: 20,
     fontWeight: "bold",
@@ -344,7 +308,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     color: "#555",
   },
-
   progressBarBg: {
     flexDirection: "row",
     height: 8,
@@ -353,11 +316,8 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginVertical: 8,
   },
-  progressBarFg: {
-    backgroundColor: "#2D6A4F",
-  },
+  progressBarFg: { backgroundColor: "#2D6A4F" },
   progressText: { textAlign: "center", marginBottom: 16 },
-
   moduleSection: {
     marginBottom: 16,
     backgroundColor: "#fafafa",
@@ -372,11 +332,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
   },
   moduleTitle: { fontSize: 16, fontWeight: "600" },
-
-  taskList: {
-    paddingLeft: 12,
-    paddingBottom: 12,
-  },
+  taskList: { paddingLeft: 12, paddingBottom: 12 },
   taskRow: {
     marginBottom: 16,
     paddingVertical: 4,
@@ -385,25 +341,20 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8fffd",
   },
   taskName: { fontSize: 15, fontWeight: "600", marginBottom: 8 },
-
   paramRow: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "flex-end", // Empuja todo hacia la derecha
+    justifyContent: "flex-end",
     marginBottom: 6,
   },
   paramLabel: {
-    width: 100, // Ajusta este valor al espacio que necesites
-    textAlign: "right", // Alinea el texto a la derecha
-    marginRight: 8, // Espacio entre etiqueta y stepper
+    width: 100,
+    textAlign: "right",
+    marginRight: 8,
     fontSize: 14,
     fontWeight: "500",
   },
-
-  stepper: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
+  stepper: { flexDirection: "row", alignItems: "center" },
   stepButtonBg: {
     backgroundColor: "#ddd",
     borderRadius: 4,
@@ -411,13 +362,8 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     marginHorizontal: 4,
   },
-  stepButton: {
-    fontSize: 18,
-    lineHeight: 18,
-    textAlign: "center",
-  },
+  stepButton: { fontSize: 18, lineHeight: 18, textAlign: "center" },
   stepValue: { width: 32, textAlign: "center", fontSize: 14 },
-
   doneButton: {
     marginTop: 8,
     padding: 10,
@@ -427,7 +373,6 @@ const styles = StyleSheet.create({
   },
   doneButtonDone: { backgroundColor: "#4d9174" },
   doneText: { color: "#fff", fontWeight: "600" },
-
   saveAll: {
     marginVertical: 24,
     padding: 14,

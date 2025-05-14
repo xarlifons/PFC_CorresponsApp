@@ -15,7 +15,6 @@ import { useRedirectByEstadoFase1 } from "../../hooks/useRedirectByEstadoFase1";
 
 const { height, width } = Dimensions.get("window");
 const CARD_SIZE = width * 0.24;
-// Altura total que queremos reservar para el botón + márgenes
 const BUTTON_AREA_HEIGHT = 80;
 
 export default function TaskNegotiationAssignmentScreen({ navigation }) {
@@ -23,7 +22,7 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
     state,
     getUnidadInfoCompleta,
     getUnidadConfiguracion,
-    guardarConsensoFinal,
+    instanciarTareas,
     actualizarEstadoFase1,
   } = useAuth();
 
@@ -49,7 +48,15 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
         // Inicializa las zonas
         const init = { unassigned: [] };
         config.tareasUnidad.forEach((t) => {
-          init.unassigned.push({ ...t });
+          const enriched = {
+            ...t,
+            datos: {
+              periodicidad: t.periodicidad ?? 1,
+              intensidad: t.intensidad ?? 5,
+              cargaMental: t.cargaMental ?? 5,
+            },
+          };
+          init.unassigned.push(enriched);
           panRefs.current[t.id] = new Animated.ValueXY();
           responderRefs.current[t.id] = PanResponder.create({
             onStartShouldSetPanResponder: () => true,
@@ -86,7 +93,7 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
                     Object.keys(z).forEach((k) => {
                       nz[k] = z[k].filter((tk) => tk.id !== t.id);
                     });
-                    nz[zoneId] = [...nz[zoneId], t];
+                    nz[zoneId] = [...nz[zoneId], enriched];
                     return nz;
                   });
                   break;
@@ -109,22 +116,34 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
 
   const onSave = async () => {
     try {
-      const payload = Object.entries(zones)
+      // 1) Construir el array de instancias
+      const instances = Object.entries(zones)
         .filter(([zoneId]) => zoneId !== "unassigned")
-        .flatMap(([_, tasks]) =>
+        .flatMap(([zoneId, tasks]) =>
           tasks.map((t) => ({
-            tareaId: t.id,
-            grupoId: t.modulo,
+            id: t.id,
+            asignadoA: zoneId,
             periodicidad: t.datos?.periodicidad ?? 1,
             intensidad: t.datos?.intensidad ?? 5,
             cargaMental: t.datos?.cargaMental ?? 5,
           }))
         );
-      await guardarConsensoFinal(state.user.unidadAsignada, payload);
+
+      console.log(
+        "📤 Payload enviado a instanciarTareas:",
+        JSON.stringify(instances, null, 2)
+      );
+
+      // 2) Persistir en backend todas las instancias
+      await instanciarTareas(state.user.unidadAsignada, instances);
+
+      // 3) Actualizar estado de Fase1 para navegar al dashboard
       await actualizarEstadoFase1(state.user.unidadAsignada, "completada");
+
+      // 4) Disparar refresco/redirección
       setRefresh((r) => !r);
     } catch (e) {
-      console.error("Error guardando:", e);
+      console.error("Error instanciando tareas:", e);
     }
   };
 
@@ -137,7 +156,6 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
     );
   }
 
-  // Definir orden de filas según número de miembros
   let filasOrder;
   if (members.length === 2) {
     filasOrder = [members[0].id, "unassigned", members[1].id];
@@ -151,7 +169,6 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
     filasOrder = ["unassigned", ...members.map((m) => m.id)];
   }
 
-  // Reducimos un poco el factor para dejar más espacio
   const ROW_HEIGHT =
     ((height - BUTTON_AREA_HEIGHT - 32) / filasOrder.length) * 0.7;
 
@@ -180,8 +197,8 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{
             flexGrow: 1,
-            justifyContent: "flex-start", // bajas las tarjetas
-            alignItems: "flex-end", // y las dejas a la izquierda
+            justifyContent: "flex-start",
+            alignItems: "flex-end",
             paddingHorizontal: 4,
             marginBottom: 4,
           }}
@@ -252,10 +269,6 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     marginBottom: 4,
     fontSize: 14,
-  },
-  scrollContent: {
-    alignItems: "center",
-    paddingHorizontal: 4,
   },
   card: {
     width: CARD_SIZE,
