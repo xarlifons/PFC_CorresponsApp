@@ -7,9 +7,9 @@ public class MiembroDTO {
     private String nombre;
     private String email;
     private List<SurveyParametersDTO> surveyParameters;
-    private Double umbralLimpieza;
+    private float umbralLimpieza;
 
-    public MiembroDTO(String id, String nombre, String email, List<SurveyParametersDTO> surveyParameters, Double umbralLimpieza) {
+    public MiembroDTO(String id, String nombre, String email, List<SurveyParametersDTO> surveyParameters, float umbralLimpieza) {
         this.id = id;
         this.nombre = nombre;
         this.email = email;
@@ -49,11 +49,11 @@ public class MiembroDTO {
 		this.surveyParameters = surveyParameters;
 	}
 	
-	public Double getUmbralLimpieza() {
+	public float getUmbralLimpieza() {
 		return umbralLimpieza;
 	}
 
-	public void setUmbralLimpieza(Double umbralLimpieza) {
+	public void setUmbralLimpieza(float umbralLimpieza) {
 		this.umbralLimpieza = umbralLimpieza;
 	}
 

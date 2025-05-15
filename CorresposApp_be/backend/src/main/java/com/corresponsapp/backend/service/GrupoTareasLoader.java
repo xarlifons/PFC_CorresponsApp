@@ -1,6 +1,7 @@
 package com.corresponsapp.backend.service;
 
 import com.corresponsapp.backend.dto.SurveyParametersDTO;
+import com.corresponsapp.backend.dto.TareaParametroDTO;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
@@ -23,9 +24,10 @@ public class GrupoTareasLoader {
 
     public static class TareaDelGrupo {
         public String id;
-        public double ajustePeriodicidad;
-        public double ajusteIntensidad;
-        public double ajusteCargaMental;
+        public String nombre;
+        public float ajustePeriodicidad;
+        public float ajusteIntensidad;
+        public float ajusteCargaMental;
     }
 
     private final Map<String, String> tareaToGrupo = new HashMap<>();
@@ -46,15 +48,18 @@ public class GrupoTareasLoader {
                     tareaToGrupo.put(tarea.id, grupo.id);
                     tareaToAjustes.put(tarea.id, tarea);
                 }
-                // Agrega también la tarea representativa
                 tareaToGrupo.put(grupo.tareaRepresentativa, grupo.id);
+                System.out.println("✅ Tareas registradas en tareaToAjustes:");
+                for (String id : tareaToAjustes.keySet()) {
+                    System.out.println(" - " + id);
+                }
             }
 
         } catch (Exception e) {
             throw new RuntimeException("❌ Error al cargar grupos_tareas.json", e);
         }
     }
-    
+
     public Map<String, SurveyParametersDTO> propagarParametrosDesdeRepresentativas(List<SurveyParametersDTO> respuestasUsuario) {
         Map<String, SurveyParametersDTO> resultado = new HashMap<>();
 
@@ -63,9 +68,9 @@ public class GrupoTareasLoader {
             if (grupo == null) continue;
 
             for (TareaDelGrupo tarea : grupo.tareas) {
-                double periodicidad = Math.max(0.5, respuesta.getPeriodicidad() * tarea.ajustePeriodicidad);
-                double intensidad = Math.min(10, Math.max(0, respuesta.getIntensidad() + tarea.ajusteIntensidad));
-                double cargaMental = Math.min(10, Math.max(0, respuesta.getCargaMental() + tarea.ajusteCargaMental));
+                float periodicidad = (float) Math.max(0.5, respuesta.getPeriodicidad() * tarea.ajustePeriodicidad);
+                float intensidad = (float) Math.min(10, Math.max(0, respuesta.getIntensidad() + tarea.ajusteIntensidad));
+                float cargaMental = (float) Math.min(10, Math.max(0, respuesta.getCargaMental() + tarea.ajusteCargaMental));
 
                 resultado.put(tarea.id, new SurveyParametersDTO(
                     tarea.id, periodicidad, cargaMental, intensidad
@@ -75,14 +80,43 @@ public class GrupoTareasLoader {
         return resultado;
     }
 
+    public Map<String, TareaParametroDTO> propagarParametrosConNombres(List<SurveyParametersDTO> respuestasUsuario) {
+        Map<String, TareaParametroDTO> resultado = new HashMap<>();
+
+        for (SurveyParametersDTO respuesta : respuestasUsuario) {
+            System.out.println("🧪 Grupo recibido en respuesta: " + respuesta.getGrupo());
+            GrupoTareas grupo = gruposById.get(respuesta.getGrupo());
+            if (grupo == null) {
+                System.out.println("⚠️ Grupo no encontrado: " + respuesta.getGrupo());
+                continue;
+            }
+
+            for (TareaDelGrupo tarea : grupo.tareas) {
+                float periodicidad = (float) Math.max(0.5, respuesta.getPeriodicidad() * tarea.ajustePeriodicidad);
+                float intensidad = (float) Math.min(10, Math.max(0, respuesta.getIntensidad() + tarea.ajusteIntensidad));
+                float cargaMental = (float) Math.min(10, Math.max(0, respuesta.getCargaMental() + tarea.ajusteCargaMental));
+
+                resultado.put(tarea.id, new TareaParametroDTO(
+                    tarea.id, tarea.nombre, periodicidad, cargaMental, intensidad
+                ));
+            }
+        }
+
+        return resultado;
+    }
 
     public String obtenerGrupoDeTarea(String tareaId) {
         return tareaToGrupo.get(tareaId);
     }
 
     public TareaDelGrupo obtenerAjustesDeTarea(String tareaId) {
-        return tareaToAjustes.get(tareaId);
+        TareaDelGrupo tarea = tareaToAjustes.get(tareaId);
+        if (tarea == null) {
+            System.out.println("⚠️ Tarea ID no encontrada en tareaToAjustes: " + tareaId);
+        }
+        return tarea;
     }
+    
 
     public Map<String, GrupoTareas> getGrupos() {
         return gruposById;

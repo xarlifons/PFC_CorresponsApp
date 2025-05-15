@@ -3,20 +3,23 @@ package com.corresponsapp.backend.dto;
 public class ConsensoUmbralLimpiezaUnidad {
 	private String tareaId;
 	private String grupoId;
-	private double periodicidad;
-	private double intensidad;
-	private double cargaMental;
+	private float periodicidad;
+	private float intensidad;
+	private float cargaMental;
+	private String asignadoA;
+
 
 	public ConsensoUmbralLimpiezaUnidad() {
 	}
 
-	public ConsensoUmbralLimpiezaUnidad(String tareaId, String grupoId, double periodicidad, double intensidad,
-			double cargaMental) {
+	public ConsensoUmbralLimpiezaUnidad(String tareaId, String grupoId, float periodicidad, float intensidad,
+			float cargaMental, String asignadoA) {
 		this.tareaId = tareaId;
 		this.grupoId = grupoId;
 		this.periodicidad = periodicidad;
 		this.intensidad = intensidad;
 		this.cargaMental = cargaMental;
+		this.asignadoA = asignadoA;
 	}
 
 	// Getters y Setters
@@ -36,27 +39,35 @@ public class ConsensoUmbralLimpiezaUnidad {
 		this.grupoId = grupoId;
 	}
 
-	public double getPeriodicidad() {
+	public float getPeriodicidad() {
 		return periodicidad;
 	}
 
-	public void setPeriodicidad(double periodicidad) {
+	public void setPeriodicidad(float periodicidad) {
 		this.periodicidad = periodicidad;
 	}
 
-	public double getIntensidad() {
+	public float getIntensidad() {
 		return intensidad;
 	}
 
-	public void setIntensidad(double intensidad) {
+	public void setIntensidad(float intensidad) {
 		this.intensidad = intensidad;
 	}
 
-	public double getCargaMental() {
+	public float getCargaMental() {
 		return cargaMental;
 	}
 
-	public void setCargaMental(double cargaMental) {
+	public void setCargaMental(float cargaMental) {
 		this.cargaMental = cargaMental;
+	}
+	
+	public String getAsignadoA() {
+		return asignadoA;
+	}
+
+	public void setAsignadoA(String asignadoA) {
+		this.asignadoA = asignadoA;
 	}
 }

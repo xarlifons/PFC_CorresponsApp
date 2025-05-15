@@ -14,10 +14,15 @@ import java.util.Map;
 @Component
 public class ModulosTareasLoader {
 
+    public static class TareaModulo {
+        public String id;
+        public String nombre;
+    }
+
     public static class Modulo {
         public String id;
         public String nombre;
-        public List<String> tareas;
+        public List<TareaModulo> tareas;
     }
 
     private final Map<String, Modulo> modulos = new HashMap<>();

@@ -8,7 +8,7 @@ export default function SplashScreen({ navigation }) {
   useEffect(() => {
     if (!state.isLoading) {
       if (state.isAuthenticated) {
-        navigation.replace("MainStack"); // ← lo conectaremos pronto
+        navigation.replace("MainStack");
       } else {
         navigation.replace("AuthStack");
       }

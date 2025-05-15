@@ -389,63 +389,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  // const enviarParametrosEncuesta = async (respuestas) => {
-  //   try {
-  //     const response = await fetch(`${API_BASE_URL}/api/encuesta/parametros`, {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //         Authorization: `Bearer ${state.token}`,
-  //       },
-  //       body: JSON.stringify(respuestas),
-  //     });
-
-  //     if (!response.ok) {
-  //       const errorText = await response.text();
-  //       throw new Error(`Error al enviar encuesta: ${errorText}`);
-  //     }
-
-  //     console.log("✅ Encuesta enviada correctamente");
-  //   } catch (error) {
-  //     console.error("❌ Error en enviarParametrosEncuesta:", error.message);
-  //     throw error;
-  //   }
-  // };
-
-  const enviarParametrosEncuesta = async (respuestas) => {
-    try {
-      const respuestasNormalizadas = respuestas.map((r) => ({
-        grupo: r.grupo,
-        periodicidad: r.periodicidad,
-        intensidad: r.intensidad / 10,
-        cargaMental: r.cargaMental / 10,
-      }));
-
-      const response = await fetch(`${API_BASE_URL}/api/encuesta/parametros`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${state.token}`,
-        },
-        body: JSON.stringify(respuestasNormalizadas),
-      });
-
-      console.log("📥 Código de respuesta:", response.status);
-
-      const errorText = await response.text();
-
-      if (!response.ok) {
-        console.error("💥 Respuesta del backend:", errorText);
-        throw new Error(`(${response.status}) ${errorText}`);
-      }
-
-      console.log("✅ Encuesta enviada correctamente");
-    } catch (error) {
-      console.error("❌ Error en enviarParametrosEncuesta:", error.message);
-      throw error;
-    }
-  };
-
   const getConsensoFase1 = async (unidadId) => {
     try {
       const response = await fetch(
@@ -551,14 +494,6 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const getCorrespondencias = async () => {
-    const res = await fetch(`${API_BASE_URL}/api/tareas/correspondencias`, {
-      headers: { Authorization: `Bearer ${state.token}` },
-    });
-    if (!res.ok) throw new Error(await res.text());
-    return res.json();
-  };
-
   // Obtiene módulos, tareasUnidad y estadoFase1
   const getUnidadConfiguracion = async (unidadId) => {
     const response = await fetch(`${API_BASE_URL}/api/unidad/${unidadId}`, {
@@ -611,6 +546,13 @@ export function AuthProvider({ children }) {
   };
 
   const enviarEncuestaYRecibirUmbral = async (unidadId, respuestas) => {
+    console.log("📤 Enviando respuestas de encuesta al backend:");
+    respuestas.forEach((r, idx) => {
+      console.log(
+        `  [${idx}] grupo=${r.grupo}, tarea=${r.tarea}, periodicidad=${r.periodicidad}, intensidad=${r.intensidad}, cargaMental=${r.cargaMental}`
+      );
+    });
+
     const response = await fetch(
       `${API_BASE_URL}/api/encuesta/parametros/devolver/${unidadId}`,
       {
@@ -651,7 +593,8 @@ export function AuthProvider({ children }) {
   // GET la media de encuesta por grupo
   const getInitialConsensus = async (unidadId) => {
     const res = await fetch(
-      `${API_BASE_URL}/api/encuesta/promedios/${unidadId}`,
+      `${API_BASE_URL}/api/unidad/${unidadId}/consenso-fase1`,
+
       { headers: { Authorization: `Bearer ${state.token}` } }
     );
     if (!res.ok) throw new Error(await res.text());
@@ -730,6 +673,29 @@ export function AuthProvider({ children }) {
     return await response.json(); // Lista de tareas instanciadas
   };
 
+  const getTareasBase = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/tareas`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(`Error al obtener tareas base: ${text}`);
+      }
+
+      const data = await response.json();
+      return data; // debería ser un objeto tipo { "1": { nombre: "..." }, ... }
+    } catch (error) {
+      console.error("❌ Error en getTareasBase:", error.message);
+      throw error;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -743,7 +709,6 @@ export function AuthProvider({ children }) {
         getModulosYTareas,
         getGruposIniciales,
         getGruposTareas,
-        getCorrespondencias,
         getUnidadConfiguracion,
         getEstadoFase1,
         crearYAsignarUnidad,
@@ -752,7 +717,6 @@ export function AuthProvider({ children }) {
         refreshToken,
         actualizarConfiguracionUnidad,
         actualizarEstadoFase1,
-        enviarParametrosEncuesta,
         enviarEncuestaYRecibirUmbral,
         guardarConsensoFinal,
         guardarConsensoInicial,
@@ -760,6 +724,7 @@ export function AuthProvider({ children }) {
         persistInitialConsensus,
         instanciarTareas,
         getTareasInstanciadas,
+        getTareasBase,
       }}
     >
       {children}

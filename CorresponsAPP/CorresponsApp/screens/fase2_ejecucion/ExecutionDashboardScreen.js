@@ -5,21 +5,25 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  TouchableOpacity,
 } from "react-native";
-import { Button, Card, Title, Paragraph } from "react-native-paper";
 import { useAuth } from "../../context/AuthContext";
+import { Card } from "react-native-paper";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function ExecutionDashboardScreen() {
   const { state, getTareasInstanciadas, logout } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
     (async () => {
       try {
-        setLoading(true);
         const data = await getTareasInstanciadas(state.user.unidadAsignada);
-        setTasks(data);
+        console.log("🧠 Usuario actual:", state.user);
+        const asignadas = data.filter((t) => t.asignadoA === state.user.id);
+        setTasks(asignadas);
       } catch (e) {
         console.error("Error cargando tareas instanciadas:", e);
       } finally {
@@ -28,16 +32,39 @@ export default function ExecutionDashboardScreen() {
     })();
   }, [state.user?.unidadAsignada]);
 
-  const handleLogout = async () => {
-    await logout();
+  const handleToggleExpand = (taskId) => {
+    setExpandedId((prev) => (prev === taskId ? null : taskId));
   };
 
   const renderItem = ({ item }) => (
     <Card style={styles.card}>
-      <Card.Content>
-        <Title style={styles.taskName}>{item.nombre}</Title>
-        <Paragraph style={styles.taskDate}>{item.fechaProgramada}</Paragraph>
-      </Card.Content>
+      <TouchableOpacity onPress={() => handleToggleExpand(item.id)}>
+        <Card.Title
+          title={item.nombre}
+          subtitle={`📅 ${item.fechaProgramada}`}
+          right={() => (
+            <Ionicons
+              name={expandedId === item.id ? "chevron-up" : "chevron-down"}
+              size={24}
+              color="#333"
+              style={{ marginRight: 12 }}
+            />
+          )}
+        />
+      </TouchableOpacity>
+      {expandedId === item.id && (
+        <Card.Content>
+          <Text style={styles.attribute}>
+            🔁 Periodicidad: {item.periodicidad} días
+          </Text>
+          <Text style={styles.attribute}>
+            💪 Esfuerzo: {item.intensidad} / 10
+          </Text>
+          <Text style={styles.attribute}>
+            🧠 Carga mental: {item.cargaMental} / 10
+          </Text>
+        </Card.Content>
+      )}
     </Card>
   );
 
@@ -51,22 +78,21 @@ export default function ExecutionDashboardScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Panel de Ejecución</Text>
+      <Text style={styles.header}>
+        👤 Cuenta de {state.user?.nombre || "usuario"}
+      </Text>
+      <Text style={styles.subHeader}>🗓 Tareas programadas:</Text>
       <FlatList
         data={tasks}
         keyExtractor={(t) => t.id}
         renderItem={renderItem}
         contentContainerStyle={tasks.length === 0 && styles.center}
-        ListEmptyComponent={<Text>No hay tareas programadas.</Text>}
+        ListEmptyComponent={<Text>No hay tareas asignadas.</Text>}
         style={styles.list}
       />
-      <Button
-        mode="contained"
-        onPress={handleLogout}
-        style={styles.logoutButton}
-      >
-        Cerrar sesión
-      </Button>
+      <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+        <Text style={styles.logoutText}>Cerrar sesión</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -74,35 +100,46 @@ export default function ExecutionDashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: "#fff",
+    padding: 16,
   },
   center: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  title: {
-    fontSize: 24,
+  header: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 6,
+  },
+  subHeader: {
+    fontSize: 16,
+    color: "#444",
     marginBottom: 16,
-    textAlign: "center",
   },
   list: {
     flex: 1,
-    marginBottom: 16,
   },
   card: {
-    marginBottom: 8,
+    marginBottom: 10,
+    borderRadius: 8,
     elevation: 2,
   },
-  taskName: {
-    fontSize: 18,
-  },
-  taskDate: {
-    color: "#555",
+  attribute: {
+    fontSize: 14,
+    marginVertical: 4,
+    color: "#333",
   },
   logoutButton: {
-    alignSelf: "center",
-    width: "60%",
+    backgroundColor: "#c62828",
+    padding: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  logoutText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });

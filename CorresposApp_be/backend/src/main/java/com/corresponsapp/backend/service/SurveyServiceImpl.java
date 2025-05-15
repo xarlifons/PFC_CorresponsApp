@@ -19,11 +19,11 @@ import java.util.Optional;
 @Service
 public class SurveyServiceImpl implements SurveyService {
 
-    private final UserRepository userRepository;
-    private final GrupoTareasLoader grupoTareasLoader;
-    private UnidadRepository unidadRepository;
-    
-    public SurveyServiceImpl(UserRepository userRepository, GrupoTareasLoader grupoTareasLoader,
+	private final UserRepository userRepository;
+	private final GrupoTareasLoader grupoTareasLoader;
+	private UnidadRepository unidadRepository;
+
+	public SurveyServiceImpl(UserRepository userRepository, GrupoTareasLoader grupoTareasLoader,
 			UnidadRepository unidadRepository) {
 		super();
 		this.userRepository = userRepository;
@@ -31,145 +31,108 @@ public class SurveyServiceImpl implements SurveyService {
 		this.unidadRepository = unidadRepository;
 	}
 
-	
+	@Override
+	public float guardarYDevolverParametrosUsuario(List<SurveyParametersDTO> respuestas, String unidadId) {
+		// reutiliza tu save + cálculo
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (!(principal instanceof User usuario)) {
+			throw new RuntimeException("Principal no es del tipo esperado User");
+		}
+		usuario.setSurveyParameters(respuestas);
+		float umbral = calcularUmbralLimpieza(respuestas, unidadId);
+		usuario.setUmbralLimpieza(umbral);
+		userRepository.save(usuario);
+		return umbral;
+	}
 
-    @Override
-    public void guardarParametrosUsuario(List<SurveyParametersDTO> respuestas) {
-    	System.out.println("Si ves este log, es que el metodo  guardarParametrosUsuario de la calse SurveyServiceImpl es necesario, vea a verlo. Es posible que falte la unidadId") ;
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//
-//        if (!(principal instanceof User usuario)) {
-//            throw new RuntimeException("Principal no es del tipo esperado User");
-//        }
-//
-//        System.out.println("✅ Usuario autenticado: " + usuario.getEmail());
-//
-//        usuario.setSurveyParameters(respuestas);
-//
-//        double umbral = calcularUmbralLimpieza(respuestas);
-//        usuario.setUmbralLimpieza(umbral);
-//
-//        userRepository.save(usuario);
-//
-//        System.out.println("📩 Encuesta guardada para: " + usuario.getEmail());
-//        System.out.println("✅ Umbral de limpieza calculado y guardado: " + umbral);
-    }
-    
-    @Override
-    public double guardarYDevolverParametrosUsuario(List<SurveyParametersDTO> respuestas, String unidadId) {
-        // reutiliza tu save + cálculo
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!(principal instanceof User usuario)) {
-            throw new RuntimeException("Principal no es del tipo esperado User");
-        }
-        usuario.setSurveyParameters(respuestas);
-        double umbral = calcularUmbralLimpieza(respuestas, unidadId);
-        usuario.setUmbralLimpieza(umbral);
-        userRepository.save(usuario);
-        return umbral;
-    }
+	private float calcularUmbralLimpieza(List<SurveyParametersDTO> respuestas, String unidadId) {
+		float sumaIntensidad = 0f;
+		float sumaCargaMental = 0f;
+		float sumaPeriodicidad = 0f;
 
-    
-    private double calcularUmbralLimpieza(List<SurveyParametersDTO> respuestas, String unidadId) {
-        double promedioIntensidad = respuestas.stream()
-            .mapToDouble(SurveyParametersDTO::getIntensidad)
-            .average()
-            .orElse(0.0);
+		for (SurveyParametersDTO r : respuestas) {
+			sumaIntensidad += r.getIntensidad();
+			sumaCargaMental += r.getCargaMental();
+			sumaPeriodicidad += r.getPeriodicidad();
+		}
 
-        double promedioCargaMental = respuestas.stream()
-            .mapToDouble(SurveyParametersDTO::getCargaMental)
-            .average()
-            .orElse(0.0);
+		int total = respuestas.size();
+		float promedioIntensidad = total > 0 ? sumaIntensidad / total : 0f;
+		float promedioCargaMental = total > 0 ? sumaCargaMental / total : 0f;
+		float promedioPeriodicidad = total > 0 ? sumaPeriodicidad / total : 0f;
 
-        double promedioPeriodicidad = respuestas.stream()
-            .mapToDouble(SurveyParametersDTO::getPeriodicidad)
-            .average()
-            .orElse(0.0);
-        
-        Optional<Unidad> unidadOpt = unidadRepository.findById(unidadId);
+		Optional<Unidad> unidadOpt = unidadRepository.findById(unidadId);
 
-        if (unidadOpt.isPresent()) {
-            int cicloCorresponsabilidad = unidadOpt.get().getCicloCorresponsabilidad();
-            double cicloCorresponsabilidadDouble = cicloCorresponsabilidad;
-   
-         // Normaliza la periodicidad: 0.5 días (muy frecuente) = 10, 30 días (poco frecuente) = 0
-            double periodicidadNormalizada = (1.0 - ((promedioPeriodicidad - 0.5) / (cicloCorresponsabilidadDouble - 0.5))) * 10.0;
+		if (unidadOpt.isPresent()) {
+			float ciclo = (float) unidadOpt.get().getCicloCorresponsabilidad();
 
-            // Calcula el umbral como media ponderada (puedes ajustar los pesos si lo deseas)
-            double umbral = (
-                0.5 * periodicidadNormalizada +     // Más peso a la predisposición
-                0.25 * (10.0 - promedioIntensidad) + // A menor esfuerzo, más umbral
-                0.25 * (10.0 - promedioCargaMental)  // A menor carga mental, más umbral
-            );
+			// Normaliza la periodicidad: 0.5 días = 10, ciclo días = 0
+			float periodicidadNormalizada = (1f - ((promedioPeriodicidad - 0.5f) / (ciclo - 0.5f))) * 10f;
 
-            return Math.round(umbral * 10.0) / 10.0; // Redondeado a 1 decimal
-        } else {
-        	System.out.println("⚠️ No se encontró la unidad con id " + unidadId + "El umbral enviado no es correcto ");
-            double promedioFacke = 0.0;
-        	return promedioFacke;  
-        }
-        
-    }
+			// Calcula el umbral ponderado
+			float umbral = 0.5f * periodicidadNormalizada + 0.25f * (10f - promedioIntensidad)
+					+ 0.25f * (10f - promedioCargaMental);
 
-    
-    @Override
-    public Map<String, SurveyParametersDTO> calcularPromediosPorGrupo(String unidadId) {
-        List<User> usuarios = userRepository.findByUnidadAsignada(unidadId);
-        System.out.println("✅ Usuarios encontrados en la unidad: " + usuarios);
+			return Math.round(umbral * 10f) / 10f;
+		} else {
+			System.out
+					.println("⚠️ No se encontró la unidad con id " + unidadId + ". El umbral enviado no es correcto.");
+			return 0f;
+		}
+	}
 
-        // Map<grupo, List<SurveyParametersDTO>>
-        Map<String, List<SurveyParametersDTO>> respuestasPorGrupo = new HashMap<>();
+	@Override
+	public Map<String, SurveyParametersDTO> calcularPromediosPorGrupo(String unidadId) {
+		List<User> usuarios = userRepository.findByUnidadAsignada(unidadId);
+		System.out.println("✅ Usuarios encontrados en la unidad: " + usuarios);
 
-        for (User usuario : usuarios) {
-            System.out.println("🧪 Usuario: " + usuario.getEmail());
+		Map<String, List<SurveyParametersDTO>> respuestasPorGrupo = new HashMap<>();
 
-            if (usuario.getSurveyParameters() != null) {
-            	System.out.println("✅ SurveyParameters encontrados: " + usuario.getSurveyParameters().size());
-                for (SurveyParametersDTO respuesta : usuario.getSurveyParameters()) {
-                    respuestasPorGrupo
-                        .computeIfAbsent(respuesta.getGrupo(), k -> new ArrayList<>())
-                        .add(respuesta);
-                }
-            }
-        }
+		for (User usuario : usuarios) {
+			System.out.println("🧪 Usuario: " + usuario.getEmail());
 
-        // Calcular medias por grupo
-        Map<String, SurveyParametersDTO> promedios = new HashMap<>();
+			if (usuario.getSurveyParameters() != null) {
+				System.out.println("✅ SurveyParameters encontrados: " + usuario.getSurveyParameters().size());
+				for (SurveyParametersDTO respuesta : usuario.getSurveyParameters()) {
+					respuestasPorGrupo.computeIfAbsent(respuesta.getGrupo(), k -> new ArrayList<>()).add(respuesta);
+				}
+			}
+		}
 
-        for (Map.Entry<String, List<SurveyParametersDTO>> entry : respuestasPorGrupo.entrySet()) {
-            String grupo = entry.getKey();
-            List<SurveyParametersDTO> respuestas = entry.getValue();
+		Map<String, SurveyParametersDTO> promedios = new HashMap<>();
 
-            double sumaPeriodicidad = 0.0;
-            double sumaCargaMental = 0.0;
-            double sumaIntensidad = 0.0;
+		for (Map.Entry<String, List<SurveyParametersDTO>> entry : respuestasPorGrupo.entrySet()) {
+			String grupo = entry.getKey();
+			List<SurveyParametersDTO> respuestas = entry.getValue();
 
-            for (SurveyParametersDTO r : respuestas) {
-                sumaPeriodicidad += r.getPeriodicidad();
-                sumaCargaMental += r.getCargaMental();
-                sumaIntensidad += r.getIntensidad();
-            }
+			float sumaPeriodicidad = 0f;
+			float sumaCargaMental = 0f;
+			float sumaIntensidad = 0f;
 
-            int total = respuestas.size();
+			for (SurveyParametersDTO r : respuestas) {
+				sumaPeriodicidad += r.getPeriodicidad();
+				sumaCargaMental += r.getCargaMental();
+				sumaIntensidad += r.getIntensidad();
+			}
 
-            SurveyParametersDTO promedio = new SurveyParametersDTO(
-                grupo,
-                Math.round(sumaPeriodicidad / total * 100.0) / 100.0,
-                Math.round(sumaCargaMental / total * 100.0) / 100.0,
-                Math.round(sumaIntensidad / total * 100.0) / 100.0
-            );
-            
-            System.out.println("Iteracion para llenar el map promedios, con promedio:" + grupo + ","  + promedio);
-            promedios.put(grupo, promedio);
-        }
-        
-        System.out.println("🎯 Grupos con respuestas:");
-        for (String grupo : promedios.keySet()) {
-            System.out.println(" - " + grupo);
-        }
+			int total = respuestas.size();
 
-        return promedios;
-    }
+			SurveyParametersDTO promedio = new SurveyParametersDTO(grupo,
+					Math.round(sumaPeriodicidad / total * 100f) / 100f,
+					Math.round(sumaCargaMental / total * 100f) / 100f,
+					Math.round(sumaIntensidad / total * 100f) / 100f);
+
+			System.out.println("📊 Promedio grupo " + grupo + ": " + promedio);
+			promedios.put(grupo, promedio);
+		}
+
+		System.out.println("🎯 Grupos con respuestas:");
+		for (String grupo : promedios.keySet()) {
+			System.out.println(" - " + grupo);
+		}
+
+		return promedios;
+	}
 
 //    @Override
 //    public Map<String, SurveyParametersDTO> calcularPromediosPorTarea(String unidadId) {
@@ -217,48 +180,63 @@ public class SurveyServiceImpl implements SurveyService {
 //
 //        return resultado;
 //    }
-    
-    public Map<String, SurveyParametersDTO> calcularPromediosPorTarea(String unidadId) {
-        List<User> usuarios = userRepository.findByUnidadAsignada(unidadId);
-        Map<String, List<SurveyParametersDTO>> respuestasPorTarea = new HashMap<>();
 
-        for (User usuario : usuarios) {
-            List<SurveyParametersDTO> respuestas = usuario.getSurveyParameters();
-            if (respuestas == null) continue;
+	public Map<String, SurveyParametersDTO> calcularPromediosPorTarea(String unidadId) {
+		System.out.println("🧮 [BACKEND] Iniciando cálculo de promedios por tarea para unidad: " + unidadId);
 
-            Map<String, SurveyParametersDTO> respuestasPropagadas = grupoTareasLoader.propagarParametrosDesdeRepresentativas(respuestas);
+		List<User> usuarios = userRepository.findByUnidadAsignada(unidadId);
+		Map<String, List<SurveyParametersDTO>> respuestasPorTarea = new HashMap<>();
 
-            for (Map.Entry<String, SurveyParametersDTO> entry : respuestasPropagadas.entrySet()) {
-                respuestasPorTarea
-                    .computeIfAbsent(entry.getKey(), k -> new ArrayList<>())
-                    .add(entry.getValue());
-            }
-        }
+		for (User usuario : usuarios) {
+			System.out.println("👤 Usuario: " + usuario.getEmail());
+			List<SurveyParametersDTO> respuestas = usuario.getSurveyParameters();
 
-        // Calcular promedio por tarea
-        Map<String, SurveyParametersDTO> promedios = new HashMap<>();
-        for (Map.Entry<String, List<SurveyParametersDTO>> entry : respuestasPorTarea.entrySet()) {
-            String tareaId = entry.getKey();
-            List<SurveyParametersDTO> respuestas = entry.getValue();
+			if (respuestas == null) {
+				System.out.println("⚠️ Este usuario no ha respondido la encuesta");
+				continue;
+			}
 
-            double sumaP = 0, sumaI = 0, sumaC = 0;
-            for (SurveyParametersDTO r : respuestas) {
-                sumaP += r.getPeriodicidad();
-                sumaI += r.getIntensidad();
-                sumaC += r.getCargaMental();
-            }
-            int total = respuestas.size();
-            promedios.put(tareaId, new SurveyParametersDTO(
-                tareaId,
-                Math.round(sumaP / total * 100.0) / 100.0,
-                Math.round(sumaC / total * 100.0) / 100.0,
-                Math.round(sumaI / total * 100.0) / 100.0
-            ));
-        }
+			System.out.println("📥 Respuestas representativas: " + respuestas);
 
-        return promedios;
-    }
+			Map<String, SurveyParametersDTO> respuestasPropagadas = grupoTareasLoader
+					.propagarParametrosDesdeRepresentativas(respuestas);
 
+			System.out.println("📤 Tareas propagadas para " + usuario.getEmail() + ":");
+			respuestasPropagadas.forEach(
+					(tareaId, dto) -> System.out.println("   ↪ " + tareaId + " → periodicidad=" + dto.getPeriodicidad()
+							+ ", carga=" + dto.getCargaMental() + ", intensidad=" + dto.getIntensidad()));
 
+			for (Map.Entry<String, SurveyParametersDTO> entry : respuestasPropagadas.entrySet()) {
+				respuestasPorTarea.computeIfAbsent(entry.getKey(), k -> new ArrayList<>()).add(entry.getValue());
+			}
+		}
+
+		// Calcular promedio por tarea
+		Map<String, SurveyParametersDTO> promedios = new HashMap<>();
+		for (Map.Entry<String, List<SurveyParametersDTO>> entry : respuestasPorTarea.entrySet()) {
+			String tareaId = entry.getKey();
+			List<SurveyParametersDTO> respuestas = entry.getValue();
+
+			float sumaP = 0f, sumaI = 0f, sumaC = 0f;
+			for (SurveyParametersDTO r : respuestas) {
+				sumaP += r.getPeriodicidad();
+				sumaI += r.getIntensidad();
+				sumaC += r.getCargaMental();
+			}
+			int total = respuestas.size();
+
+			float promedioP = Math.round((sumaP / total) * 100f) / 100f;
+			float promedioI = Math.round((sumaI / total) * 100f) / 100f;
+			float promedioC = Math.round((sumaC / total) * 100f) / 100f;
+
+			System.out.println(
+					"✅ Promedio tarea " + tareaId + " → P=" + promedioP + ", I=" + promedioI + ", C=" + promedioC);
+
+			promedios.put(tareaId, new SurveyParametersDTO(tareaId, promedioP, promedioC, promedioI));
+		}
+
+		System.out.println("🎯 Total tareas con promedio: " + promedios.size());
+		return promedios;
+	}
 
 }

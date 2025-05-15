@@ -1,123 +1,270 @@
 [
-   {
-      "id":"limpieza_general",
-      "nombre":"Limpieza general",
-      "tareas":[
-         "Barrer y fregar suelos",
-         "Limpiar el polvo de muebles",
-         "Pasar aspiradora"
-      ]
-   },
-   {
-      "id":"limpieza_especifica",
-      "nombre":"Limpieza específica",
-      "tareas":[
-         "Limpiar cristales y ventanas",
-         "Limpiar paredes y puertas",
-         "Limpiar terraza o balcon",
-         "Organizar armarios"
-      ]
-   },
-   {
-      "id":"cocina_alimentacion",
-      "nombre":"Cocina y alimentación",
-      "tareas":[
-         "Cocinar comidas",
-         "Cocinar cenas",
-         "Fregar platos o poner lavavajillas",
-         "Planificar menu semanal",
-         "Retirar alimentos caducados"
-      ]
-   },
-   {
-      "id":"ropa_lavanderia",
-      "nombre":"Ropa y lavandería",
-      "tareas":[
-         "Poner lavadoras",
-         "Tender ropa",
-         "Planchar ropa",
-         "Doblar y guardar ropa",
-         "Revisar ropa sucia acumulada"
-      ]
-   },
-   {
-      "id":"habitaciones_organizacion",
-      "nombre":"Habitaciones y organización",
-      "tareas":[
-         "Hacer las camas",
-         "Ventilar habitaciones",
-         "Vaciar papeleras",
-         "Cambiar sabanas",
-         "Ordenar habitaciones"
-      ]
-   },
-   {
-      "id":"bano_higiene",
-      "nombre":"Baño e higiene",
-      "tareas":[
-         "Limpiar inodoro",
-         "Limpiar lavabo y espejo",
-         "Limpiar ducha o bañera",
-         "Reponer papel higienico y jabon",
-         "Cambiar toallas"
-      ]
-   },
-   {
-      "id":"cuidados_familiares",
-      "nombre":"Cuidados familiares",
-      "tareas":[
-         "Ayudar higiene personal ninos/as",
-         "Supervisar deberes escolares",
-         "Acompañar a actividades extraescolares",
-         "Cuidados a mayores",
-         "Preparar mochilas escolares"
-      ]
-   },
-   {
-      "id":"mantenimiento_hogar",
-      "nombre":"Mantenimiento del hogar",
-      "tareas":[
-         "Revisar bombillas y fusibles",
-         "Montar o desmontar muebles"
-      ]
-   },
-   {
-      "id":"plantas_mascotas",
-      "nombre":"Cuidado de plantas y mascotas",
-      "tareas":[
-         "Regar plantas",
-         "Podar plantas",
-         "Cuidar jardin",
-         "Sacar mascotas a pasear",
-         "Limpiar jaulas o areneros"
-      ]
-   },
-   {
-      "id":"recados_abastecimiento",
-      "nombre":"Recados y abastecimiento",
-      "tareas":[
-         "Hacer la compra",
-         "Comprar el pan",
-         "Comprar medicamentos",
-         "Gestionar basura y reciclaje"
-      ]
-   },
-   {
-      "id":"gestion_invisible",
-      "nombre":"Gestión invisible",
-      "tareas":[
-         "Coordinar citas y eventos",
-         "Revisar y pagar facturas",
-         "Hacer gestiones administrativas"
-      ]
-   },
-   {
-      "id":"cuidado_vehiculo",
-      "nombre":"Cuidado del vehículo",
-      "tareas":[
-         "Llenar deposito de gasolina",
-         "Llevar coche al taller",
-         "Renovar ITV o documentacion"
-      ]
-   }
+  {
+    "id": "limpieza_general",
+    "nombre": "Limpieza general",
+    "tareas": [
+      {
+        "id": "1",
+        "nombre": "Barrer y fregar suelos"
+      },
+      {
+        "id": "2",
+        "nombre": "Limpiar el polvo de muebles"
+      },
+      {
+        "id": "3",
+        "nombre": "Pasar aspiradora"
+      }
+    ]
+  },
+  {
+    "id": "limpieza_especifica",
+    "nombre": "Limpieza específica",
+    "tareas": [
+      {
+        "id": "4",
+        "nombre": "Limpiar cristales y ventanas"
+      },
+      {
+        "id": "5",
+        "nombre": "Limpiar paredes y puertas"
+      },
+      {
+        "id": "6",
+        "nombre": "Limpiar terraza o balcon"
+      },
+      {
+        "id": "7",
+        "nombre": "Organizar armarios"
+      }
+    ]
+  },
+  {
+    "id": "cocina_alimentacion",
+    "nombre": "Cocina y alimentación",
+    "tareas": [
+      {
+        "id": "8",
+        "nombre": "Cocinar comidas"
+      },
+      {
+        "id": "9",
+        "nombre": "Cocinar cenas"
+      },
+      {
+        "id": "10",
+        "nombre": "Fregar platos o poner lavavajillas"
+      },
+      {
+        "id": "11",
+        "nombre": "Planificar menu semanal"
+      },
+      {
+        "id": "12",
+        "nombre": "Retirar alimentos caducados"
+      }
+    ]
+  },
+  {
+    "id": "ropa_lavanderia",
+    "nombre": "Ropa y lavandería",
+    "tareas": [
+      {
+        "id": "13",
+        "nombre": "Poner lavadoras"
+      },
+      {
+        "id": "14",
+        "nombre": "Tender ropa"
+      },
+      {
+        "id": "15",
+        "nombre": "Planchar ropa"
+      },
+      {
+        "id": "16",
+        "nombre": "Doblar y guardar ropa"
+      },
+      {
+        "id": "17",
+        "nombre": "Revisar ropa sucia acumulada"
+      }
+    ]
+  },
+  {
+    "id": "habitaciones_organizacion",
+    "nombre": "Habitaciones y organización",
+    "tareas": [
+      {
+        "id": "18",
+        "nombre": "Hacer las camas"
+      },
+      {
+        "id": "19",
+        "nombre": "Ventilar habitaciones"
+      },
+      {
+        "id": "20",
+        "nombre": "Vaciar papeleras"
+      },
+      {
+        "id": "21",
+        "nombre": "Cambiar sabanas"
+      },
+      {
+        "id": "22",
+        "nombre": "Ordenar habitaciones"
+      }
+    ]
+  },
+  {
+    "id": "bano_higiene",
+    "nombre": "Baño e higiene",
+    "tareas": [
+      {
+        "id": "23",
+        "nombre": "Limpiar inodoro"
+      },
+      {
+        "id": "24",
+        "nombre": "Limpiar lavabo y espejo"
+      },
+      {
+        "id": "25",
+        "nombre": "Limpiar ducha o bañera"
+      },
+      {
+        "id": "26",
+        "nombre": "Reponer papel higienico y jabon"
+      },
+      {
+        "id": "27",
+        "nombre": "Cambiar toallas"
+      }
+    ]
+  },
+  {
+    "id": "cuidados_familiares",
+    "nombre": "Cuidados familiares",
+    "tareas": [
+      {
+        "id": "28",
+        "nombre": "Ayudar higiene personal ninos/as"
+      },
+      {
+        "id": "29",
+        "nombre": "Supervisar deberes escolares"
+      },
+      {
+        "id": "30",
+        "nombre": "Acompañar a actividades extraescolares"
+      },
+      {
+        "id": "31",
+        "nombre": "Cuidados a mayores"
+      },
+      {
+        "id": "32",
+        "nombre": "Preparar mochilas escolares"
+      }
+    ]
+  },
+  {
+    "id": "mantenimiento_hogar",
+    "nombre": "Mantenimiento del hogar",
+    "tareas": [
+      {
+        "id": "33",
+        "nombre": "Revisar bombillas y fusibles"
+      },
+      {
+        "id": "34",
+        "nombre": "Montar o desmontar muebles"
+      }
+    ]
+  },
+  {
+    "id": "plantas_mascotas",
+    "nombre": "Cuidado de plantas y mascotas",
+    "tareas": [
+      {
+        "id": "35",
+        "nombre": "Regar plantas"
+      },
+      {
+        "id": "36",
+        "nombre": "Podar plantas"
+      },
+      {
+        "id": "37",
+        "nombre": "Cuidar jardin"
+      },
+      {
+        "id": "38",
+        "nombre": "Sacar mascotas a pasear"
+      },
+      {
+        "id": "39",
+        "nombre": "Limpiar jaulas o areneros"
+      }
+    ]
+  },
+  {
+    "id": "recados_abastecimiento",
+    "nombre": "Recados y abastecimiento",
+    "tareas": [
+      {
+        "id": "40",
+        "nombre": "Hacer la compra"
+      },
+      {
+        "id": "41",
+        "nombre": "Comprar el pan"
+      },
+      {
+        "id": "42",
+        "nombre": "Comprar medicamentos"
+      },
+      {
+        "id": "43",
+        "nombre": "Gestionar basura y reciclaje"
+      }
+    ]
+  },
+  {
+    "id": "gestion_invisible",
+    "nombre": "Gestión invisible",
+    "tareas": [
+      {
+        "id": "44",
+        "nombre": "Coordinar citas y eventos"
+      },
+      {
+        "id": "45",
+        "nombre": "Revisar y pagar facturas"
+      },
+      {
+        "id": "46",
+        "nombre": "Hacer gestiones administrativas"
+      }
+    ]
+  },
+  {
+    "id": "cuidado_vehiculo",
+    "nombre": "Cuidado del vehículo",
+    "tareas": [
+      {
+        "id": "47",
+        "nombre": "Llenar deposito de gasolina"
+      },
+      {
+        "id": "48",
+        "nombre": "Llevar coche al taller"
+      },
+      {
+        "id": "49",
+        "nombre": "Renovar ITV o documentacion"
+      }
+    ]
+  }
 ]

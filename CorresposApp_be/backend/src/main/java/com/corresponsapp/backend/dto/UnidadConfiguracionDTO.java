@@ -16,7 +16,7 @@ public class UnidadConfiguracionDTO {
 	public List<String> getModulosActivados() {
         return modulosActivados;
     }
-
+	
     public void setModulosActivados(List<String> modulosActivados) {
         this.modulosActivados = modulosActivados;
     }

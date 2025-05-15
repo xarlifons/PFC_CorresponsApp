@@ -1,0 +1,149 @@
+{
+  "1": {
+    "nombre": "Barrer y fregar suelos"
+  },
+  "2": {
+    "nombre": "Limpiar el polvo de muebles"
+  },
+  "3": {
+    "nombre": "Pasar aspiradora"
+  },
+  "4": {
+    "nombre": "Limpiar cristales y ventanas"
+  },
+  "5": {
+    "nombre": "Limpiar paredes y puertas"
+  },
+  "6": {
+    "nombre": "Limpiar terraza o balcon"
+  },
+  "7": {
+    "nombre": "Organizar armarios"
+  },
+  "8": {
+    "nombre": "Cocinar comidas"
+  },
+  "9": {
+    "nombre": "Cocinar cenas"
+  },
+  "10": {
+    "nombre": "Fregar platos o poner lavavajillas"
+  },
+  "11": {
+    "nombre": "Planificar menu semanal"
+  },
+  "12": {
+    "nombre": "Retirar alimentos caducados"
+  },
+  "13": {
+    "nombre": "Poner lavadoras"
+  },
+  "14": {
+    "nombre": "Tender ropa"
+  },
+  "15": {
+    "nombre": "Planchar ropa"
+  },
+  "16": {
+    "nombre": "Doblar y guardar ropa"
+  },
+  "17": {
+    "nombre": "Revisar ropa sucia acumulada"
+  },
+  "18": {
+    "nombre": "Hacer las camas"
+  },
+  "19": {
+    "nombre": "Ventilar habitaciones"
+  },
+  "20": {
+    "nombre": "Vaciar papeleras"
+  },
+  "21": {
+    "nombre": "Cambiar sabanas"
+  },
+  "22": {
+    "nombre": "Ordenar habitaciones"
+  },
+  "23": {
+    "nombre": "Limpiar inodoro"
+  },
+  "24": {
+    "nombre": "Limpiar lavabo y espejo"
+  },
+  "25": {
+    "nombre": "Limpiar ducha o bañera"
+  },
+  "26": {
+    "nombre": "Reponer papel higienico y jabon"
+  },
+  "27": {
+    "nombre": "Cambiar toallas"
+  },
+  "28": {
+    "nombre": "Ayudar higiene personal ninos/as"
+  },
+  "29": {
+    "nombre": "Supervisar deberes escolares"
+  },
+  "30": {
+    "nombre": "Acompañar a actividades extraescolares"
+  },
+  "31": {
+    "nombre": "Cuidados a mayores"
+  },
+  "32": {
+    "nombre": "Preparar mochilas escolares"
+  },
+  "33": {
+    "nombre": "Revisar bombillas y fusibles"
+  },
+  "34": {
+    "nombre": "Montar o desmontar muebles"
+  },
+  "35": {
+    "nombre": "Regar plantas"
+  },
+  "36": {
+    "nombre": "Podar plantas"
+  },
+  "37": {
+    "nombre": "Cuidar jardin"
+  },
+  "38": {
+    "nombre": "Sacar mascotas a pasear"
+  },
+  "39": {
+    "nombre": "Limpiar jaulas o areneros"
+  },
+  "40": {
+    "nombre": "Hacer la compra"
+  },
+  "41": {
+    "nombre": "Comprar el pan"
+  },
+  "42": {
+    "nombre": "Comprar medicamentos"
+  },
+  "43": {
+    "nombre": "Gestionar basura y reciclaje"
+  },
+  "44": {
+    "nombre": "Coordinar citas y eventos"
+  },
+  "45": {
+    "nombre": "Revisar y pagar facturas"
+  },
+  "46": {
+    "nombre": "Hacer gestiones administrativas"
+  },
+  "47": {
+    "nombre": "Llenar deposito de gasolina"
+  },
+  "48": {
+    "nombre": "Llevar coche al taller"
+  },
+  "49": {
+    "nombre": "Renovar ITV o documentacion"
+  }
+}

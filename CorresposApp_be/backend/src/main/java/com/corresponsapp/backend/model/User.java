@@ -23,7 +23,7 @@ public class User {
     @Field("surveyParameters")
     private List<SurveyParametersDTO> surveyParameters;
     private String unidadId;
-    private Double umbralLimpieza;
+    private float umbralLimpieza;
 
 
 
@@ -115,11 +115,11 @@ public class User {
 		this.unidadId = unidadId;
 	}
 	
-	public Double getUmbralLimpieza() {
+	public float getUmbralLimpieza() {
 		return umbralLimpieza;
 	}
 
-	public void setUmbralLimpieza(Double umbralLimpieza) {
+	public void setUmbralLimpieza(float umbralLimpieza) {
 		this.umbralLimpieza = umbralLimpieza;
 	}
 

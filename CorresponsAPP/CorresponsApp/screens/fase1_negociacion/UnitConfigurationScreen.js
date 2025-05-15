@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   Modal,
   FlatList,
+  ActivityIndicator,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useRedirectByEstadoFase1 } from "../../hooks/useRedirectByEstadoFase1";
@@ -24,6 +25,7 @@ export default function UnitConfigurationScreen({ navigation, route }) {
   } = useAuth();
 
   const [unidad, setUnidad] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [modulosSeleccionados, setModulosSeleccionados] = useState([]);
   const [duracionCiclo, setDuracionCiclo] = useState("30");
   const [tareasUnidad, setTareasUnidad] = useState([]);
@@ -37,26 +39,41 @@ export default function UnitConfigurationScreen({ navigation, route }) {
   useRedirectByEstadoFase1("momento1", "SurveyParametersScreen");
 
   useEffect(() => {
+    console.log(
+      "🌀 useEffect de UnitConfigurationScreen ejecutado. unidadAsignada:",
+      state.user?.unidadAsignada
+    );
+
     const cargarDatos = async () => {
       try {
+        console.log("📡 Solicitando datos...");
         const [unidadData, modulosData] = await Promise.all([
           getUnidadInfoCompleta(state.user.unidadAsignada),
           getModulosYTareas(),
         ]);
+        console.log("✅ unidadData:", unidadData);
+        console.log("✅ modulosData:", modulosData);
+
         setUnidad(unidadData);
         setModulosTareas(modulosData);
+
         if (unidadData?.modulosActivados?.length) {
           setModulosSeleccionados(unidadData.modulosActivados);
           setDuracionCiclo(unidadData.cicloCorresponsabilidad?.toString());
         }
       } catch (error) {
+        console.error("❌ Error al cargar datos", error.message);
         Alert.alert("❌ Error al cargar datos", error.message);
+      } finally {
+        setLoading(false);
       }
     };
+
+    console.log("🔍 user actualizado:", state.user);
     if (state.user?.unidadAsignada) {
       cargarDatos();
     }
-  }, [state.user?.unidadAsignada]);
+  }, [state.user]);
 
   useEffect(() => {
     if (route.params?.nuevaTarea) {
@@ -84,25 +101,6 @@ export default function UnitConfigurationScreen({ navigation, route }) {
     }
   }, [route.params?.nuevaTarea]);
 
-  // const toggleModulo = (moduloId) => {
-  //   const tareasDeModulo = tareasUnidad.filter(
-  //     (t) => t.modulo === moduloId || t.moduloId === moduloId
-  //   );
-  //   if (tareasDeModulo.length === 0) {
-  //     setModulosSeleccionados(
-  //       modulosSeleccionados.filter((m) => m !== moduloId)
-  //     );
-  //     return;
-  //   }
-  //   if (modulosSeleccionados.includes(moduloId)) {
-  //     setModulosSeleccionados(
-  //       modulosSeleccionados.filter((m) => m !== moduloId)
-  //     );
-  //   } else {
-  //     setModulosSeleccionados([...modulosSeleccionados, moduloId]);
-  //   }
-  // };
-
   const abrirModal = (moduloId) => {
     setModuloActivo(moduloId);
 
@@ -111,22 +109,28 @@ export default function UnitConfigurationScreen({ navigation, route }) {
     );
 
     const modulo = modulosTareas.find((m) => m.id === moduloId);
-    const tareasPredefinidas = (modulo?.tareas || []).map((nombre) => ({
-      id: `${moduloId}_${nombre.replace(/\s+/g, "_").toLowerCase()}`,
-      nombre,
-      modulo: moduloId,
-      personalizada: false,
-    }));
+    const tareasPredefinidas =
+      modulo?.tareas?.map((t) => ({
+        id: t.id,
+        nombre: t.nombre,
+        modulo: moduloId,
+        personalizada: false,
+      })) || [];
+    console.log("📦 Tareas predefinidas:", modulo?.tareas);
 
     const todasLasTareas = [
       ...tareasPredefinidas,
       ...tareasPersonalizadas,
     ].filter(
-      (t, index, self) => self.findIndex((o) => o.id === t.id) === index
+      (t, index, self) =>
+        t.id !== undefined &&
+        t.id !== null &&
+        self.findIndex((o) => o.id === t.id) === index
     );
+    console.log("🧩 Tareas del módulo", todasLasTareas);
 
     const yaSeleccionadas = tareasUnidad.filter((t) => t.modulo === moduloId);
-
+    console.log("🧩 Tareas del módulo", todasLasTareas);
     setTareasDelModulo(todasLasTareas);
     setTareasSeleccionadas(yaSeleccionadas);
     setModalVisible(true);
@@ -161,10 +165,16 @@ export default function UnitConfigurationScreen({ navigation, route }) {
 
   const prepareTareasParaGuardar = () => {
     return tareasUnidad.map((t) => ({
+      id: t.id,
       nombre: t.nombre,
       modulo: t.modulo,
       tiempoEstimado: t.tiempoEstimado || 0,
       definicion: t.definicion,
+      esPlantilla: true,
+      asignadoA: null,
+      periodicidad: t.periodicidad ?? 0,
+      intensidad: t.intensidad ?? 0,
+      cargaMental: t.cargaMental ?? 0,
     }));
   };
 
@@ -189,7 +199,19 @@ export default function UnitConfigurationScreen({ navigation, route }) {
     }
   };
 
-  if (!unidad) return null;
+  if (!state.user?.unidadAsignada) {
+    console.log("⚠️ unidadAsignada no disponible aún. Esperando...");
+    return null;
+  }
+
+  if (loading) {
+    return (
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" color="#007AFF" />
+        <Text>Cargando datos de la unidad…</Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -460,5 +482,11 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 24,
   },
 });

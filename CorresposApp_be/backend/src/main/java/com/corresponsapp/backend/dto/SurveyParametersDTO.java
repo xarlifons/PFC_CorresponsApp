@@ -2,25 +2,56 @@ package com.corresponsapp.backend.dto;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SurveyParametersDTO implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private String unidadId;
-    private String grupo;
-    private double periodicidad; // en días
-    private double cargaMental;  // 0.0 - 10.0
-    private double intensidad;   // 0.0 - 10.0
+	 @JsonProperty("unidadId")
+	    private String unidadId;
+
+	    @JsonProperty("grupo")
+	    private String grupo;
+
+	    @JsonProperty("tarea")
+	    private String tarea;
+
+	    @JsonProperty("periodicidad")
+	    private float periodicidad;
+
+	    @JsonProperty("cargaMental")
+	    private float cargaMental;
+
+	    @JsonProperty("intensidad")
+	    private float intensidad;
 
     public SurveyParametersDTO() {
     }
-
-    public SurveyParametersDTO(String grupo, double periodicidad, double cargaMental, double intensidad) {
+    
+    public SurveyParametersDTO(String grupo, float periodicidad, float cargaMental, float intensidad) {
         this.grupo = grupo;
         this.periodicidad = periodicidad;
         this.cargaMental = cargaMental;
         this.intensidad = intensidad;
     }
+
+    @JsonCreator
+    public SurveyParametersDTO(
+        @JsonProperty("grupo") String grupo,
+        @JsonProperty("tarea") String tarea,
+        @JsonProperty("periodicidad") float periodicidad,
+        @JsonProperty("cargaMental") float cargaMental,
+        @JsonProperty("intensidad") float intensidad
+    ) {
+        this.grupo = grupo;
+        this.tarea = tarea;
+        this.periodicidad = periodicidad;
+        this.cargaMental = cargaMental;
+        this.intensidad = intensidad;
+    }
+
 
     public String getGrupo() {
         return grupo;
@@ -30,23 +61,23 @@ public class SurveyParametersDTO implements Serializable {
         this.grupo = grupo;
     }
 
-    public double getPeriodicidad() {
+    public float getPeriodicidad() {
         return periodicidad;
     }
 
-    public void setPeriodicidad(double periodicidad) {
+    public void setPeriodicidad(float periodicidad) {
         this.periodicidad = periodicidad;
     }
 
-    public double getCargaMental() {
+    public float getCargaMental() {
         return cargaMental;
     }
 
-    public void setCargaMental(double cargaMental) {
+    public void setCargaMental(float cargaMental) {
         this.cargaMental = cargaMental;
     }
 
-    public double getIntensidad() {
+    public float getIntensidad() {
         return intensidad;
     }
 
@@ -58,7 +89,15 @@ public class SurveyParametersDTO implements Serializable {
 		this.unidadId = unidadId;
 	}
 
-	public void setIntensidad(double intensidad) {
+	public void setIntensidad(float intensidad) {
         this.intensidad = intensidad;
     }
+
+	public String getTarea() {
+		return tarea;
+	}
+
+	public void setTarea(String tarea) {
+		this.tarea = tarea;
+	}
 }

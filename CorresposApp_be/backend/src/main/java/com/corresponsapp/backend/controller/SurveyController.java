@@ -17,42 +17,26 @@ import java.util.Optional;
 @RequestMapping("/api/encuesta")
 public class SurveyController {
 
-    private final SurveyService surveyService;
-    private UnidadRepository unidadRepository;
+	private final SurveyService surveyService;
+	private UnidadRepository unidadRepository;
 
-    @Autowired
-    public SurveyController(SurveyService surveyService) {
-        this.surveyService = surveyService;
-    }
+	@Autowired
+	public SurveyController(SurveyService surveyService) {
+		this.surveyService = surveyService;
+	}
 
-    @PostMapping("/parametros")
-    public ResponseEntity<String> guardarParametros(@RequestBody List<SurveyParametersDTO> respuestas) {
-        surveyService.guardarParametrosUsuario(respuestas);
-        return ResponseEntity.ok("Encuesta guardada correctamente");
-    }
-    
-    @PostMapping("/parametros/devolver/{unidadId}")
-    public ResponseEntity<Map<String, Double>> procesarParametros(@PathVariable String unidadId, 
-    		@RequestBody List<SurveyParametersDTO> respuestas) {
-        try {
-        	       	
-            double umbral = surveyService.guardarYDevolverParametrosUsuario(respuestas, unidadId);
-            return ResponseEntity.ok(Map.of("umbralLimpieza", umbral));
-        } catch (Exception e) {
-            return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", -1.0));
-        }
-    }
-    
-    @GetMapping("/promedios/{unidadId}")
-    public ResponseEntity<Map<String, SurveyParametersDTO>> obtenerPromedios(@PathVariable String unidadId) {
-        return ResponseEntity.ok(surveyService.calcularPromediosPorGrupo(unidadId));
-    }
-    
-    @GetMapping("/tareas/promedios/{unidadId}")
-    public ResponseEntity<Map<String, SurveyParametersDTO>> obtenerPromediosPorTarea(@PathVariable String unidadId) {
-        return ResponseEntity.ok(surveyService.calcularPromediosPorTarea(unidadId));
-    }    
-    
+	@PostMapping("/parametros/devolver/{unidadId}")
+	public ResponseEntity<Map<String, Float>> procesarParametros(@PathVariable String unidadId,
+			@RequestBody List<SurveyParametersDTO> respuestas) {
+		try {
+			float umbral = surveyService.guardarYDevolverParametrosUsuario(respuestas, unidadId);
+			for (SurveyParametersDTO r : respuestas) {
+				System.out.println("📥 DTO recibido: grupo=" + r.getGrupo());
+			}
+			return ResponseEntity.ok(Map.of("umbralLimpieza", umbral));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", -1.0f));
+		}
+	}
+
 }

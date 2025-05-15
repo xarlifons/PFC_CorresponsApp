@@ -13,10 +13,10 @@ public class Tarea {
 
     private String nombre;
     private String definicion;
-    private float periodicidad; // Días entre repeticiones
-    private float cargaMental; // Escala de 1.0 a 10.0
-    private float intensidad; // baja / media / alta
-    private double tiempoEstimado; 
+    private float periodicidad;
+    private float cargaMental; 
+    private float intensidad; 
+    private int tiempoEstimado; 
 
     private String asignadoA; // id del usuario
     private boolean completada = false;
@@ -29,7 +29,7 @@ public class Tarea {
     // Constructores
     public Tarea() {}
 
-    public Tarea(String nombre, String definicion, float periodicidad, float cargaMental, float intensidad, String asignadoA, LocalDate fechaProgramada, double tiempoEstimado ,String unidadId, String modulo, boolean esPlantilla) {
+    public Tarea(String nombre, String definicion, float periodicidad, float cargaMental, float intensidad, String asignadoA, LocalDate fechaProgramada, int tiempoEstimado ,String unidadId, String modulo, boolean esPlantilla) {
         this.nombre = nombre;
         this.definicion = definicion;
         this.periodicidad = periodicidad;
@@ -52,11 +52,11 @@ public class Tarea {
         this.id = id;
     }
     
-    public double getTiempoEstimado() {
+    public int getTiempoEstimado() {
 		return tiempoEstimado;
 	}
 
-	public void setTiempoEstimado(double tiempoEstimado) {
+	public void setTiempoEstimado(int tiempoEstimado) {
 		this.tiempoEstimado = tiempoEstimado;
 	}
 

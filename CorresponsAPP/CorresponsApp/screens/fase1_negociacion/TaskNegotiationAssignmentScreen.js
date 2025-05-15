@@ -24,6 +24,8 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
     getUnidadConfiguracion,
     instanciarTareas,
     actualizarEstadoFase1,
+    getTareasBase,
+    getInitialConsensus,
   } = useAuth();
 
   const [zones, setZones] = useState({});
@@ -39,24 +41,39 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
 
   useEffect(() => {
     if (!state.user?.unidadAsignada) return;
+
     (async () => {
       setLoading(true);
       try {
-        const config = await getUnidadConfiguracion(state.user.unidadAsignada);
-        const info = await getUnidadInfoCompleta(state.user.unidadAsignada);
+        const [config, info, tareasBase, consensoFinal] = await Promise.all([
+          getUnidadConfiguracion(state.user.unidadAsignada),
+          getUnidadInfoCompleta(state.user.unidadAsignada),
+          getTareasBase(),
+          getInitialConsensus(state.user.unidadAsignada),
+        ]);
 
-        // Inicializa las zonas
         const init = { unassigned: [] };
+
         config.tareasUnidad.forEach((t) => {
+          const parametros = consensoFinal[t.id] || {
+            periodicidad: 1,
+            intensidad: 5,
+            cargaMental: 5,
+          };
+
           const enriched = {
             ...t,
+            nombre: t.nombre || tareasBase[t.id]?.nombre || "Tarea sin nombre",
             datos: {
-              periodicidad: t.periodicidad ?? 1,
-              intensidad: t.intensidad ?? 5,
-              cargaMental: t.cargaMental ?? 5,
+              periodicidad: parametros.periodicidad,
+              intensidad: parametros.intensidad,
+              cargaMental: parametros.cargaMental,
             },
           };
+
+          console.log("🧩 Tarea enriquecida:", enriched);
           init.unassigned.push(enriched);
+
           panRefs.current[t.id] = new Animated.ValueXY();
           responderRefs.current[t.id] = PanResponder.create({
             onStartShouldSetPanResponder: () => true,
@@ -70,10 +87,7 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
             onPanResponderMove: Animated.event(
               [
                 null,
-                {
-                  dx: panRefs.current[t.id].x,
-                  dy: panRefs.current[t.id].y,
-                },
+                { dx: panRefs.current[t.id].x, dy: panRefs.current[t.id].y },
               ],
               { useNativeDriver: false }
             ),
@@ -103,6 +117,7 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
             },
           });
         });
+
         (info.miembros || []).forEach((m) => (init[m.id] = []));
         setZones(init);
         setMembers(info.miembros || []);

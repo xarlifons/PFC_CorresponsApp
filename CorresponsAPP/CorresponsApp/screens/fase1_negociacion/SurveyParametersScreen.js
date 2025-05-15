@@ -43,6 +43,8 @@ export default function SurveyParametersScreen() {
     (async () => {
       try {
         const data = await getGruposIniciales();
+        console.log("📥 Datos de grupos iniciales:", data);
+
         if (!Array.isArray(data)) throw new Error("Formato inesperado");
         setGrupos(data);
         setRespuestas(

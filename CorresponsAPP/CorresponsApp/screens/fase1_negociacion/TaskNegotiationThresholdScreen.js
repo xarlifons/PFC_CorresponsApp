@@ -17,10 +17,10 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
     state,
     getInitialConsensus,
     getModulosYTareas,
-    getCorrespondencias,
     getUnidadConfiguracion,
     actualizarEstadoFase1,
     guardarConsensoFinal,
+    getTareasBase,
   } = useAuth();
 
   const [consenso, setConsenso] = useState({});
@@ -43,13 +43,14 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
     (async () => {
       setLoading(true);
       try {
-        // Usamos getInitialConsensus en lugar de guardarConsensoInicial
-        const [initCons, modData, corr, uni] = await Promise.all([
+        const [initCons, modData, uni, tareasBase] = await Promise.all([
           getInitialConsensus(state.user.unidadAsignada),
           getModulosYTareas(),
-          getCorrespondencias(),
           getUnidadConfiguracion(state.user.unidadAsignada),
+          getTareasBase(),
         ]);
+        console.log("📦 initCons recibido:", initCons);
+
         setTotalTask(uni.tareasUnidad.length);
 
         const activos = modData.filter((m) =>
@@ -57,27 +58,42 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
         );
 
         const built = activos.map((mod) => {
-          // Para plantillas, usamos el grupoId
           const plantilla = uni.tareasUnidad
             .filter((t) => t.esPlantilla && t.modulo === mod.id)
             .map((t) => {
-              const datos = initCons[mod.id] || {
+              const datos = initCons[t.id] || {
                 periodicidad: 1,
                 intensidad: 5,
                 cargaMental: 5,
               };
-              return { id: t.id, nombre: t.nombre, datos, esPlantilla: true };
+              return {
+                id: t.id,
+                nombre:
+                  initCons[t.id]?.nombre ??
+                  tareasBase[t.id]?.nombre ??
+                  t.nombre,
+                datos,
+                esPlantilla: true,
+              };
             });
 
           const custom = uni.tareasUnidad
             .filter((t) => !t.esPlantilla && t.modulo === mod.id)
             .map((t) => {
-              const datos = initCons[mod.id] || {
+              const datos = initCons[t.id] || {
                 periodicidad: 1,
                 intensidad: 5,
                 cargaMental: 5,
               };
-              return { id: t.id, nombre: t.nombre, datos, esPlantilla: false };
+              return {
+                id: t.id,
+                nombre:
+                  initCons[t.id]?.nombre ??
+                  tareasBase[t.id]?.nombre ??
+                  t.nombre,
+                datos,
+                esPlantilla: false,
+              };
             });
 
           const tareas = [...plantilla, ...custom];

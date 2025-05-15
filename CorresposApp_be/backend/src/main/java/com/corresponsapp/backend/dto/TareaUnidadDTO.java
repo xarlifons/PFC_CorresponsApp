@@ -119,7 +119,7 @@ public class TareaUnidadDTO {
 		this.periodicidad = periodicidad;
 	}
 
-	public double getIntensidad() {
+	public float getIntensidad() {
 		return intensidad;
 	}
 
@@ -127,7 +127,7 @@ public class TareaUnidadDTO {
 		this.intensidad = intensidad;
 	}
 
-	public double getCargaMental() {
+	public float getCargaMental() {
 		return cargaMental;
 	}
 
