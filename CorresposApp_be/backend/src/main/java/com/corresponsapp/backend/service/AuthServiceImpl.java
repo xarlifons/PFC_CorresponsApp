@@ -18,47 +18,48 @@ public class AuthServiceImpl implements AuthService {
 	private final BCryptPasswordEncoder passwordEncoder;
 	private final JwtUtil jwtUtil;
 
-    @Autowired
-    public AuthServiceImpl(UserRepository userRepository, JwtUtil jwtUtil) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = new BCryptPasswordEncoder();
-        this.jwtUtil = jwtUtil;
-    }
+	@Autowired
+	public AuthServiceImpl(UserRepository userRepository, JwtUtil jwtUtil) {
+		this.userRepository = userRepository;
+		this.passwordEncoder = new BCryptPasswordEncoder();
+		this.jwtUtil = jwtUtil;
+	}
 
-    @Override
-    public LoginResponse register(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new RuntimeException("El email ya está registrado");
-        }
+	@Override
+	public LoginResponse register(User user) {
+		if (userRepository.existsByEmail(user.getEmail())) {
+			throw new RuntimeException("El email ya está registrado");
+		}
 
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword);
+		String hashedPassword = passwordEncoder.encode(user.getPassword());
+		user.setPassword(hashedPassword);
 
-        User savedUser = userRepository.save(user);
+		User savedUser = userRepository.save(user);
 
-        String token = jwtUtil.generateToken(savedUser.getEmail());
+		String token = jwtUtil.generateToken(user);
 
-        return new LoginResponse(token, user.getNombre(), user.getEmail(), user.getRole(), user.getUnidadAsignada());
-    }
-    
-    @Override
-    public LoginResponse login(String email, String password) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+		return new LoginResponse(token, user.getId(), user.getNombre(), user.getEmail(), user.getRole(),
+				user.getUnidadAsignada());
+	}
 
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new RuntimeException("Contraseña incorrecta");
-        }
+	@Override
+	public LoginResponse login(String email, String password) {
+		User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        String token = jwtUtil.generateToken(user.getEmail());
+		if (!passwordEncoder.matches(password, user.getPassword())) {
+			throw new RuntimeException("Contraseña incorrecta");
+		}
 
-        return new LoginResponse(token, user.getNombre(), user.getEmail(), user.getRole(), user.getUnidadAsignada());
+		String token = jwtUtil.generateToken(user);
 
-    }
-    
-    @Override
-    public Optional<User> getByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-    
+		return new LoginResponse(token, user.getId(), user.getNombre(), user.getEmail(), user.getRole(),
+				user.getUnidadAsignada());
+
+	}
+
+	@Override
+	public Optional<User> getByEmail(String email) {
+		return userRepository.findByEmail(email);
+	}
+
 }

@@ -25,21 +25,10 @@ public class JwtUtil {
     private long expirationTime; // ms
 
     // Generar token JWT
-    public String generateToken(String email) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expirationTime);
-
-        return Jwts.builder()
-                .setSubject(email)
-                .setIssuedAt(now)
-                .setExpiration(expiryDate)
-                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-                .compact();
-    }
-    
     public String generateToken(User user) {
         return Jwts.builder()
             .setSubject(user.getEmail())
+            .claim("id", user.getId())
             .claim("nombre", user.getNombre())
             .claim("role", user.getRole())
             .claim("unidadAsignada", user.getUnidadAsignada())

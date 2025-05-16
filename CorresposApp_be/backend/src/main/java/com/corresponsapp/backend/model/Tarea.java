@@ -18,7 +18,7 @@ public class Tarea {
     private float intensidad; 
     private int tiempoEstimado; 
 
-    private String asignadoA; // id del usuario
+    private String asignadaA;
     private boolean completada = false;
     private LocalDate fechaProgramada;
 
@@ -29,13 +29,13 @@ public class Tarea {
     // Constructores
     public Tarea() {}
 
-    public Tarea(String nombre, String definicion, float periodicidad, float cargaMental, float intensidad, String asignadoA, LocalDate fechaProgramada, int tiempoEstimado ,String unidadId, String modulo, boolean esPlantilla) {
+    public Tarea(String nombre, String definicion, float periodicidad, float cargaMental, float intensidad, String asignadaA, LocalDate fechaProgramada, int tiempoEstimado ,String unidadId, String modulo, boolean esPlantilla) {
         this.nombre = nombre;
         this.definicion = definicion;
         this.periodicidad = periodicidad;
         this.cargaMental = cargaMental;
         this.intensidad = intensidad;
-        this.asignadoA = asignadoA;
+        this.asignadaA = asignadaA;
         this.fechaProgramada = fechaProgramada;
         this.unidadId = unidadId;
         this.modulo = modulo;
@@ -100,12 +100,12 @@ public class Tarea {
         this.intensidad = intensidad;
     }
 
-    public String getAsignadoA() {
-        return asignadoA;
+    public String getAsignadaA() {
+        return asignadaA;
     }
 
-    public void setAsignadoA(String asignadoA) {
-        this.asignadoA = asignadoA;
+    public void setAsignadaA(String asignadaA) {
+        this.asignadaA = asignadaA;
     }
 
     public boolean isCompletada() {
@@ -147,4 +147,13 @@ public class Tarea {
     public void setEsPlantilla(boolean esPlantilla) {
         this.esPlantilla = esPlantilla;
     }
+
+	@Override
+	public String toString() {
+		return "Tarea [id=" + id + ", nombre=" + nombre + ", definicion=" + definicion + ", periodicidad="
+				+ periodicidad + ", cargaMental=" + cargaMental + ", intensidad=" + intensidad + ", tiempoEstimado="
+				+ tiempoEstimado + ", asignadaA=" + asignadaA + ", completada=" + completada + ", fechaProgramada="
+				+ fechaProgramada + ", unidadId=" + unidadId + ", modulo=" + modulo + ", esPlantilla=" + esPlantilla
+				+ "]";
+	}
 }

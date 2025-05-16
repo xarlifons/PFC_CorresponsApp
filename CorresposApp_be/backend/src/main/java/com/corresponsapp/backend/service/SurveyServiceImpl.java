@@ -134,53 +134,6 @@ public class SurveyServiceImpl implements SurveyService {
 		return promedios;
 	}
 
-//    @Override
-//    public Map<String, SurveyParametersDTO> calcularPromediosPorTarea(String unidadId) {
-//        Map<String, SurveyParametersDTO> promediosPorGrupo = calcularPromediosPorGrupo(unidadId);
-//        System.out.println("🧪 promediosPorGrupo:" + promediosPorGrupo);
-//        System.out.println("🧪 Claves disponibles en promediosPorGrupo:");
-//        for (String key : promediosPorGrupo.keySet()) {
-//            System.out.println(" - " + key);
-//        }
-//        Map<String, SurveyParametersDTO> resultado = new HashMap<>();
-//
-//        // 🔍 Mostrar los grupos definidos en el JSON
-//        System.out.println("📁 Grupos con datos cargados desde JSON:");
-//        for (GrupoTareasLoader.GrupoTareas grupo : grupoTareasLoader.getGrupos().values()) {
-//            System.out.println(" - " + grupo.id);
-//        }
-//
-//        // 🔍 Mostrar los grupos con respuestas de usuarios
-//        System.out.println("🎯 Grupos con respuestas:");
-//        for (String grupo : promediosPorGrupo.keySet()) {
-//            System.out.println(" - " + grupo);
-//        }
-//
-//        for (GrupoTareasLoader.GrupoTareas grupo : grupoTareasLoader.getGrupos().values()) {
-//            System.out.println("🔍 Buscando grupo: " + grupo.id + " en promediosPorGrupo");
-//            SurveyParametersDTO promedioGrupo = promediosPorGrupo.get(grupo.id);
-//            if (promedioGrupo == null) continue;
-//            System.out.println("🧩 Grupo con promedio válido: " + grupo.id);
-//            System.out.println("   Tareas a propagar: " + grupo.tareas.size());
-//
-//            for (GrupoTareasLoader.TareaDelGrupo tarea : grupo.tareas) {
-//            	 System.out.println("   ↪ Propagando a tarea: " + tarea.id);
-//                double periodicidad = Math.round((promedioGrupo.getPeriodicidad() * tarea.ajustePeriodicidad) * 100.0) / 100.0;
-//                double intensidad = Math.round((promedioGrupo.getIntensidad() + tarea.ajusteIntensidad) * 100.0) / 100.0;
-//                double cargaMental = Math.round((promedioGrupo.getCargaMental() + tarea.ajusteCargaMental) * 100.0) / 100.0;
-//
-//                resultado.put(tarea.id, new SurveyParametersDTO(
-//                    grupo.id,
-//                    periodicidad,
-//                    cargaMental,
-//                    intensidad
-//                ));
-//            }
-//        }
-//
-//        return resultado;
-//    }
-
 	public Map<String, SurveyParametersDTO> calcularPromediosPorTarea(String unidadId) {
 		System.out.println("🧮 [BACKEND] Iniciando cálculo de promedios por tarea para unidad: " + unidadId);
 

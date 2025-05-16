@@ -87,8 +87,8 @@ public class UnidadServiceImpl implements UnidadService {
 		if (configuracionDTO.getTareasUnidad() != null && !configuracionDTO.getTareasUnidad().isEmpty()) {
 			List<Tarea> tareasCompletas = configuracionDTO.getTareasUnidad().stream().map(dto -> {
 				Tarea t = tareaPlantillaService.completarDatosDesdePlantilla(dto);
-				if (dto.getAsignadoA() != null)
-					t.setAsignadoA(dto.getAsignadoA());
+				if (dto.getAsignadaA() != null)
+					t.setAsignadaA(dto.getAsignadaA());
 				t.setPeriodicidad(dto.getPeriodicidad());
 				t.setIntensidad(dto.getIntensidad());
 				t.setCargaMental(dto.getCargaMental());
@@ -138,15 +138,13 @@ public class UnidadServiceImpl implements UnidadService {
 			}
 
 			for (Map.Entry<String, TareaParametroDTO> entry : respuestasPropagadas.entrySet()) {
-			    SurveyParametersDTO dto = new SurveyParametersDTO();
-			    dto.setTarea(entry.getKey()); // tareaId real, no grupo
-			    dto.setPeriodicidad((float) entry.getValue().getPeriodicidad());
-			    dto.setCargaMental((float) entry.getValue().getCargaMental());
-			    dto.setIntensidad((float) entry.getValue().getIntensidad());
+				SurveyParametersDTO dto = new SurveyParametersDTO();
+				dto.setTarea(entry.getKey()); // tareaId real, no grupo
+				dto.setPeriodicidad((float) entry.getValue().getPeriodicidad());
+				dto.setCargaMental((float) entry.getValue().getCargaMental());
+				dto.setIntensidad((float) entry.getValue().getIntensidad());
 
-			    respuestasPorTarea
-			        .computeIfAbsent(entry.getKey(), k -> new ArrayList<>())
-			        .add(dto);
+				respuestasPorTarea.computeIfAbsent(entry.getKey(), k -> new ArrayList<>()).add(dto);
 			}
 		}
 
@@ -177,7 +175,6 @@ public class UnidadServiceImpl implements UnidadService {
 
 			System.out.println("🧩 Tarea ID: " + tareaId + ", nombre obtenido: " + nombre);
 
-
 			promedios.put(tareaId, new TareaParametroDTO(tareaId, nombre, p, c, i));
 		}
 
@@ -203,10 +200,16 @@ public class UnidadServiceImpl implements UnidadService {
 
 		for (TareaInstanciaDTO dto : dtos) {
 			System.out.println("📌 Tarea recibida: " + dto.getId() + " | Periodicidad: " + dto.getPeriodicidad()
-					+ " | Intensidad: " + dto.getIntensidad() + " | CargaMental: " + dto.getCargaMental());
+					+ " | Intensidad: " + dto.getIntensidad() + " | CargaMental: " + dto.getCargaMental()
+					+ " | AsignadaA: " + dto.getAsignadaA());
 
 			Tarea plantilla = plantillas.stream().filter(p -> p.getId().equals(dto.getId())).findFirst()
 					.orElseThrow(() -> new RuntimeException("Plantilla no encontrada: " + dto.getId()));
+			
+			System.out.println("🔎 Plantillas disponibles:");
+			for (Tarea p : plantillas) {
+			    System.out.println(" - plantilla.id = " + p.getId());
+			}
 
 			float periodicidad = dto.getPeriodicidad() > 0 ? (float) dto.getPeriodicidad() : 1f;
 			float intensidad = (float) dto.getIntensidad();
@@ -222,7 +225,7 @@ public class UnidadServiceImpl implements UnidadService {
 				t.setModulo(plantilla.getModulo());
 				t.setTiempoEstimado(plantilla.getTiempoEstimado());
 				t.setUnidadId(unidadId);
-				t.setAsignadoA(dto.getAsignadoA());
+				t.setAsignadaA(dto.getAsignadaA());
 				t.setPeriodicidad(periodicidad);
 				t.setIntensidad(intensidad);
 				t.setCargaMental(cargaMental);
@@ -241,20 +244,56 @@ public class UnidadServiceImpl implements UnidadService {
 
 	public List<Tarea> obtenerTareasInstanciadas(String unidadId) {
 		Unidad unidad = obtenerUnidadPorId(unidadId).orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
-		return unidad.getTareasUnidad().stream().filter(t -> !t.getEsPlantilla()).collect(Collectors.toList());
+		List<Tarea> instanciadas = new ArrayList<>();
+		for (Tarea t : unidad.getTareasUnidad()) {
+			if (!t.getEsPlantilla()) {
+				instanciadas.add(t);
+			}
+		}
+		return instanciadas;
 	}
-	
-	private List<TareaInstanciaDTO> mapearDesdeConsenso(List<ConsensoUmbralLimpiezaUnidad> consenso) {
-	    return consenso.stream()
-	        .map(c -> {
-	            TareaInstanciaDTO dto = new TareaInstanciaDTO();
-	            dto.setId(c.getTareaId());
-	            dto.setPeriodicidad(c.getPeriodicidad());
-	            dto.setIntensidad(c.getIntensidad());
-	            dto.setCargaMental(c.getCargaMental());
-	            dto.setAsignadoA(null); // aún no asignada
-	            return dto;
-	        })
-	        .toList();
+
+	@Override
+	public List<TareaInstanciaDTO> mapearDesdeConsenso(String unidadId, List<ConsensoUmbralLimpiezaUnidad> consenso) {
+	    Unidad unidad = unidadRepository.findById(unidadId)
+	            .orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
+
+	    // 💾 1) Persistimos el consenso
+	    unidad.setConsensoUnidad(consenso);
+	    unidad.setEstadoFase1("momento4");
+	    unidadRepository.save(unidad);
+	    
+	    System.out.println("🧾 Mapeando consenso...");
+	    for (ConsensoUmbralLimpiezaUnidad c : consenso) {
+	        System.out.println(" - tareaId: " + c.getTareaId()
+	            + ", asignadaA: " + c.getAsignadaA()
+	            + ", periodicidad: " + c.getPeriodicidad()
+	            + ", intensidad: " + c.getIntensidad()
+	            + ", cargaMental: " + c.getCargaMental());
+	    }
+
+	    // 🛠 2) Convertimos a DTOs para generar instancias
+	    return consenso.stream().map(c -> {
+	        TareaInstanciaDTO dto = new TareaInstanciaDTO();
+	        dto.setId(c.getTareaId());
+	        dto.setPeriodicidad(c.getPeriodicidad());
+	        dto.setIntensidad(c.getIntensidad());
+	        dto.setCargaMental(c.getCargaMental());
+	        dto.setAsignadaA(c.getAsignadaA()); // Puede venir null
+	        return dto;
+	    }).toList();
 	}
+
+
+//	private List<TareaInstanciaDTO> mapearDesdeConsenso(List<ConsensoUmbralLimpiezaUnidad> consenso) {
+//		return consenso.stream().map(c -> {
+//			TareaInstanciaDTO dto = new TareaInstanciaDTO();
+//			dto.setId(c.getTareaId());
+//			dto.setPeriodicidad(c.getPeriodicidad());
+//			dto.setIntensidad(c.getIntensidad());
+//			dto.setCargaMental(c.getCargaMental());
+//			dto.setAsignadaA(null); // aún no asignada
+//			return dto;
+//		}).toList();
+//	}
 }

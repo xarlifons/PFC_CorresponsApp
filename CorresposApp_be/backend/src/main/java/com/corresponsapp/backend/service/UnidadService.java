@@ -26,6 +26,7 @@ public interface UnidadService {
     List<Tarea> generarInstancias(String unidadId, List<TareaInstanciaDTO> dtos, int cicloDias, LocalDate startDate
         );
 	List<Tarea> obtenerTareasInstanciadas(String unidadId);
+	List<TareaInstanciaDTO> mapearDesdeConsenso(String unidadId, List<ConsensoUmbralLimpiezaUnidad> consenso);
 
 
 }

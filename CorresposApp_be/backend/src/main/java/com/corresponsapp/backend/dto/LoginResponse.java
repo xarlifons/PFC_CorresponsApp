@@ -2,23 +2,30 @@ package com.corresponsapp.backend.dto;
 
 public class LoginResponse {
     private String token;
-    private String email;
-    private String role;
+    private String id;
     private String nombre;
+    private String email;
+    private String role;    
     private String unidadAsignada;
 
 
 	public LoginResponse() {}
 
-    public LoginResponse(String token, String nombre, String email, String role, String unidadAsignada) {
-        this.token = token;
-        this.email = email;
-        this.role = role;
-        this.nombre = nombre;
-        this.unidadAsignada = unidadAsignada;
-    }
 
-    public String getToken() {
+
+    public LoginResponse(String token, String id, String nombre, String email, String role,  String unidadAsignada) {
+		super();
+		this.token = token;
+		this.id = id;
+		this.nombre = nombre;
+		this.email = email;
+		this.role = role;
+		this.unidadAsignada = unidadAsignada;
+	}
+
+
+
+	public String getToken() {
         return token;
     }
 
@@ -26,7 +33,15 @@ public class LoginResponse {
         this.token = token;
     }
 
-    public String getEmail() {
+    public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getEmail() {
         return email;
     }
 
@@ -60,7 +75,9 @@ public class LoginResponse {
 
 	@Override
 	public String toString() {
-		return "LoginResponse [token=" + token + ", email=" + email + ", role=" + role + ", nombre=" + nombre
-				+ ", unidadAsignada=" + unidadAsignada + "]";
+		return "LoginResponse [token=" + token + ", id=" + id + ", email=" + email + ", role=" + role + ", nombre="
+				+ nombre + ", unidadAsignada=" + unidadAsignada + "]";
 	}
+
+
 }

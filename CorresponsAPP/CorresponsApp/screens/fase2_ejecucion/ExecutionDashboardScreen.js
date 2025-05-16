@@ -22,8 +22,15 @@ export default function ExecutionDashboardScreen() {
       try {
         const data = await getTareasInstanciadas(state.user.unidadAsignada);
         console.log("🧠 Usuario actual:", state.user);
-        const asignadas = data.filter((t) => t.asignadoA === state.user.id);
-        setTasks(asignadas);
+        console.log("📦 Tareas instanciadas:", data);
+
+        data.forEach((t, index) => {
+          console.log(
+            `🔎 Tarea[${index}] → id=${t.id}, nombre=${t.nombre}, asignadaA=${t.asignadaA}`
+          );
+        });
+        const asignadasA = data.filter((t) => t.asignadaA === state.user.id);
+        setTasks(asignadasA);
       } catch (e) {
         console.error("Error cargando tareas instanciadas:", e);
       } finally {

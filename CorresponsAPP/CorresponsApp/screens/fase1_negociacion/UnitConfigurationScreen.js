@@ -171,7 +171,7 @@ export default function UnitConfigurationScreen({ navigation, route }) {
       tiempoEstimado: t.tiempoEstimado || 0,
       definicion: t.definicion,
       esPlantilla: true,
-      asignadoA: null,
+      asignadaA: null,
       periodicidad: t.periodicidad ?? 0,
       intensidad: t.intensidad ?? 0,
       cargaMental: t.cargaMental ?? 0,

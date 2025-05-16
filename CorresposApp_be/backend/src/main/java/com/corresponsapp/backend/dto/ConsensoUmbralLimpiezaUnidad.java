@@ -6,20 +6,20 @@ public class ConsensoUmbralLimpiezaUnidad {
 	private float periodicidad;
 	private float intensidad;
 	private float cargaMental;
-	private String asignadoA;
+	private String asignadaA;
 
 
 	public ConsensoUmbralLimpiezaUnidad() {
 	}
 
 	public ConsensoUmbralLimpiezaUnidad(String tareaId, String grupoId, float periodicidad, float intensidad,
-			float cargaMental, String asignadoA) {
+			float cargaMental, String asignadaA) {
 		this.tareaId = tareaId;
 		this.grupoId = grupoId;
 		this.periodicidad = periodicidad;
 		this.intensidad = intensidad;
 		this.cargaMental = cargaMental;
-		this.asignadoA = asignadoA;
+		this.asignadaA = asignadaA;
 	}
 
 	// Getters y Setters
@@ -63,11 +63,11 @@ public class ConsensoUmbralLimpiezaUnidad {
 		this.cargaMental = cargaMental;
 	}
 	
-	public String getAsignadoA() {
-		return asignadoA;
+	public String getAsignadaA() {
+		return asignadaA;
 	}
 
-	public void setAsignadoA(String asignadoA) {
-		this.asignadoA = asignadoA;
+	public void setAsignadaA(String asignadaA) {
+		this.asignadaA = asignadaA;
 	}
 }

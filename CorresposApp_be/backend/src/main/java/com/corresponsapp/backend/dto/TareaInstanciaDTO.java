@@ -2,7 +2,7 @@ package com.corresponsapp.backend.dto;
 
 public class TareaInstanciaDTO {
 	private String id; // ID de la plantilla de tarea
-	private String asignadoA; // userId del miembro asignado
+	private String asignadaA; // userId del miembro asignado
 	private float periodicidad;
 	private float intensidad;
 	private float cargaMental;
@@ -18,12 +18,12 @@ public class TareaInstanciaDTO {
 		this.id = id;
 	}
 
-	public String getAsignadoA() {
-		return asignadoA;
+	public String getAsignadaA() {
+		return asignadaA;
 	}
 
-	public void setAsignadoA(String asignadoA) {
-		this.asignadoA = asignadoA;
+	public void setAsignadaA(String asignadaA) {
+		this.asignadaA = asignadaA;
 	}
 
 	public double getPeriodicidad() {
@@ -48,5 +48,11 @@ public class TareaInstanciaDTO {
 
 	public void setCargaMental(float cargaMental) {
 		this.cargaMental = cargaMental;
+	}
+
+	@Override
+	public String toString() {
+		return "TareaInstanciaDTO [id=" + id + ", asignadaA=" + asignadaA + ", periodicidad=" + periodicidad
+				+ ", intensidad=" + intensidad + ", cargaMental=" + cargaMental + "]";
 	}
 }

@@ -136,8 +136,8 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
         .filter(([zoneId]) => zoneId !== "unassigned")
         .flatMap(([zoneId, tasks]) =>
           tasks.map((t) => ({
-            id: t.id,
-            asignadoA: zoneId,
+            tareaId: t.id,
+            asignadaA: zoneId,
             periodicidad: t.datos?.periodicidad ?? 1,
             intensidad: t.datos?.intensidad ?? 5,
             cargaMental: t.datos?.cargaMental ?? 5,

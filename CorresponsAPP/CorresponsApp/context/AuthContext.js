@@ -89,6 +89,7 @@ export function AuthProvider({ children }) {
       await AsyncStorage.setItem(
         "user",
         JSON.stringify({
+          id: data.id,
           nombre: data.nombre,
           email: data.email,
           role: data.role,
@@ -101,6 +102,7 @@ export function AuthProvider({ children }) {
         payload: {
           token: data.token,
           user: {
+            id: data.id,
             nombre: data.nombre,
             email: data.email,
             role: data.role,
@@ -135,6 +137,7 @@ export function AuthProvider({ children }) {
       await AsyncStorage.setItem(
         "user",
         JSON.stringify({
+          id: data.id,
           nombre: data.nombre,
           email: data.email,
           role: data.role,
@@ -147,6 +150,7 @@ export function AuthProvider({ children }) {
         payload: {
           token: data.token,
           user: {
+            id: data.id,
             nombre: data.nombre,
             email: data.email,
             role: data.role,

@@ -11,7 +11,7 @@ public class TareaUnidadDTO {
     private int tiempoEstimado;
     private String definicion;
     private boolean esPlantilla;
-    private String asignadoA; 
+    private String asignadaA; 
     
     private float periodicidad;
     private float intensidad;
@@ -24,7 +24,7 @@ public class TareaUnidadDTO {
     }
 
 	public TareaUnidadDTO(String id, String nombre, String modulo, int tiempoEstimado, String definicion,
-			boolean esPlantilla, String asignadoA) {
+			boolean esPlantilla, String asignadaA) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -32,12 +32,12 @@ public class TareaUnidadDTO {
 		this.tiempoEstimado = tiempoEstimado;
 		this.definicion = definicion;
 		this.esPlantilla = esPlantilla;
-		this.asignadoA = asignadoA;
+		this.asignadaA = asignadaA;
 	}
 
 
 	public TareaUnidadDTO(String id, String nombre, String modulo, int tiempoEstimado, String definicion,
-			boolean esPlantilla, String asignadoA, float periodicidad, float intensidad, float cargaMental) {
+			boolean esPlantilla, String asignadaA, float periodicidad, float intensidad, float cargaMental) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -45,7 +45,7 @@ public class TareaUnidadDTO {
 		this.tiempoEstimado = tiempoEstimado;
 		this.definicion = definicion;
 		this.esPlantilla = esPlantilla;
-		this.asignadoA = asignadoA;
+		this.asignadaA = asignadaA;
 		this.periodicidad = periodicidad;
 		this.intensidad = intensidad;
 		this.cargaMental = cargaMental;
@@ -102,13 +102,13 @@ public class TareaUnidadDTO {
 		this.esPlantilla = esPlantilla;
 	}
 
-	public String getAsignadoA() {
-		return asignadoA;
+	public String getAsignadaA() {
+		return asignadaA;
 	}
 
 
-	public void setAsignadoA(String asignadoA) {
-		this.asignadoA = asignadoA;
+	public void setAsignadaA(String asignadaA) {
+		this.asignadaA = asignadaA;
 	}
 
 	public float getPeriodicidad() {
@@ -138,7 +138,7 @@ public class TareaUnidadDTO {
 	@Override
 	public String toString() {
 		return "TareaUnidadDTO [id=" + id + ", nombre=" + nombre + ", modulo=" + modulo + ", tiempoEstimado="
-				+ tiempoEstimado + ", definicion=" + definicion + ", esPlantilla=" + esPlantilla + ", asignadoA="
-				+ asignadoA + "]";
+				+ tiempoEstimado + ", definicion=" + definicion + ", esPlantilla=" + esPlantilla + ", asignadaA="
+				+ asignadaA + "]";
 	}
 }

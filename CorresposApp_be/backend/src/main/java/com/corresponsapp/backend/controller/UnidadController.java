@@ -249,53 +249,37 @@ public class UnidadController {
 		}
 	}
 
-	/**
-	 * Crea instancias de Tarea para todo el ciclo de corresponsabilidad a partir
-	 * del consenso final.
-	 */
 	@PostMapping("/{unidadId}/tareas/instanciar")
-	public ResponseEntity<List<Tarea>> instanciarTareas(@PathVariable String unidadId) {
-		try {
-			// 1) Recupera los días de ciclo desde la unidad
-			Unidad unidad = unidadService.obtenerUnidadPorId(unidadId)
-					.orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
-			int ciclo = unidad.getCicloCorresponsabilidad();
+	public ResponseEntity<List<Tarea>> instanciarTareas(
+	        @PathVariable String unidadId,
+	        @RequestBody List<ConsensoUmbralLimpiezaUnidad> consensoPayload) {
+	    try {
+	        // 1) Recupera unidad y su ciclo
+	        Unidad unidad = unidadService.obtenerUnidadPorId(unidadId)
+	                .orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
+	        int ciclo = unidad.getCicloCorresponsabilidad();
 
-			// 2) Mapea desde consenso guardado
-			List<TareaInstanciaDTO> dtos = mapearDesdeConsenso(unidad.getConsensoUnidad());
+	        // 2) Persiste el consenso y genera lista de TareaInstanciaDTO
+	        List<TareaInstanciaDTO> dtos = unidadService.mapearDesdeConsenso(unidadId, consensoPayload);
 
-			// 3) Genera instancias desde los datos ya guardados
-			List<Tarea> creadas = unidadService.generarInstancias(unidadId, dtos, ciclo, LocalDate.now() // o usa
-																											// unidad.getStartDate()
-																											// si lo
-																											// tienes
-			);
+	        // 3) Genera las tareas instanciadas
+	        List<Tarea> creadas = unidadService.generarInstancias(unidadId, dtos, ciclo, LocalDate.now());
 
-			// 4) Devuelve 200 + lista de instancias
-			return ResponseEntity.ok(creadas);
-		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-		}
+	        return ResponseEntity.ok(creadas);
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+	    }
 	}
 
-	private List<TareaInstanciaDTO> mapearDesdeConsenso(List<ConsensoUmbralLimpiezaUnidad> consenso) {
-		List<TareaInstanciaDTO> dtos = new ArrayList<>();
-		for (ConsensoUmbralLimpiezaUnidad c : consenso) {
-			TareaInstanciaDTO dto = new TareaInstanciaDTO();
-			dto.setId(c.getTareaId());
-			dto.setPeriodicidad(c.getPeriodicidad());
-			dto.setIntensidad(c.getIntensidad());
-			dto.setCargaMental(c.getCargaMental());
-			dto.setAsignadoA(c.getAsignadoA()); // Puede venir null y es válido
-			dtos.add(dto);
-		}
-		return dtos;
-	}
 
 	@GetMapping("/{unidadId}/tareas/instanciadas")
 	public ResponseEntity<List<Tarea>> getTareasInstanciadasDesdeUnidad(@PathVariable String unidadId) {
 		try {
 			List<Tarea> instanciadas = unidadService.obtenerTareasInstanciadas(unidadId);
+			for (Tarea tarea : instanciadas) {
+				System.err.println("Tareas instanciadas que devuelve el servidor: " + tarea.toString());
+			}
+			
 			return ResponseEntity.ok(instanciadas);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);

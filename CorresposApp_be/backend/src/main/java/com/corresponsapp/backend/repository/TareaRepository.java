@@ -13,9 +13,9 @@ public interface TareaRepository extends MongoRepository<Tarea, String> {
 
     List<Tarea> findByUnidadIdAndModuloAndEsPlantillaFalse(String unidadId, String modulo);
 
-    List<Tarea> findByAsignadoAAndEsPlantillaFalse(String userId);
+    List<Tarea> findByAsignadaAAndEsPlantillaFalse(String userId);
 
-    List<Tarea> findByUnidadIdAndAsignadoAAndEsPlantillaFalse(String unidadId, String userId);
+    List<Tarea> findByUnidadIdAndAsignadaAAndEsPlantillaFalse(String unidadId, String userId);
 
     List<Tarea> findByEsPlantillaTrue();
 

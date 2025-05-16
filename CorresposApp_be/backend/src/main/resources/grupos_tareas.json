@@ -61,11 +61,11 @@
         "nombre": "Reponer papel higienico y jabon"
       },
       {
-        "id": "ayudar_higiene_personal_ninos_as",
+        "id": "28",
         "ajustePeriodicidad": 0.7,
         "ajusteIntensidad": 1,
         "ajusteCargaMental": 0.5,
-        "nombre": ""
+        "nombre": "Ayudar higiene personal menores"
       },
       {
         "id": "38",
