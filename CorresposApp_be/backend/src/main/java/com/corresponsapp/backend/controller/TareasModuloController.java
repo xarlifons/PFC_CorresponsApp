@@ -30,7 +30,6 @@ public class TareasModuloController {
     @GetMapping("/grupos-iniciales")
     public ResponseEntity<?> obtenerGruposIniciales() {
         try {
-        	System.out.println("📄 Grupos iniciales cargados: " + gruposInicialesLoader.getGruposIniciales().size());
             return ResponseEntity.ok(gruposInicialesLoader.getGruposIniciales());
         } catch (Exception e) {
             return ResponseEntity.status(500).body("❌ Error al obtener grupos iniciales: " + e.getMessage());
@@ -40,7 +39,7 @@ public class TareasModuloController {
     @GetMapping("/grupos-tareas")
     public ResponseEntity<?> obtenerGruposTareas() {
         try {
-            return ResponseEntity.ok(grupoTareasLoader.getGrupos().values()); // Devolver como lista
+            return ResponseEntity.ok(grupoTareasLoader.getGrupos().values());
         } catch (Exception e) {
             return ResponseEntity.status(500).body("❌ Error al obtener grupos de tareas: " + e.getMessage());
         }

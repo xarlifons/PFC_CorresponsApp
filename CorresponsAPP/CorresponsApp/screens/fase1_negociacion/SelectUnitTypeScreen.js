@@ -1,14 +1,16 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
   Alert,
-  Button,
   TouchableOpacity,
+  Animated,
 } from "react-native";
 import LottieView from "lottie-react-native";
+import Icon from "react-native-vector-icons/Ionicons";
 import { useAuth } from "../../context/AuthContext";
 import { useRedirectByEstadoFase1 } from "../../hooks/useRedirectByEstadoFase1";
 
@@ -20,29 +22,37 @@ export default function SelectUnitTypeScreen() {
     actualizarEstadoFase1,
   } = useAuth();
 
-  const [modo, setModo] = useState(null); // 'crear' | 'unirse'
+  const [modo, setModo] = useState(null);
   const [nombreUnidad, setNombreUnidad] = useState("");
   const [codigoAcceso, setCodigoAcceso] = useState("");
+  const [newCodigoAcceso, setNewCodigoAcceso] = useState("");
   const [unidadNombre, setUnidadNombre] = useState(null);
   const [loading, setLoading] = useState(false);
   const [refreshRedirect, setRefreshRedirect] = useState(false);
+  const [mostrarIconoCasa, setMostrarIconoCasa] = useState(false);
   const animationRef = useRef(null);
 
-  // 🔁 Redirección automática según estadoFase1
   useRedirectByEstadoFase1(
     "momento0",
     "UnitConfigurationScreen",
     refreshRedirect
   );
 
-  // ✅ LOG de control del estado de autenticación
-  console.log("🧠 Auth state en render:", state);
+  useEffect(() => {
+    if (state?.user?.unidadAsignada && !unidadNombre) {
+      setUnidadNombre("tu unidad"); // O busca el nombre real si es necesario
+    }
+  }, [state?.user]);
 
-  // ✅ Verificamos que state.user exista antes de renderizar
-  if (!state.user) {
-    console.warn("⚠️ Usuario no disponible aún. Mostrando pantalla vacía...");
-    return null;
-  }
+  useEffect(() => {
+    if (unidadNombre) {
+      animationRef.current?.play();
+
+      setTimeout(() => {
+        setMostrarIconoCasa(true);
+      }, 2000); // Mostrar icono 2s después del inicio de la animación
+    }
+  }, [unidadNombre]);
 
   const handleCrear = async () => {
     if (!nombreUnidad.trim()) {
@@ -52,9 +62,10 @@ export default function SelectUnitTypeScreen() {
 
     try {
       setLoading(true);
-      const unidad = await crearYAsignarUnidad(nombreUnidad);
+      const nombreUnidadTrim = nombreUnidad.trim();
+      const unidad = await crearYAsignarUnidad(nombreUnidadTrim);
       setUnidadNombre(unidad.nombre);
-      animationRef.current?.play();
+      setNewCodigoAcceso(unidad.codigoAcceso);
     } catch (error) {
       Alert.alert("❌ Error", error.message);
     } finally {
@@ -72,9 +83,7 @@ export default function SelectUnitTypeScreen() {
       setLoading(true);
       const unidad = await unirseUnidadPorCodigo(codigoAcceso);
       setUnidadNombre(unidad.nombre);
-      animationRef.current?.play();
-      // No actualizamos estadoFase1 aquí: ya debe estar en momento1
-      setRefreshRedirect((prev) => !prev); // fuerza ejecución del hook
+      setRefreshRedirect((prev) => !prev);
     } catch (error) {
       Alert.alert("❌ Error", error.message);
     } finally {
@@ -87,89 +96,126 @@ export default function SelectUnitTypeScreen() {
       try {
         const unidadId = state.user.unidadAsignada;
         await actualizarEstadoFase1(unidadId, "momento1");
-        setRefreshRedirect((prev) => !prev); // fuerza revalidación del hook
+        setRefreshRedirect((prev) => !prev);
       } catch (error) {
         Alert.alert("❌ Error", "No se pudo actualizar el estado.");
       }
     } else {
-      // Si viene de unirse, ya está en el estado correcto
       setRefreshRedirect((prev) => !prev);
     }
   };
 
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Bienvenido a CorresponsAPP</Text>
+  if (!state.user) return null;
 
-      {!unidadNombre && (
-        <>
-          <Text style={styles.subtitle}>¿Qué deseas hacer?</Text>
-          <View style={styles.buttonRow}>
+  return (
+    <SafeAreaView style={styles.safeContainer}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Bienvenido a CorresponsAPP</Text>
+
+        {!unidadNombre && (
+          <>
+            <Text style={styles.subtitle}>¿Qué deseas hacer?</Text>
+            <View style={styles.buttonRow}>
+              <TouchableOpacity
+                style={styles.primaryButton}
+                onPress={() => setModo("crear")}
+              >
+                <Text style={styles.buttonText}>Crear unidad</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.primaryButton}
+                onPress={() => setModo("unirse")}
+              >
+                <Text style={styles.buttonText}>Unirme a una unidad</Text>
+              </TouchableOpacity>
+            </View>
+
+            {modo === "crear" && (
+              <>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Nombre de la unidad"
+                  value={nombreUnidad}
+                  onChangeText={setNombreUnidad}
+                />
+                <TouchableOpacity
+                  style={styles.primaryButton}
+                  onPress={handleCrear}
+                  disabled={loading}
+                >
+                  <Text style={styles.buttonText}>
+                    {loading ? "Creando..." : "Crear y continuar"}
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
+
+            {modo === "unirse" && (
+              <>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Código de acceso"
+                  value={codigoAcceso}
+                  onChangeText={setCodigoAcceso}
+                  autoCapitalize="characters"
+                />
+                <TouchableOpacity
+                  style={styles.primaryButton}
+                  onPress={handleUnirse}
+                  disabled={loading}
+                >
+                  <Text style={styles.buttonText}>
+                    {loading ? "Uniéndome..." : "Unirme y continuar"}
+                  </Text>
+                </TouchableOpacity>
+              </>
+            )}
+          </>
+        )}
+
+        {unidadNombre && (
+          <View style={styles.successCard}>
+            {!mostrarIconoCasa ? (
+              <LottieView
+                ref={animationRef}
+                source={require("../../assets/animations/fireworks.json")}
+                autoPlay={false}
+                loop={false}
+                style={{ width: 200, height: 200 }}
+              />
+            ) : (
+              <Icon
+                name="home"
+                size={120}
+                color="#000000"
+                style={{ marginVertical: 20 }}
+              />
+            )}
+
+            <Text style={styles.successText}>
+              🎉 ¡Te has unido a la unidad{" "}
+              <Text style={styles.unitName}>{unidadNombre}</Text>!
+            </Text>
+            <Text style={styles.message}>
+              Facilita este código a tu compañera/o para unirse a esta unidad:
+            </Text>
+
+            <View style={styles.newCodigoAccesoBox}>
+              <Text style={styles.newCodigoAccesoTexto}>
+                {newCodigoAcceso ? newCodigoAcceso : codigoAcceso}
+              </Text>
+            </View>
+
             <TouchableOpacity
-              style={styles.optionButton}
-              onPress={() => setModo("crear")}
+              style={styles.primaryButton}
+              onPress={handleContinuar}
             >
-              <Text style={styles.buttonText}>Crear unidad</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.optionButton}
-              onPress={() => setModo("unirse")}
-            >
-              <Text style={styles.buttonText}>Unirme a una unidad</Text>
+              <Text style={styles.buttonText}>Continuar</Text>
             </TouchableOpacity>
           </View>
-
-          {modo === "crear" && (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="Nombre de la unidad"
-                value={nombreUnidad}
-                onChangeText={setNombreUnidad}
-              />
-              <Button
-                title={loading ? "Creando..." : "Crear y continuar"}
-                onPress={handleCrear}
-                disabled={loading}
-              />
-            </>
-          )}
-
-          {modo === "unirse" && (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="Código de acceso"
-                value={codigoAcceso}
-                onChangeText={setCodigoAcceso}
-                autoCapitalize="characters"
-              />
-              <Button
-                title={loading ? "Uniéndome..." : "Unirme y continuar"}
-                onPress={handleUnirse}
-                disabled={loading}
-              />
-            </>
-          )}
-        </>
-      )}
-
-      {unidadNombre && (
-        <>
-          <LottieView
-            ref={animationRef}
-            source={require("../../assets/animations/fireworks.json")}
-            autoPlay={false}
-            loop={false}
-            style={{ width: 200, height: 200 }}
-          />
-          <Text style={styles.subtitle}>
-            🎉 ¡Te has unido a la unidad {unidadNombre}!
-          </Text>
-          <Button title="Continuar" color="#28a745" onPress={handleContinuar} />
-        </>
-      )}
-    </View>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -179,9 +225,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     flex: 1,
+    backgroundColor: "#f4f6f8",
   },
   title: {
-    fontSize: 22,
+    fontSize: 20,
     marginBottom: 20,
     fontWeight: "bold",
   },
@@ -197,6 +244,7 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "100%",
     marginBottom: 16,
+    backgroundColor: "#fff",
   },
   buttonRow: {
     flexDirection: "row",
@@ -204,14 +252,71 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 16,
   },
-  optionButton: {
+  primaryButton: {
     backgroundColor: "#007AFF",
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 5,
+    marginLeft: 5,
+    marginRight: 5,
     borderRadius: 6,
-    marginHorizontal: 5,
+    alignItems: "center",
+    marginVertical: 6,
   },
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+    fontSize: 16,
+  },
+  successCard: {
+    backgroundColor: "#fff",
+    padding: 24,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+    marginTop: 20,
+  },
+  successText: {
+    fontSize: 18,
+    fontWeight: "600",
+    textAlign: "center",
+    marginTop: 10,
+  },
+  unitName: {
+    color: "#28a745",
+    fontWeight: "bold",
+  },
+  message: {
+    fontSize: 15,
+    color: "#666",
+    textAlign: "center",
+    marginVertical: 10,
+  },
+  safeContainer: {
+    flex: 1,
+    backgroundColor: "#f4f6f8",
+  },
+  newCodigoAccesoBox: {
+    borderWidth: 2,
+    borderColor: "#000",
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginTop: 10,
+    marginBottom: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#fff",
+  },
+
+  newCodigoAccesoTexto: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: "#000",
+    letterSpacing: 2,
   },
 });

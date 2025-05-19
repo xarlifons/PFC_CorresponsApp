@@ -49,14 +49,12 @@ public class GrupoTareasLoader {
                     tareaToAjustes.put(tarea.id, tarea);
                 }
                 tareaToGrupo.put(grupo.tareaRepresentativa, grupo.id);
-                System.out.println("✅ Tareas registradas en tareaToAjustes:");
-                for (String id : tareaToAjustes.keySet()) {
-                    System.out.println(" - " + id);
-                }
             }
+            
+            System.out.println("[GRUPOTAREASLOADER] Tareas cargadas en el sistema.");
 
         } catch (Exception e) {
-            throw new RuntimeException("❌ Error al cargar grupos_tareas.json", e);
+            throw new RuntimeException("[GRUPOTAREASLOADER] Error al cargar las tareas en el sistema: ", e);
         }
     }
 
@@ -77,6 +75,7 @@ public class GrupoTareasLoader {
                 ));
             }
         }
+        System.out.println("[GRUPOTAREASLOADER] Parametros de la encuesta propagados: tarea representativa --> a tareas de su grupo.");
         return resultado;
     }
 

@@ -2,7 +2,6 @@ package com.corresponsapp.backend.controller;
 
 import com.corresponsapp.backend.model.Tarea;
 import com.corresponsapp.backend.service.TareaService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
@@ -18,7 +17,6 @@ public class TareaController {
 
 	private final TareaService tareaService;
 
-	@Autowired
 	public TareaController(TareaService tareaService) {
 		this.tareaService = tareaService;
 	}

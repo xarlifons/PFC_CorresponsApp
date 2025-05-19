@@ -15,7 +15,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.corresponsapp.backend.repository.UserRepository;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -28,36 +27,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
     }
-
-//    @Override
-//    protected void doFilterInternal(
-//            HttpServletRequest request,
-//            HttpServletResponse response,
-//            FilterChain filterChain
-//    ) throws ServletException, IOException {
-//        String authHeader = request.getHeader("Authorization");
-//
-//        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-//            filterChain.doFilter(request, response);
-//            return;
-//        }
-//
-//        String token = authHeader.substring(7);
-//        String email = jwtUtil.extractUsername(token);
-//
-//        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-//            userRepository.findByEmail(email).ifPresent(user -> {
-//                if (jwtUtil.validateToken(token, email)) {
-//                    UsernamePasswordAuthenticationToken authToken =
-//                        new UsernamePasswordAuthenticationToken(user.getEmail(), null, Collections.emptyList());
-//                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-//                    SecurityContextHolder.getContext().setAuthentication(authToken);
-//                }
-//            });
-//        }
-//
-//        filterChain.doFilter(request, response);
-//    }
     
     @Override
     protected void doFilterInternal(
@@ -69,31 +38,30 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            System.out.println("ℹ️ No se procesó JWT: cabecera Authorization ausente o mal formada para esta petición.");
+            System.out.println("[JWTAUTHFILTER] No se procesó JWT: cabecera Authorization ausente o mal formada para esta petición.");
             filterChain.doFilter(request, response);
             return;
         }
 
         String token = authHeader.substring(7);
-        String email = jwtUtil.extractUsername(token);
-
-        System.out.println("🔍 Token recibido: " + token);
-        System.out.println("📧 Email extraído del token: " + email);
+        String email = jwtUtil.extractEmail(token);
+        
+        System.out.println("[JWTAUTHFILTER] Correo-e " + email + " extarído del token " + token);
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             userRepository.findByEmail(email).ifPresentOrElse(user -> {
                 if (jwtUtil.validateToken(token, email)) {
-                    System.out.println("✅ Token válido. Autenticando al usuario.");
+                    System.out.println("[JWTAUTHFILTER] Token válido. Autenticando al usuario.");
                     UsernamePasswordAuthenticationToken authToken =
                             new UsernamePasswordAuthenticationToken(
                             		user, null,  List.of(new SimpleGrantedAuthority("ROLE_USER")));
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 } else {
-                    System.out.println("❌ Token inválido.");
+                    System.out.println("[JWTAUTHFILTER] Token inválido.");
                 }
             }, () -> {
-                System.out.println("❌ Usuario no encontrado en la base de datos con email: " + email);
+                System.out.println("[JWTAUTHFILTER] Usuario no encontrado en la base de datos con email: " + email);
             });
         }
 

@@ -28,6 +28,7 @@ export default function MainStack() {
       <Stack.Screen
         name="ExecutionDashboardScreen"
         component={ExecutionDashboardScreen}
+        screenOptions={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

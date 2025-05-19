@@ -4,5 +4,5 @@ import com.corresponsapp.backend.dto.TareaUnidadDTO;
 import com.corresponsapp.backend.model.Tarea;
 
 public interface TareaPlantillaService {
-    Tarea completarDatosDesdePlantilla(TareaUnidadDTO tareaUnidadDTO);
+	Tarea completarDatosDesdePlantilla(TareaUnidadDTO tareaUnidadDTO);
 }

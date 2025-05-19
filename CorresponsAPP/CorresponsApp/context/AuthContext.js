@@ -31,6 +31,7 @@ export function AuthProvider({ children }) {
           await AsyncStorage.setItem(
             "user",
             JSON.stringify({
+              id: data.id,
               nombre: data.nombre,
               email: data.email,
               role: data.role,
@@ -43,6 +44,7 @@ export function AuthProvider({ children }) {
             payload: {
               token: data.token,
               user: {
+                id: data.id,
                 nombre: data.nombre,
                 email: data.email,
                 role: data.role,
@@ -330,8 +332,38 @@ export function AuthProvider({ children }) {
 
       const data = await response.json();
 
-      await AsyncStorage.setItem("user", JSON.stringify(data));
-      dispatch({ type: "LOGIN", payload: { ...data, token: state.token } });
+      const { id, nombre, email, role, unidadAsignada, token } = data;
+      console.log("🔐 Datos del usuario recibidos tras login o refresh:");
+      console.log("🆔 ID:", id);
+      console.log("📛 Nombre:", nombre);
+      console.log("📧 Email:", email);
+      console.log("🎭 Rol:", role);
+      console.log("🏠 Unidad asignada:", unidadAsignada);
+      console.log("🪙 Token JWT:", token);
+      await AsyncStorage.setItem(
+        "user",
+        JSON.stringify({
+          id,
+          nombre,
+          email,
+          role,
+          unidadAsignada: unidadAsignada || null,
+        })
+      );
+
+      dispatch({
+        type: "LOGIN",
+        payload: {
+          token,
+          user: {
+            id,
+            nombre,
+            email,
+            role,
+            unidadAsignada: unidadAsignada || null,
+          },
+        },
+      });
     } catch (error) {
       console.error("❌ Error al refrescar token:", error.message);
       throw error;
@@ -393,31 +425,31 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const getConsensoFase1 = async (unidadId) => {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/unidad/${unidadId}/consenso-fase1`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${state.token}`,
-          },
-        }
-      );
+  // const getConsensoFase1 = async (unidadId) => {
+  //   try {
+  //     const response = await fetch(
+  //       `${API_BASE_URL}/api/unidad/${unidadId}/consenso-fase1`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${state.token}`,
+  //         },
+  //       }
+  //     );
 
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`Error al obtener consenso fase 1: ${text}`);
-      }
+  //     if (!response.ok) {
+  //       const text = await response.text();
+  //       throw new Error(`Error al obtener consenso fase 1: ${text}`);
+  //     }
 
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("❌ Error en getConsensoFase1:", error.message);
-      throw error;
-    }
-  };
+  //     const data = await response.json();
+  //     return data;
+  //   } catch (error) {
+  //     console.error("❌ Error en getConsensoFase1:", error.message);
+  //     throw error;
+  //   }
+  // };
 
   const getModulosYTareas = async () => {
     try {
@@ -468,32 +500,6 @@ export function AuthProvider({ children }) {
       return data;
     } catch (error) {
       console.error("❌ Error en getGruposIniciales:", error.message);
-      throw error;
-    }
-  };
-
-  const getGruposTareas = async () => {
-    try {
-      const response = await fetch(
-        `${API_BASE_URL}/api/modulos-tareas/grupos-tareas`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${state.token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(`Error al obtener grupos de tareas: ${text}`);
-      }
-
-      const data = await response.json();
-      return Object.values(data); // Convertimos de {id: {...}} a [{...}, {...}]
-    } catch (error) {
-      console.error("❌ Error en getGruposTareas:", error.message);
       throw error;
     }
   };
@@ -605,6 +611,23 @@ export function AuthProvider({ children }) {
     return res.json(); // Map<grupoId, SurveyParametersDTO>
   };
 
+  // const guardarConsensoInicial = async (unidadId) => {
+  //   const response = await fetch(
+  //     `${API_BASE_URL}/api/unidad/${unidadId}/consenso-inicial`,
+  //     {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //         Authorization: `Bearer ${state.token}`,
+  //       },
+  //     }
+  //   );
+  //   if (!response.ok) {
+  //     const errorText = await response.text();
+  //     throw new Error(`(${response.status}) ${errorText}`);
+  //   }
+  // };
+
   // POST para persistir ese consenso en la unidad
   const persistInitialConsensus = async (unidadId, consensoList) => {
     const res = await fetch(
@@ -619,23 +642,6 @@ export function AuthProvider({ children }) {
       }
     );
     if (!res.ok) throw new Error(await res.text());
-  };
-
-  const guardarConsensoInicial = async (unidadId) => {
-    const response = await fetch(
-      `${API_BASE_URL}/api/unidad/${unidadId}/consenso-inicial`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${state.token}`,
-        },
-      }
-    );
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`(${response.status}) ${errorText}`);
-    }
   };
 
   const instanciarTareas = async (unidadId, instances) => {
@@ -709,10 +715,9 @@ export function AuthProvider({ children }) {
         register,
         getUnidadById,
         getUnidadInfoCompleta,
-        getConsensoFase1,
+        //getConsensoFase1,
         getModulosYTareas,
         getGruposIniciales,
-        getGruposTareas,
         getUnidadConfiguracion,
         getEstadoFase1,
         crearYAsignarUnidad,
@@ -723,7 +728,7 @@ export function AuthProvider({ children }) {
         actualizarEstadoFase1,
         enviarEncuestaYRecibirUmbral,
         guardarConsensoFinal,
-        guardarConsensoInicial,
+        //guardarConsensoInicial,
         getInitialConsensus,
         persistInitialConsensus,
         instanciarTareas,

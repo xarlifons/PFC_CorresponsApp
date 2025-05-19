@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
@@ -9,6 +10,7 @@ import {
   PanResponder,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useAuth } from "../../context/AuthContext";
 import { useRedirectByEstadoFase1 } from "../../hooks/useRedirectByEstadoFase1";
@@ -156,7 +158,7 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
       await actualizarEstadoFase1(state.user.unidadAsignada, "completada");
 
       // 4) Disparar refresco/redirección
-      setRefresh((r) => !r);
+      setRefresh((prev) => !prev);
     } catch (e) {
       console.error("Error instanciando tareas:", e);
     }
@@ -236,18 +238,37 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        style={[styles.rowsContainer, { marginBottom: BUTTON_AREA_HEIGHT }]}
-        showsVerticalScrollIndicator={false}
-      >
-        {filasOrder.map((zoneId) => renderRow(zoneId))}
-      </ScrollView>
+    <SafeAreaView style={styles.safeContainer}>
+      <View style={styles.container}>
+        <ScrollView
+          style={[styles.rowsContainer, { marginBottom: BUTTON_AREA_HEIGHT }]}
+          showsVerticalScrollIndicator={false}
+        >
+          {filasOrder.map((zoneId) => renderRow(zoneId))}
+        </ScrollView>
 
-      <TouchableOpacity style={styles.saveButton} onPress={onSave}>
-        <Text style={styles.saveText}>Guardar asignaciones y finalizar</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={() => {
+            const tareasSinAsignar = zones["unassigned"] || [];
+            if (tareasSinAsignar.length > 0) {
+              Alert.alert(
+                "⚠️ Tareas sin asignar",
+                "Debes asignar todas las tareas antes de finalizar."
+              );
+              return;
+            }
+            onSave();
+          }}
+          activeOpacity={0.5}
+        >
+          <Text style={styles.saveText}>Guardar asignaciones y</Text>
+          <Text style={styles.saveText}>
+            finalizar configuración de la unidad
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -315,13 +336,18 @@ const styles = StyleSheet.create({
     bottom: 16,
     left: 16,
     right: 16,
-    padding: 12,
-    backgroundColor: "#2D6A4F",
-    borderRadius: 8,
+    padding: 14,
+    backgroundColor: "#007AFF",
+    borderRadius: 10,
     alignItems: "center",
   },
   saveText: {
-    color: "#fff",
-    fontWeight: "600",
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  safeContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
   },
 });

@@ -1,26 +1,26 @@
 [
    {
       "grupo":"actividades_diarias",
-      "tarea":"hacer_las_camas"
+      "tarea":"Hacer las camas"
    },
    {
       "grupo":"actividad_semanal_1s",
-      "tarea":"cambiar_sabanas"
+      "tarea":"Camiar sabanas"
    },
    {
       "grupo":"actividad_semanal_2s",
-      "tarea":"poner_lavadoras"
+      "tarea":"Poner lavadoras"
    },
    {
       "grupo":"actividad_semanal_3s",
-      "tarea":"comprar_el_pan"
+      "tarea":"Comprar el pan"
    },
    {
       "grupo":"actividad_quincenal_mensual",
-      "tarea":"retirar_alimentos_caducados"
+      "tarea":"Retirar alimentos caducado"
    },
    {
       "grupo":"actividad_a_medida",
-      "tarea":"hacer_la_compra"
+      "tarea":"Hacer la compra"
    }
 ]

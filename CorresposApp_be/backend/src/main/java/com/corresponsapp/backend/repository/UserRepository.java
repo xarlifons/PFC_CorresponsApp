@@ -8,11 +8,10 @@ import java.util.Optional;
 
 public interface UserRepository extends MongoRepository<User, String> {
 
-    // Buscar usuario por email (para login, recuperación, etc.)
     Optional<User> findByEmail(String email);
 
-    // Saber si un email ya está registrado (para validación en el registro)
     boolean existsByEmail(String email);
     
-    List<User> findByUnidadAsignada(String unidadId);
+    List<User> findByUnidadAsignada(String unidadId);   
+    
 }

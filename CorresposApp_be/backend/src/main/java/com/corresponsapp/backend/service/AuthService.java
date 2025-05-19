@@ -8,9 +8,9 @@ import com.corresponsapp.backend.dto.LoginResponse;
 
 public interface AuthService {
 
-	LoginResponse register(User user);// Registro de usuarios
+	LoginResponse register(User user);
 
-    LoginResponse login(String email, String password); // Login de usuarios con respuesta JWT    
+    LoginResponse login(String email, String password);
   
     public Optional<User> getByEmail(String email);
 }

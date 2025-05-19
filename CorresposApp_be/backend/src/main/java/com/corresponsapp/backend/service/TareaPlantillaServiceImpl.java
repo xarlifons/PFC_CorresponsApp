@@ -19,7 +19,7 @@ public class TareaPlantillaServiceImpl implements TareaPlantillaService {
 
     public static class PlantillaTarea {
         public String nombre;
-        public String definicion = "Definición pendiente"; // por si faltara
+        public String definicion = "Definición pendiente";
         public int tiempoEstimado = 30;
     }
 
@@ -32,10 +32,10 @@ public class TareaPlantillaServiceImpl implements TareaPlantillaService {
             Map<String, PlantillaTarea> cargadas = mapper.readValue(is, new TypeReference<>() {});
             tareasPorId.putAll(cargadas);
 
-            System.out.println("✅ tareas.json cargado con " + tareasPorId.size() + " tareas.");
+            System.out.println("[TAREAPLANTILLASERVICEIMPL] Archivo tareas.json cargado con " + tareasPorId.size() + " tareas.");
         } catch (IOException e) {
-            System.err.println("❌ Error al cargar tareas.json: " + e.getMessage());
-            throw new RuntimeException("Error cargando tareas.json", e);
+            System.err.println("[TAREAPLANTILLASERVICEIMPL] Error al cargar tareas.json: " + e.getMessage());
+            throw new RuntimeException("[TAREAPLANTILLASERVICEIMPL] Error cargando tareas.json", e);
         }
     }
 

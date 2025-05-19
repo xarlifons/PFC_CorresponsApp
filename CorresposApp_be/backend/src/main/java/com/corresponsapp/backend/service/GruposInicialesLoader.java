@@ -25,7 +25,7 @@ public class GruposInicialesLoader {
             InputStream is = getClass().getClassLoader().getResourceAsStream("grupos_iniciales.json");
             gruposIniciales = mapper.readValue(is, new TypeReference<>() {});
         } catch (Exception e) {
-            throw new RuntimeException("❌ Error al cargar grupos_iniciales.json", e);
+            throw new RuntimeException("[GRUPOSINICIALESLOADER] Error al cargar grupos_iniciales.json", e);
         }
     }
 

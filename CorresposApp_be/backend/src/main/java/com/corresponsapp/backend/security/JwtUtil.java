@@ -14,76 +14,52 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.function.Function;
 
-
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private String secret;
+	@Value("${jwt.secret}")
+	private String secret;
 
-    @Value("${jwt.expiration}")
-    private long expirationTime; // ms
+	@Value("${jwt.expiration}")
+	private long expirationTime;
 
-    // Generar token JWT
-    public String generateToken(User user) {
-        return Jwts.builder()
-            .setSubject(user.getEmail())
-            .claim("id", user.getId())
-            .claim("nombre", user.getNombre())
-            .claim("role", user.getRole())
-            .claim("unidadAsignada", user.getUnidadAsignada())
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-            .signWith(getSigningKey(), SignatureAlgorithm.HS512)
-            .compact();
-    }
-    
-    // Obtener clave de firma en base64
-    private Key getSigningKey() {
-        byte[] keyBytes = Base64.getDecoder().decode(secret);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
-    
-    
- 
-    // Extraer un claim específico del token
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-    
-    // Obtener todos los claims
-    private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
-                .setSigningKey(getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-    
-    
+	public String generateToken(User user) {
+		return Jwts.builder()
+				.setSubject(user.getEmail())
+				.claim("id", user.getId())
+				.claim("nombre", user.getNombre())
+				.claim("role", user.getRole())
+				.claim("unidadAsignada", user.getUnidadAsignada())
+				.setIssuedAt(new Date())
+				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
+				.signWith(getSigningKey(), SignatureAlgorithm.HS512).compact();
+	}
 
-    // Validar el token
-    public boolean validateToken(String token, String email) {
-        final String username = extractUsername(token);
-        return (username.equals(email) && !isTokenExpired(token));
-    }
-    
-    // Extraer el email del token
-    public String extractUsername(String token) {
-        return extractClaim(token,  claims -> claims.getSubject());
-    }
+	private Key getSigningKey() {
+		byte[] keyBytes = Base64.getDecoder().decode(secret);
+		return Keys.hmacShaKeyFor(keyBytes);
+	}
 
-    // Verificar si el token ha expirado
-    private boolean isTokenExpired(String token) {
-        final Date expiration = extractClaim(token, claims -> claims.getExpiration());
-        return expiration.before(new Date());
-    }
+	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+		final Claims claims = extractAllClaims(token);
+		return claimsResolver.apply(claims);
+	}
 
- 
+	private Claims extractAllClaims(String token) {
+		return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
+	}
 
+	public boolean validateToken(String token, String email) {
+		final String username = extractEmail(token);
+		return (username.equals(email) && !isTokenExpired(token));
+	}
 
+	public String extractEmail(String token) {
+		return extractClaim(token, claims -> claims.getSubject());
+	}
 
-
+	private boolean isTokenExpired(String token) {
+		final Date expiration = extractClaim(token, claims -> claims.getExpiration());
+		return expiration.before(new Date());
+	}
 }

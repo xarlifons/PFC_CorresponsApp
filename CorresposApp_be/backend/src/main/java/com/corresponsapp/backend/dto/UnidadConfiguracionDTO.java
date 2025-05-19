@@ -6,7 +6,7 @@ public class UnidadConfiguracionDTO {
 
     private List<String> modulosActivados;
     private int cicloCorresponsabilidad;
-    private List<TareaUnidadDTO> tareasUnidad;  // Ahora lista de TareaUnidadDTO (no de Tarea completa)
+    private List<TareaUnidadDTO> tareasUnidad;
     private String estadoFase1;
 
     public UnidadConfiguracionDTO() {

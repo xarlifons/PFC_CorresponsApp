@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
   StyleSheet,
   Button,
+  TouchableOpacity,
   Alert,
   ScrollView,
 } from "react-native";
@@ -100,8 +102,8 @@ export default function SurveyParametersScreen() {
         <Text style={styles.title}>🎯 Resultado de tu encuesta</Text>
 
         <View style={styles.umbralCard}>
-          <Text style={styles.umbralTitle}>Tu umbral de limpieza</Text>
-          <Text style={styles.umbralValor}>{umbral} / 100</Text>
+          <Text style={styles.umbralTitle}>Tu Umbral de Limpieza</Text>
+          <Text style={styles.umbralValor}>{umbral} / 10</Text>
         </View>
 
         <Text style={styles.subtitle}>
@@ -109,8 +111,11 @@ export default function SurveyParametersScreen() {
           {"\n"}📝 Han respondido: {responded} / {total}
         </Text>
 
-        <Button
-          title="💬 Vamos a por el consenso en las tareas"
+        <TouchableOpacity
+          style={[
+            styles.boton,
+            responded < total && styles.botonConsensoDisabled,
+          ]}
           onPress={async () => {
             try {
               const mapa = await getInitialConsensus(state.user.unidadAsignada);
@@ -131,23 +136,44 @@ export default function SurveyParametersScreen() {
             }
           }}
           disabled={responded < total}
-          color={responded < total ? "#ccc" : "#007AFF"}
-        />
-        {responded < total && (
-          <Text style={styles.waitText}>
-            Aún faltan personas por completar la encuesta.
-          </Text>
-        )}
+          activeOpacity={0.5}
+        >
+          <Text style={styles.botonTexto}>💬 Vamos a por el</Text>
+          <Text style={styles.botonTexto}>consenso en las tareas</Text>
+          {responded < total && (
+            <Text style={styles.waitText}>
+              Aún faltan personas por completar la encuesta.
+            </Text>
+          )}
+        </TouchableOpacity>
 
         <View style={styles.actions}>
-          <Button
-            title="🔄 Volver a encuesta"
-            onPress={() => setShowResumen(false)}
-            color="#888"
-          />
+          <TouchableOpacity
+            style={styles.boton}
+            onPress={async () => {
+              try {
+                const info = await getUnidadInfoCompleta(
+                  state.user.unidadAsignada
+                );
+                setUnidadInfo(info);
+              } catch (e) {
+                Alert.alert("❌ Error al actualizar", e.message);
+              }
+            }}
+            activeOpacity={0.4}
+          >
+            <Text style={styles.botonTexto}>Actualizar</Text>
+          </TouchableOpacity>
         </View>
+
         <View style={styles.actions}>
-          <Button title="Cerrar sesión" onPress={logout} color="tomato" />
+          <TouchableOpacity
+            style={styles.botonLogout}
+            onPress={logout}
+            activeOpacity={0.5}
+          >
+            <Text style={styles.botonTexto}>Cerrar sesión</Text>
+          </TouchableOpacity>
         </View>
         {redirect}
       </View>
@@ -156,54 +182,63 @@ export default function SurveyParametersScreen() {
 
   // 3) Render sliders antes de enviar
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>📋 ¿Cómo ves tú las tareas del hogar?</Text>
-      <Text style={styles.intro}>Ajusta estos parámetros para cada tarea:</Text>
+    <SafeAreaView style={styles.safeContainer}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>📋 ¿Cómo ves tú las tareas del hogar?</Text>
+        <Text style={styles.intro}>
+          Ajusta estos parámetros para cada tarea:
+        </Text>
 
-      {grupos.map((g, i) => (
-        <View key={g.grupo} style={styles.card}>
-          <Text style={styles.groupTitle}>
-            {i + 1}. {g.tarea}
+        {grupos.map((g, i) => (
+          <View key={g.grupo} style={styles.card}>
+            <Text style={styles.groupTitle}>
+              {i + 1}. {g.tarea}
+            </Text>
+
+            <Text style={styles.sliderLabel}>📅 Periodicidad</Text>
+            <Slider
+              minimumValue={0.5}
+              maximumValue={30}
+              step={0.5}
+              value={respuestas[i].periodicidad}
+              onValueChange={(v) => handleSliderChange(i, "periodicidad", v)}
+            />
+            <Text>Cada {respuestas[i].periodicidad.toFixed(1)} días</Text>
+
+            <Text style={styles.sliderLabel}>💥 Esfuerzo</Text>
+            <Slider
+              minimumValue={0}
+              maximumValue={10}
+              step={1}
+              value={respuestas[i].intensidad}
+              onValueChange={(v) => handleSliderChange(i, "intensidad", v)}
+            />
+            <Text>{respuestas[i].intensidad.toFixed(0)} / 10</Text>
+
+            <Text style={styles.sliderLabel}>🧠 Carga mental</Text>
+            <Slider
+              minimumValue={0}
+              maximumValue={10}
+              step={1}
+              value={respuestas[i].cargaMental}
+              onValueChange={(v) => handleSliderChange(i, "cargaMental", v)}
+            />
+            <Text>{respuestas[i].cargaMental.toFixed(0)} / 10</Text>
+          </View>
+        ))}
+
+        <TouchableOpacity
+          style={[styles.boton, isEnviando && { opacity: 0.6 }]}
+          onPress={handleEnviar}
+          disabled={isEnviando}
+          activeOpacity={0.8}
+        >
+          <Text style={styles.botonTexto}>
+            {isEnviando ? "Enviando..." : "Enviar respuestas"}
           </Text>
-
-          <Text style={styles.sliderLabel}>📅 Periodicidad</Text>
-          <Slider
-            minimumValue={0.5}
-            maximumValue={30}
-            step={0.5}
-            value={respuestas[i].periodicidad}
-            onValueChange={(v) => handleSliderChange(i, "periodicidad", v)}
-          />
-          <Text>Cada {respuestas[i].periodicidad.toFixed(1)} días</Text>
-
-          <Text style={styles.sliderLabel}>💥 Esfuerzo</Text>
-          <Slider
-            minimumValue={0}
-            maximumValue={10}
-            step={1}
-            value={respuestas[i].intensidad}
-            onValueChange={(v) => handleSliderChange(i, "intensidad", v)}
-          />
-          <Text>{respuestas[i].intensidad.toFixed(0)} / 10</Text>
-
-          <Text style={styles.sliderLabel}>🧠 Carga mental</Text>
-          <Slider
-            minimumValue={0}
-            maximumValue={10}
-            step={1}
-            value={respuestas[i].cargaMental}
-            onValueChange={(v) => handleSliderChange(i, "cargaMental", v)}
-          />
-          <Text>{respuestas[i].cargaMental.toFixed(0)} / 10</Text>
-        </View>
-      ))}
-
-      <Button
-        title={isEnviando ? "Enviando..." : "Enviar respuestas"}
-        onPress={handleEnviar}
-        disabled={isEnviando}
-      />
-    </ScrollView>
+        </TouchableOpacity>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -273,5 +308,33 @@ const styles = StyleSheet.create({
   sliderLabel: {
     marginTop: 12,
     fontSize: 14,
+  },
+  safeContainer: {
+    flex: 1,
+    backgroundColor: "#fff",
+  },
+  boton: {
+    marginTop: 16,
+    padding: 14,
+    backgroundColor: "#007AFF",
+    borderRadius: 10,
+    width: "100%",
+    alignItems: "center",
+  },
+  botonTexto: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
+  botonConsensoDisabled: {
+    backgroundColor: "#ccc",
+  },
+  botonLogout: {
+    marginTop: 24,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    backgroundColor: "tomato",
+    borderRadius: 10,
+    alignItems: "center",
   },
 });

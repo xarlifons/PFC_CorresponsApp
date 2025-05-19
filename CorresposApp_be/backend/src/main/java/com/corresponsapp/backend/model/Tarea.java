@@ -22,11 +22,10 @@ public class Tarea {
     private boolean completada = false;
     private LocalDate fechaProgramada;
 
-    private String unidadId; // La unidad a la que pertenece
-    private String modulo;   // Nombre del módulo (Limpieza, Cocina, etc.)
-    private boolean esPlantilla; // Si es una tarea base común para todas las unidades
+    private String unidadId;
+    private String modulo;
+    private boolean esPlantilla;
 
-    // Constructores
     public Tarea() {}
 
     public Tarea(String nombre, String definicion, float periodicidad, float cargaMental, float intensidad, String asignadaA, LocalDate fechaProgramada, int tiempoEstimado ,String unidadId, String modulo, boolean esPlantilla) {
@@ -43,11 +42,10 @@ public class Tarea {
         this.tiempoEstimado = tiempoEstimado;
     }
 
-	// Getters y Setters
     public String getId() {
         return id;
     }
-    // Solo para gestionar actualizarTarea() en TareaController
+
     public void setId(String id) {
         this.id = id;
     }

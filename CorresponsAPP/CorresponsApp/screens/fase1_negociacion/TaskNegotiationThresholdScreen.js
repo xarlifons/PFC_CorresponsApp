@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
@@ -30,12 +31,12 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
   const [completed, setCompleted] = useState({});
   const [loading, setLoading] = useState(true);
   const [totalTasks, setTotalTask] = useState(0);
-  const [refreshRedirect, setRefreshRedirect] = useState(false);
+  const [refresh, setRefresh] = useState(false);
 
   useRedirectByEstadoFase1(
     "momento3",
     "TaskNegotiationAssignmentScreen",
-    refreshRedirect
+    refresh
   );
 
   useEffect(() => {
@@ -157,7 +158,7 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
 
       await guardarConsensoFinal(state.user.unidadAsignada, payload);
       await actualizarEstadoFase1(state.user.unidadAsignada, "momento4");
-      setRefreshRedirect((prev) => !prev);
+      setRefresh((prev) => !prev);
     } catch (error) {
       Alert.alert("❌ Error al guardar consenso", error.message);
     }
@@ -173,139 +174,144 @@ export default function TaskNegotiationThresholdScreen({ navigation }) {
   }
 
   return (
-    <FlatList
-      contentContainerStyle={styles.container}
-      data={modules}
-      keyExtractor={(m) => m.id}
-      ListHeaderComponent={
-        <>
-          <Text style={styles.title}>Consenso inicial de tareas por grupo</Text>
-          <Text style={styles.subtitle}>
-            Revisad las {totalTasks} tareas según el umbral consensuado.
-          </Text>
-          <View style={styles.progressBarBg}>
-            <View style={[styles.progressBarFg, { flex: progress }]} />
-            <View style={{ flex: 1 - progress }} />
-          </View>
-          <Text style={styles.progressText}>
-            Módulos revisados: {doneModules}/{totalModules}
-          </Text>
-        </>
-      }
-      renderItem={({ item: mod }) => (
-        <View style={styles.moduleSection}>
-          <TouchableOpacity
-            style={styles.moduleHeader}
-            onPress={() =>
-              setExpanded({ ...expanded, [mod.id]: !expanded[mod.id] })
-            }
-          >
-            <Text style={styles.moduleTitle}>
-              {mod.nombre} ({mod.tareas.length} tareas)
+    <SafeAreaView style={styles.safeContainer}>
+      <FlatList
+        contentContainerStyle={styles.container}
+        data={modules}
+        keyExtractor={(m) => m.id}
+        ListHeaderComponent={
+          <>
+            <Text style={styles.title}>
+              Consenso inicial de tareas por grupo
             </Text>
-            <Ionicons
-              name={expanded[mod.id] ? "chevron-down" : "chevron-forward"}
-              size={24}
-              color="#333"
-            />
-          </TouchableOpacity>
+            <Text style={styles.subtitle}>
+              Revisad las {totalTasks} tareas según el umbral consensuado.
+            </Text>
+          </>
+        }
+        renderItem={({ item: mod }) => (
+          <View style={styles.moduleSection}>
+            <TouchableOpacity
+              style={styles.moduleHeader}
+              onPress={() =>
+                setExpanded({ ...expanded, [mod.id]: !expanded[mod.id] })
+              }
+            >
+              <Text style={styles.moduleTitle}>
+                {mod.nombre} ({mod.tareas.length} tareas)
+              </Text>
+              <Ionicons
+                name={expanded[mod.id] ? "chevron-down" : "chevron-forward"}
+                size={24}
+                color="#333"
+              />
+            </TouchableOpacity>
 
-          {expanded[mod.id] && (
-            <View style={styles.taskList}>
-              {mod.tareas.map((t) => (
-                <View key={t.id} style={styles.taskRow}>
-                  <Text style={styles.taskName}>{t.nombre}</Text>
+            {expanded[mod.id] && (
+              <View style={styles.taskList}>
+                {mod.tareas.map((t) => (
+                  <View key={t.id} style={styles.taskRow}>
+                    <Text style={styles.taskName}>{t.nombre}</Text>
 
-                  <View style={styles.paramRow}>
-                    <Text style={styles.paramLabel}>Periodicidad</Text>
-                    <View style={styles.stepper}>
-                      <TouchableOpacity
-                        style={styles.stepButtonBg}
-                        onPress={() => dec(t.id, "periodicidad")}
-                      >
-                        <Text style={styles.stepButton}>–</Text>
-                      </TouchableOpacity>
-                      <Text style={styles.stepValue}>
-                        {values[t.id].periodicidad.toFixed(1)}
-                      </Text>
-                      <TouchableOpacity
-                        style={styles.stepButtonBg}
-                        onPress={() => inc(t.id, "periodicidad")}
-                      >
-                        <Text style={styles.stepButton}>＋</Text>
-                      </TouchableOpacity>
+                    <View style={styles.paramRow}>
+                      <Text style={styles.paramLabel}>Periodicidad</Text>
+                      <View style={styles.stepper}>
+                        <TouchableOpacity
+                          style={styles.stepButtonBg}
+                          onPress={() => dec(t.id, "periodicidad")}
+                        >
+                          <Text style={styles.stepButton}>–</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.stepValue}>
+                          {values[t.id].periodicidad.toFixed(1)}
+                        </Text>
+                        <TouchableOpacity
+                          style={styles.stepButtonBg}
+                          onPress={() => inc(t.id, "periodicidad")}
+                        >
+                          <Text style={styles.stepButton}>＋</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+
+                    <View style={styles.paramRow}>
+                      <Text style={styles.paramLabel}>Esfuerzo</Text>
+                      <View style={styles.stepper}>
+                        <TouchableOpacity
+                          style={styles.stepButtonBg}
+                          onPress={() => dec(t.id, "intensidad")}
+                        >
+                          <Text style={styles.stepButton}>–</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.stepValue}>
+                          {values[t.id].intensidad.toFixed(0)}
+                        </Text>
+                        <TouchableOpacity
+                          style={styles.stepButtonBg}
+                          onPress={() => inc(t.id, "intensidad")}
+                        >
+                          <Text style={styles.stepButton}>＋</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+
+                    <View style={styles.paramRow}>
+                      <Text style={styles.paramLabel}>Carga mental</Text>
+                      <View style={styles.stepper}>
+                        <TouchableOpacity
+                          style={styles.stepButtonBg}
+                          onPress={() => dec(t.id, "cargaMental")}
+                        >
+                          <Text style={styles.stepButton}>–</Text>
+                        </TouchableOpacity>
+                        <Text style={styles.stepValue}>
+                          {values[t.id].cargaMental.toFixed(0)}
+                        </Text>
+                        <TouchableOpacity
+                          style={styles.stepButtonBg}
+                          onPress={() => inc(t.id, "cargaMental")}
+                        >
+                          <Text style={styles.stepButton}>＋</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   </View>
+                ))}
 
-                  <View style={styles.paramRow}>
-                    <Text style={styles.paramLabel}>Esfuerzo</Text>
-                    <View style={styles.stepper}>
-                      <TouchableOpacity
-                        style={styles.stepButtonBg}
-                        onPress={() => dec(t.id, "intensidad")}
-                      >
-                        <Text style={styles.stepButton}>–</Text>
-                      </TouchableOpacity>
-                      <Text style={styles.stepValue}>
-                        {values[t.id].intensidad.toFixed(0)}
-                      </Text>
-                      <TouchableOpacity
-                        style={styles.stepButtonBg}
-                        onPress={() => inc(t.id, "intensidad")}
-                      >
-                        <Text style={styles.stepButton}>＋</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-
-                  <View style={styles.paramRow}>
-                    <Text style={styles.paramLabel}>Carga mental</Text>
-                    <View style={styles.stepper}>
-                      <TouchableOpacity
-                        style={styles.stepButtonBg}
-                        onPress={() => dec(t.id, "cargaMental")}
-                      >
-                        <Text style={styles.stepButton}>–</Text>
-                      </TouchableOpacity>
-                      <Text style={styles.stepValue}>
-                        {values[t.id].cargaMental.toFixed(0)}
-                      </Text>
-                      <TouchableOpacity
-                        style={styles.stepButtonBg}
-                        onPress={() => inc(t.id, "cargaMental")}
-                      >
-                        <Text style={styles.stepButton}>＋</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              ))}
-
-              <TouchableOpacity
-                style={[
-                  styles.doneButton,
-                  completed[mod.id] && styles.doneButtonDone,
-                ]}
-                onPress={() => markDone(mod.id)}
-              >
-                <Text style={styles.doneText}>
-                  {completed[mod.id]
-                    ? "✔ Módulo revisado"
-                    : "✔ He revisado este módulo"}
-                </Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.doneButton,
+                    completed[mod.id] && styles.doneButtonDone,
+                  ]}
+                  onPress={() => markDone(mod.id)}
+                >
+                  <Text style={styles.doneText}>
+                    {completed[mod.id]
+                      ? "✔ Módulo revisado"
+                      : "✔ He revisado este módulo"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+        )}
+        ListFooterComponent={
+          <>
+            <View style={styles.progressBarBg}>
+              <View style={[styles.progressBarFg, { flex: progress }]} />
+              <View style={{ flex: 1 - progress }} />
             </View>
-          )}
-        </View>
-      )}
-      ListFooterComponent={
-        <TouchableOpacity style={styles.saveAll} onPress={saveConsensus}>
-          <Text style={styles.saveAllText}>
-            Guardar consenso del umbral de limpieza
-          </Text>
-        </TouchableOpacity>
-      }
-    />
+            <Text style={styles.progressText}>
+              Módulos revisados: {doneModules}/{totalModules}
+            </Text>
+            <TouchableOpacity style={styles.boton} onPress={saveConsensus}>
+              <Text style={styles.botonTexto}>Guardar consenso del</Text>
+              <Text style={styles.botonTexto}>Umbral de Limpieza</Text>
+            </TouchableOpacity>
+          </>
+        }
+      />
+    </SafeAreaView>
   );
 }
 
@@ -332,7 +338,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     marginVertical: 8,
   },
-  progressBarFg: { backgroundColor: "#2D6A4F" },
+  progressBarFg: { backgroundColor: "#007AFF" },
   progressText: { textAlign: "center", marginBottom: 16 },
   moduleSection: {
     marginBottom: 16,
@@ -383,18 +389,24 @@ const styles = StyleSheet.create({
   doneButton: {
     marginTop: 8,
     padding: 10,
-    backgroundColor: "#007AFF",
+    backgroundColor: "#4d9174",
     borderRadius: 6,
     alignItems: "center",
   },
-  doneButtonDone: { backgroundColor: "#4d9174" },
+  doneButtonDone: { backgroundColor: "#007AFF" },
   doneText: { color: "#fff", fontWeight: "600" },
-  saveAll: {
-    marginVertical: 24,
+
+  boton: {
+    marginTop: 16,
     padding: 14,
-    backgroundColor: "#199962",
-    borderRadius: 8,
+    backgroundColor: "#007AFF",
+    borderRadius: 10,
+    width: "100%",
     alignItems: "center",
   },
-  saveAllText: { color: "#fff", fontSize: 16, fontWeight: "600" },
+  botonTexto: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 16,
+  },
 });

@@ -11,7 +11,6 @@ public class UnidadInfoResponse {
     private int cicloCorresponsabilidad;
     private List<MiembroDTO> miembros;
 
-    // Constructor
     public UnidadInfoResponse(String nombre, List<String> modulosActivados, int duracionCicloDias, List<MiembroDTO> miembros) {
         this.nombre = nombre;
         this.modulosActivados = modulosActivados;
@@ -58,6 +57,5 @@ public class UnidadInfoResponse {
 	public void setMiembros(List<MiembroDTO> miembros) {
 		this.miembros = miembros;
 	}
-
    
 }

@@ -8,7 +8,7 @@ import com.corresponsapp.backend.dto.UnidadConfiguracionDTO;
 import com.corresponsapp.backend.model.Tarea;
 import com.corresponsapp.backend.model.Unidad;
 import com.corresponsapp.backend.model.User;
-import com.corresponsapp.backend.repository.TareaRepository;
+//import com.corresponsapp.backend.repository.TareaRepository;
 import com.corresponsapp.backend.repository.UnidadRepository;
 import com.corresponsapp.backend.repository.UserRepository;
 import com.corresponsapp.backend.service.GrupoTareasLoader.TareaDelGrupo;
@@ -28,8 +28,7 @@ public class UnidadServiceImpl implements UnidadService {
 	private final UserRepository userRepository;
 
 	public UnidadServiceImpl(UnidadRepository unidadRepository, TareaPlantillaService tareaPlantillaService,
-			TareaRepository tareaRepository, GrupoTareasLoader grupoTareasLoader, UserRepository userRepository,
-			SurveyService surveyService) {
+			GrupoTareasLoader grupoTareasLoader, UserRepository userRepository, SurveyService surveyService) {
 		this.unidadRepository = unidadRepository;
 		this.tareaPlantillaService = tareaPlantillaService;
 		this.grupoTareasLoader = grupoTareasLoader;
@@ -64,7 +63,7 @@ public class UnidadServiceImpl implements UnidadService {
 	@Override
 	public Unidad actualizarEstadoFase1(String unidadId, String nuevoEstado) {
 		Unidad unidad = unidadRepository.findById(unidadId)
-				.orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
+				.orElseThrow(() -> new RuntimeException("[UNIDADSERVICEIMPL] Unidad no encontrada"));
 		unidad.setEstadoFase1(nuevoEstado);
 		return unidadRepository.save(unidad);
 	}
@@ -72,14 +71,14 @@ public class UnidadServiceImpl implements UnidadService {
 	@Override
 	public String obtenerEstadoFase1(String unidadId) {
 		Unidad unidad = unidadRepository.findById(unidadId)
-				.orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
+				.orElseThrow(() -> new RuntimeException("[UNIDADSERVICEIMPL] Unidad no encontrada"));
 		return unidad.getEstadoFase1();
 	}
 
 	@Override
 	public Unidad configurarUnidad(String unidadId, UnidadConfiguracionDTO configuracionDTO) {
 		Unidad unidad = unidadRepository.findById(unidadId)
-				.orElseThrow(() -> new IllegalArgumentException("Unidad no encontrada"));
+				.orElseThrow(() -> new IllegalArgumentException("[UNIDADSERVICEIMPL] Unidad no encontrada"));
 
 		unidad.setModulosActivados(configuracionDTO.getModulosActivados());
 		unidad.setCicloCorresponsabilidad(configuracionDTO.getCicloCorresponsabilidad());
@@ -110,7 +109,7 @@ public class UnidadServiceImpl implements UnidadService {
 	@Override
 	public void guardarConsensoInicial(String unidadId, List<ConsensoUmbralLimpiezaUnidad> consenso) {
 		Unidad unidad = unidadRepository.findById(unidadId)
-				.orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
+				.orElseThrow(() -> new RuntimeException("[UNIDADSERVICEIMPL] Unidad no encontrada"));
 		unidad.setConsensoInicial(consenso);
 		unidadRepository.save(unidad);
 	}
@@ -122,36 +121,28 @@ public class UnidadServiceImpl implements UnidadService {
 
 		for (User usuario : usuarios) {
 			List<SurveyParametersDTO> respuestas = usuario.getSurveyParameters();
-			System.out.println("📩 Usuario: " + usuario.getEmail());
+			
 			if (respuestas == null) {
-				System.out.println("⚠️ Sin respuestas de encuesta");
+				System.out.println("[UNIDADSERVICEIMPL] Sin respuestas de encuesta");
 				continue;
 			}
 
-			System.out.println("📊 SurveyParameters recibidos: " + respuestas.size());
-
 			Map<String, TareaParametroDTO> respuestasPropagadas = grupoTareasLoader
 					.propagarParametrosConNombres(respuestas);
-			System.out.println("🔁 Tareas propagadas para " + usuario.getEmail() + ":");
+			System.out.println("[UNIDADSERVICEIMPL] Tareas propagadas para " + usuario.getEmail() + ":");
 			for (Map.Entry<String, TareaParametroDTO> entry : respuestasPropagadas.entrySet()) {
 				System.out.println(" - " + entry.getKey() + " → " + entry.getValue().getNombre());
 			}
 
 			for (Map.Entry<String, TareaParametroDTO> entry : respuestasPropagadas.entrySet()) {
 				SurveyParametersDTO dto = new SurveyParametersDTO();
-				dto.setTarea(entry.getKey()); // tareaId real, no grupo
+				dto.setTarea(entry.getKey());
 				dto.setPeriodicidad((float) entry.getValue().getPeriodicidad());
 				dto.setCargaMental((float) entry.getValue().getCargaMental());
 				dto.setIntensidad((float) entry.getValue().getIntensidad());
 
 				respuestasPorTarea.computeIfAbsent(entry.getKey(), k -> new ArrayList<>()).add(dto);
 			}
-		}
-
-		System.out.println("📚 Total tareas agrupadas en respuestasPorTarea: " + respuestasPorTarea.size());
-		for (String tareaId : respuestasPorTarea.keySet()) {
-			System.out.println(
-					" 📌 TareaID: " + tareaId + " tiene " + respuestasPorTarea.get(tareaId).size() + " respuestas");
 		}
 
 		Map<String, TareaParametroDTO> promedios = new HashMap<>();
@@ -173,8 +164,6 @@ public class UnidadServiceImpl implements UnidadService {
 			float i = Math.round(sumaI / total * 100.0f) / 100.0f;
 			float c = Math.round(sumaC / total * 100.0f) / 100.0f;
 
-			System.out.println("🧩 Tarea ID: " + tareaId + ", nombre obtenido: " + nombre);
-
 			promedios.put(tareaId, new TareaParametroDTO(tareaId, nombre, p, c, i));
 		}
 
@@ -184,7 +173,7 @@ public class UnidadServiceImpl implements UnidadService {
 	@Override
 	public void guardarConsensoFinal(String unidadId, List<ConsensoUmbralLimpiezaUnidad> consensoFinal) {
 		Unidad unidad = unidadRepository.findById(unidadId)
-				.orElseThrow(() -> new RuntimeException("Unidad no encontrada con ID: " + unidadId));
+				.orElseThrow(() -> new RuntimeException("[UNIDADSERVICEIMPL] Unidad no encontrada con ID: " + unidadId));
 		unidad.setConsensoUnidad(consensoFinal);
 		unidad.setEstadoFase1("momento4");
 		unidadRepository.save(unidad);
@@ -194,7 +183,7 @@ public class UnidadServiceImpl implements UnidadService {
 	public List<Tarea> generarInstancias(String unidadId, List<TareaInstanciaDTO> dtos, int cicloDias,
 			LocalDate startDate) {
 		Unidad unidad = unidadRepository.findById(unidadId)
-				.orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
+				.orElseThrow(() -> new RuntimeException("[UNIDADSERVICEIMPL] Unidad no encontrada"));
 		List<Tarea> plantillas = unidad.getTareasUnidad();
 		List<Tarea> instancias = new ArrayList<>();
 
@@ -205,10 +194,10 @@ public class UnidadServiceImpl implements UnidadService {
 
 			Tarea plantilla = plantillas.stream().filter(p -> p.getId().equals(dto.getId())).findFirst()
 					.orElseThrow(() -> new RuntimeException("Plantilla no encontrada: " + dto.getId()));
-			
+
 			System.out.println("🔎 Plantillas disponibles:");
 			for (Tarea p : plantillas) {
-			    System.out.println(" - plantilla.id = " + p.getId());
+				System.out.println(" - plantilla.id = " + p.getId());
 			}
 
 			float periodicidad = dto.getPeriodicidad() > 0 ? (float) dto.getPeriodicidad() : 1f;
@@ -255,45 +244,27 @@ public class UnidadServiceImpl implements UnidadService {
 
 	@Override
 	public List<TareaInstanciaDTO> mapearDesdeConsenso(String unidadId, List<ConsensoUmbralLimpiezaUnidad> consenso) {
-	    Unidad unidad = unidadRepository.findById(unidadId)
-	            .orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
+		Unidad unidad = unidadRepository.findById(unidadId)
+				.orElseThrow(() -> new RuntimeException("Unidad no encontrada"));
 
-	    // 💾 1) Persistimos el consenso
-	    unidad.setConsensoUnidad(consenso);
-	    unidad.setEstadoFase1("momento4");
-	    unidadRepository.save(unidad);
-	    
-	    System.out.println("🧾 Mapeando consenso...");
-	    for (ConsensoUmbralLimpiezaUnidad c : consenso) {
-	        System.out.println(" - tareaId: " + c.getTareaId()
-	            + ", asignadaA: " + c.getAsignadaA()
-	            + ", periodicidad: " + c.getPeriodicidad()
-	            + ", intensidad: " + c.getIntensidad()
-	            + ", cargaMental: " + c.getCargaMental());
-	    }
+		unidad.setConsensoUnidad(consenso);
+		unidad.setEstadoFase1("momento4");
+		unidadRepository.save(unidad);
 
-	    // 🛠 2) Convertimos a DTOs para generar instancias
-	    return consenso.stream().map(c -> {
-	        TareaInstanciaDTO dto = new TareaInstanciaDTO();
-	        dto.setId(c.getTareaId());
-	        dto.setPeriodicidad(c.getPeriodicidad());
-	        dto.setIntensidad(c.getIntensidad());
-	        dto.setCargaMental(c.getCargaMental());
-	        dto.setAsignadaA(c.getAsignadaA()); // Puede venir null
-	        return dto;
-	    }).toList();
+		for (ConsensoUmbralLimpiezaUnidad c : consenso) {
+			System.out.println(" - tareaId: " + c.getTareaId() + ", asignadaA: " + c.getAsignadaA() + ", periodicidad: "
+					+ c.getPeriodicidad() + ", intensidad: " + c.getIntensidad() + ", cargaMental: "
+					+ c.getCargaMental());
+		}
+
+		return consenso.stream().map(c -> {
+			TareaInstanciaDTO dto = new TareaInstanciaDTO();
+			dto.setId(c.getTareaId());
+			dto.setPeriodicidad(c.getPeriodicidad());
+			dto.setIntensidad(c.getIntensidad());
+			dto.setCargaMental(c.getCargaMental());
+			dto.setAsignadaA(c.getAsignadaA());
+			return dto;
+		}).toList();
 	}
-
-
-//	private List<TareaInstanciaDTO> mapearDesdeConsenso(List<ConsensoUmbralLimpiezaUnidad> consenso) {
-//		return consenso.stream().map(c -> {
-//			TareaInstanciaDTO dto = new TareaInstanciaDTO();
-//			dto.setId(c.getTareaId());
-//			dto.setPeriodicidad(c.getPeriodicidad());
-//			dto.setIntensidad(c.getIntensidad());
-//			dto.setCargaMental(c.getCargaMental());
-//			dto.setAsignadaA(null); // aún no asignada
-//			return dto;
-//		}).toList();
-//	}
 }

@@ -25,12 +25,8 @@ public class User {
     private String unidadId;
     private float umbralLimpieza;
 
-
-
-	// Constructor vacío (necesario para Spring y MongoDB)
     public User() {}
 
-    // Constructor con todos los campos
     public User(String id, String nombre, String email, String password, String role, String unidadAsignada) {
         this.id = id;
         this.nombre = nombre;
@@ -40,15 +36,12 @@ public class User {
         this.unidadAsignada = unidadAsignada;
     }
 
-    // Constructor para /register sin unidad aún
     public User(String nombre, String email, String password, String role) {
         this.nombre = nombre;
         this.email = email;
         this.password = password;
         this.role = role;
     }
-
-    // Getters y Setters
 
     public String getId() {
         return id;
@@ -58,7 +51,6 @@ public class User {
         this.id = id;
     }   
     
-
     public List<SurveyParametersDTO> getSurveyParameters() {
 		return surveyParameters;
 	}

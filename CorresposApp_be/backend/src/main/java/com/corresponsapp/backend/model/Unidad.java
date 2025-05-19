@@ -13,11 +13,11 @@ public class Unidad {
     @Id
     private String id;
     private String nombre;
-    private String codigoAcceso; // generado automáticamente
+    private String codigoAcceso;
     private String creadorId;
-    private List<String> miembros; // lista de IDs de usuarios
+    private List<String> miembros;
     private List<String> modulosActivados; 
-	private int cicloCorresponsabilidad = 30; // en días
+	private int cicloCorresponsabilidad = 30;
 	private String estadoFase1 = "momento0";
 	private List<Tarea> tareasUnidad;
 	private List<ConsensoUmbralLimpiezaUnidad> consensoUnidad;
@@ -120,8 +120,6 @@ public class Unidad {
 	public void setConsensoUnidad(List<ConsensoUmbralLimpiezaUnidad> consensoUnidad) {
 		this.consensoUnidad = consensoUnidad;
 	}
-
-
     
     @Override
 	public String toString() {

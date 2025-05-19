@@ -22,7 +22,6 @@ public class ConsensoUmbralLimpiezaUnidad {
 		this.asignadaA = asignadaA;
 	}
 
-	// Getters y Setters
 	public String getTareaId() {
 		return tareaId;
 	}

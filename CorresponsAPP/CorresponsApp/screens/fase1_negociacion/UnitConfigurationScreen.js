@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
@@ -214,166 +215,168 @@ export default function UnitConfigurationScreen({ navigation, route }) {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Configuración de la unidad:</Text>
-      <Text style={styles.title}>{unidad.nombre}</Text>
+    <SafeAreaView style={styles.safeContainer}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text style={styles.title}>Configuración de la unidad:</Text>
+        <Text style={styles.title}>{unidad.nombre}</Text>
 
-      <Text style={styles.subtitle}>Duración del ciclo (días):</Text>
-      <TextInput
-        style={styles.input}
-        keyboardType="numeric"
-        value={duracionCiclo}
-        onChangeText={setDuracionCiclo}
-      />
+        <Text style={styles.subtitle}>Duración del ciclo (días):</Text>
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          value={duracionCiclo}
+          onChangeText={setDuracionCiclo}
+        />
 
-      <Text style={styles.subtitle}>Selecciona los módulos:</Text>
-      {modulosTareas.map((modulo) => (
-        <View key={modulo.id} style={styles.moduloItem}>
-          <TouchableOpacity
-            style={styles.moduloButton}
-            onPress={() => abrirModal(modulo.id)}
-          >
-            <Text style={styles.moduloNombre}>{modulo.nombre}</Text>
-            <Text style={styles.moduloSub}>
-              {
-                tareasUnidad.filter(
-                  (t) => t.modulo === modulo.id || t.moduloId === modulo.id
-                ).length
-              }{" "}
-              tareas
-            </Text>
-          </TouchableOpacity>
-        </View>
-      ))}
-
-      <TouchableOpacity
-        style={styles.saveButton}
-        onPress={handleGuardarConfiguracion}
-      >
-        <Text style={styles.saveButtonText}>
-          Guardar configuración ({tareasUnidad.length} tareas)
-        </Text>
-      </TouchableOpacity>
-
-      <Modal visible={modalVisible} animationType="slide">
-        <View style={styles.modalContainer}>
-          <Text style={styles.title}>Tareas de: {moduloActivo}</Text>
-
-          <View style={styles.modalButtonRow}>
+        <Text style={styles.subtitle}>Selecciona los módulos:</Text>
+        {modulosTareas.map((modulo) => (
+          <View key={modulo.id} style={styles.moduloItem}>
             <TouchableOpacity
-              style={styles.actionButton}
-              onPress={seleccionarTodas}
+              style={styles.moduloButton}
+              onPress={() => abrirModal(modulo.id)}
             >
-              <Text style={styles.actionButtonText}>Seleccionar todas</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={deseleccionarTodas}
-            >
-              <Text style={styles.actionButtonText}>Deseleccionar todas</Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity
-            style={[styles.actionButton, { marginVertical: 12 }]}
-            onPress={() => {
-              setModalVisible(false);
-              navigation.navigate("CreateTaskScreen", {
-                moduloId: moduloActivo,
-              });
-            }}
-          >
-            <Text style={styles.actionButtonText}>
-              ➕ Crear nueva tarea personalizada
-            </Text>
-          </TouchableOpacity>
-
-          <FlatList
-            data={tareasDelModulo}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => toggleTareaSeleccionada(item)}
-                style={[
-                  styles.tareaItem,
-                  tareasSeleccionadas.find((t) => t.id === item.id) &&
-                    styles.tareaItemSelected,
-                ]}
-              >
-                <Text>{item.nombre}</Text>
-              </TouchableOpacity>
-            )}
-          />
-
-          <View style={styles.modalFooter}>
-            <TouchableOpacity
-              style={styles.confirmButton}
-              onPress={confirmarTareasModulo}
-            >
-              <Text style={styles.confirmButtonText}>Confirmar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.confirmButton, { backgroundColor: "#aaa" }]}
-              onPress={() => setModalVisible(false)}
-            >
-              <Text style={styles.confirmButtonText}>Cancelar</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-      <Modal
-        visible={modalResumenVisible}
-        animationType="slide"
-        transparent={false}
-      >
-        <View style={styles.modalResumenContainer}>
-          <ScrollView contentContainerStyle={{ padding: 24 }}>
-            <Text style={styles.title}>✅ Unidad configurada</Text>
-            <Text style={styles.subtitle}>{unidad?.nombre}</Text>
-
-            <Text style={styles.resumenText}>
-              Duración del ciclo: {duracionCiclo} días
-            </Text>
-            <Text style={styles.resumenText}>
-              Módulos seleccionados: {modulosSeleccionados.length}
-            </Text>
-            <Text style={styles.resumenText}>
-              Tareas totales: {tareasUnidad.length}
-            </Text>
-
-            {modulosSeleccionados.map((moduloId) => (
-              <View key={moduloId} style={styles.moduloResumenItem}>
-                <Text style={styles.moduloResumenTitulo}>
-                  {moduloId.replace(/_/g, " ").toUpperCase()}
-                </Text>
-                {tareasUnidad
-                  .filter((t) => t.modulo === moduloId)
-                  .map((t) => (
-                    <Text key={t.id} style={styles.tareaResumen}>
-                      • {t.nombre}
-                    </Text>
-                  ))}
-              </View>
-            ))}
-
-            <TouchableOpacity
-              style={styles.botonContinuar}
-              onPress={() => {
-                setModalResumenVisible(false);
-                setTimeout(
-                  () => navigation.replace("SurveyParametersScreen"),
-                  0
-                );
-              }}
-            >
-              <Text style={styles.botonContinuarText}>
-                Seguimos con una pequeña encuesta →
+              <Text style={styles.moduloNombre}>{modulo.nombre}</Text>
+              <Text style={styles.moduloSub}>
+                {
+                  tareasUnidad.filter(
+                    (t) => t.modulo === modulo.id || t.moduloId === modulo.id
+                  ).length
+                }{" "}
+                tareas
               </Text>
             </TouchableOpacity>
-          </ScrollView>
-        </View>
-      </Modal>
-    </ScrollView>
+          </View>
+        ))}
+
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={handleGuardarConfiguracion}
+        >
+          <Text style={styles.saveButtonText}>
+            Guardar configuración ({tareasUnidad.length} tareas)
+          </Text>
+        </TouchableOpacity>
+
+        <Modal visible={modalVisible} animationType="slide">
+          <View style={styles.modalContainer}>
+            <Text style={styles.title}>Tareas de: {moduloActivo}</Text>
+
+            <View style={styles.modalButtonRow}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={seleccionarTodas}
+              >
+                <Text style={styles.actionButtonText}>Seleccionar todas</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={deseleccionarTodas}
+              >
+                <Text style={styles.actionButtonText}>Deseleccionar todas</Text>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.actionButton, { marginVertical: 12 }]}
+              onPress={() => {
+                setModalVisible(false);
+                navigation.navigate("CreateTaskScreen", {
+                  moduloId: moduloActivo,
+                });
+              }}
+            >
+              <Text style={styles.actionButtonText}>
+                ➕ Crear nueva tarea personalizada
+              </Text>
+            </TouchableOpacity>
+
+            <FlatList
+              data={tareasDelModulo}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => toggleTareaSeleccionada(item)}
+                  style={[
+                    styles.tareaItem,
+                    tareasSeleccionadas.find((t) => t.id === item.id) &&
+                      styles.tareaItemSelected,
+                  ]}
+                >
+                  <Text>{item.nombre}</Text>
+                </TouchableOpacity>
+              )}
+            />
+
+            <View style={styles.modalFooter}>
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={confirmarTareasModulo}
+              >
+                <Text style={styles.confirmButtonText}>Confirmar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.confirmButton, { backgroundColor: "#aaa" }]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.confirmButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          visible={modalResumenVisible}
+          animationType="slide"
+          transparent={false}
+        >
+          <View style={styles.modalResumenContainer}>
+            <ScrollView contentContainerStyle={{ padding: 24 }}>
+              <Text style={styles.title}>✅ Unidad configurada</Text>
+              <Text style={styles.subtitle}>{unidad?.nombre}</Text>
+
+              <Text style={styles.resumenText}>
+                Duración del ciclo: {duracionCiclo} días
+              </Text>
+              <Text style={styles.resumenText}>
+                Módulos seleccionados: {modulosSeleccionados.length}
+              </Text>
+              <Text style={styles.resumenText}>
+                Tareas totales: {tareasUnidad.length}
+              </Text>
+
+              {modulosSeleccionados.map((moduloId) => (
+                <View key={moduloId} style={styles.moduloResumenItem}>
+                  <Text style={styles.moduloResumenTitulo}>
+                    {moduloId.replace(/_/g, " ").toUpperCase()}
+                  </Text>
+                  {tareasUnidad
+                    .filter((t) => t.modulo === moduloId)
+                    .map((t) => (
+                      <Text key={t.id} style={styles.tareaResumen}>
+                        • {t.nombre}
+                      </Text>
+                    ))}
+                </View>
+              ))}
+
+              <TouchableOpacity
+                style={styles.botonContinuar}
+                onPress={() => {
+                  setModalResumenVisible(false);
+                  setTimeout(
+                    () => navigation.replace("SurveyParametersScreen"),
+                    0
+                  );
+                }}
+              >
+                <Text style={styles.botonContinuarText}>
+                  Seguimos con una pequeña encuesta →
+                </Text>
+              </TouchableOpacity>
+            </ScrollView>
+          </View>
+        </Modal>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -488,5 +491,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
+  },
+  safeContainer: {
+    flex: 1,
+    backgroundColor: "#f4f6f8", // mismo fondo que tenías
   },
 });

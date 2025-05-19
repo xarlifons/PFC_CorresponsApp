@@ -23,10 +23,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
-            .csrf(csrf -> csrf.disable()) // No se necesita CSRF en APIs con JWT
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // No sesiones
+            .csrf(csrf -> csrf.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll() // Público
+                .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/unidad/**").authenticated()  
                 .anyRequest().authenticated() // El resto, autenticado
             )
@@ -34,7 +34,6 @@ public class SecurityConfig {
             .build();
     }
 
-    // Para poder inyectar AuthenticationManager en futuros servicios
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

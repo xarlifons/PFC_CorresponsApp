@@ -27,20 +27,28 @@ const NegotiationStack = () => {
       <Stack.Screen
         name="UnitConfigurationScreen"
         component={UnitConfigurationScreen}
+        options={{ headerShown: false }}
       />
-      <Stack.Screen name="CreateTaskScreen" component={CreateTaskScreen} />
+      <Stack.Screen
+        name="CreateTaskScreen"
+        component={CreateTaskScreen}
+        options={{ headerShown: false }}
+      />
 
       <Stack.Screen
         name="SurveyParametersScreen"
         component={SurveyParametersScreen}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="TaskNegotiationThresholdScreen"
         component={TaskNegotiationThresholdScreen}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="TaskNegotiationAssignmentScreen"
         component={TaskNegotiationAssignmentScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

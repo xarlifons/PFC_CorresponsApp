@@ -8,10 +8,7 @@ public class LoginResponse {
     private String role;    
     private String unidadAsignada;
 
-
 	public LoginResponse() {}
-
-
 
     public LoginResponse(String token, String id, String nombre, String email, String role,  String unidadAsignada) {
 		super();
@@ -22,8 +19,6 @@ public class LoginResponse {
 		this.role = role;
 		this.unidadAsignada = unidadAsignada;
 	}
-
-
 
 	public String getToken() {
         return token;
@@ -78,6 +73,5 @@ public class LoginResponse {
 		return "LoginResponse [token=" + token + ", id=" + id + ", email=" + email + ", role=" + role + ", nombre="
 				+ nombre + ", unidadAsignada=" + unidadAsignada + "]";
 	}
-
 
 }

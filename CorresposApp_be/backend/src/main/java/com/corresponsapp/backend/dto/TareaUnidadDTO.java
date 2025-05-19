@@ -2,12 +2,11 @@ package com.corresponsapp.backend.dto;
 
 
 public class TareaUnidadDTO {
-
 	
-    private String id;            // ID único de la tarea (obligatorio para localizar la plantilla)
+    private String id;
 	
-    private String nombre;        // Nombre de la tarea
-    private String modulo;      // Módulo al que pertenece la tarea
+    private String nombre;
+    private String modulo;
     private int tiempoEstimado;
     private String definicion;
     private boolean esPlantilla;
@@ -15,9 +14,7 @@ public class TareaUnidadDTO {
     
     private float periodicidad;
     private float intensidad;
-    private float cargaMental;
-	
-    
+    private float cargaMental;    
 
 	public TareaUnidadDTO() {
         super();
@@ -35,7 +32,6 @@ public class TareaUnidadDTO {
 		this.asignadaA = asignadaA;
 	}
 
-
 	public TareaUnidadDTO(String id, String nombre, String modulo, int tiempoEstimado, String definicion,
 			boolean esPlantilla, String asignadaA, float periodicidad, float intensidad, float cargaMental) {
 		super();
@@ -51,9 +47,6 @@ public class TareaUnidadDTO {
 		this.cargaMental = cargaMental;
 	}
 
-
-
-	// Getters y Setters
     public String getId() {
         return id;
     }
@@ -105,7 +98,6 @@ public class TareaUnidadDTO {
 	public String getAsignadaA() {
 		return asignadaA;
 	}
-
 
 	public void setAsignadaA(String asignadaA) {
 		this.asignadaA = asignadaA;

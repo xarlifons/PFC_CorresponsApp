@@ -2,7 +2,6 @@ package com.corresponsapp.backend.service;
 
 import com.corresponsapp.backend.model.Tarea;
 import com.corresponsapp.backend.repository.TareaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,7 +12,6 @@ public class TareaServiceImpl implements TareaService {
 
     private final TareaRepository tareaRepository;
 
-    @Autowired
     public TareaServiceImpl(TareaRepository tareaRepository) {
         this.tareaRepository = tareaRepository;
     }
@@ -40,7 +38,7 @@ public class TareaServiceImpl implements TareaService {
 
     @Override
     public Tarea actualizarTarea(String id, Tarea tarea) {
-        tarea.setId(id); // asegurar que se actualiza el mismo documento
+        tarea.setId(id); 
         return tareaRepository.save(tarea);
     }
 

@@ -32,8 +32,11 @@ export default function Fase1RouterScreen() {
           console.log("🧭 Estado actual de la unidad:", estado);
 
           switch (estado) {
-            case "momento1":
+            case "momento0":
               navigation.replace("SelectUnitTypeScreen");
+              break;
+            case "momento1":
+              navigation.replace("UnitConfigurationScreen");
               break;
             case "momento2":
               navigation.replace("SurveyParametersScreen");

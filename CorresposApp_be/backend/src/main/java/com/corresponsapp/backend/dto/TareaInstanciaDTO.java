@@ -1,8 +1,8 @@
 package com.corresponsapp.backend.dto;
 
 public class TareaInstanciaDTO {
-	private String id; // ID de la plantilla de tarea
-	private String asignadaA; // userId del miembro asignado
+	private String id;
+	private String asignadaA;
 	private float periodicidad;
 	private float intensidad;
 	private float cargaMental;

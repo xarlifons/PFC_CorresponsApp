@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
@@ -18,6 +19,7 @@ export default function ExecutionDashboardScreen() {
   const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
+    console.log("👤 Usuario cargado:", state.user);
     (async () => {
       try {
         const data = await getTareasInstanciadas(state.user.unidadAsignada);
@@ -28,6 +30,22 @@ export default function ExecutionDashboardScreen() {
           console.log(
             `🔎 Tarea[${index}] → id=${t.id}, nombre=${t.nombre}, asignadaA=${t.asignadaA}`
           );
+        });
+
+        console.log("🧩 ID usuario logueado:", state.user.id);
+        data.forEach((t) => {
+          if (t.asignadaA === state.user.id) {
+            console.log("✅ Coincide tarea:", t.nombre);
+          } else {
+            console.log(
+              "❌ No coincide:",
+              t.nombre,
+              "| asignadaA:",
+              t.asignadaA,
+              "| id: usuario:",
+              state.user.id
+            );
+          }
         });
         const asignadasA = data.filter((t) => t.asignadaA === state.user.id);
         setTasks(asignadasA);
@@ -84,23 +102,25 @@ export default function ExecutionDashboardScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>
-        👤 Cuenta de {state.user?.nombre || "usuario"}
-      </Text>
-      <Text style={styles.subHeader}>🗓 Tareas programadas:</Text>
-      <FlatList
-        data={tasks}
-        keyExtractor={(t) => t.id}
-        renderItem={renderItem}
-        contentContainerStyle={tasks.length === 0 && styles.center}
-        ListEmptyComponent={<Text>No hay tareas asignadas.</Text>}
-        style={styles.list}
-      />
-      <TouchableOpacity style={styles.logoutButton} onPress={logout}>
-        <Text style={styles.logoutText}>Cerrar sesión</Text>
-      </TouchableOpacity>
-    </View>
+    <SafeAreaView style={styles.safeContainer}>
+      <View style={styles.container}>
+        <Text style={styles.header}>
+          👤 Cuenta de {state.user?.nombre || "usuario"}
+        </Text>
+        <Text style={styles.subHeader}>🗓 Tareas programadas:</Text>
+        <FlatList
+          data={tasks}
+          keyExtractor={(t) => t.id}
+          renderItem={renderItem}
+          contentContainerStyle={tasks.length === 0 && styles.center}
+          ListEmptyComponent={<Text>No hay tareas asignadas.</Text>}
+          style={styles.list}
+        />
+        <TouchableOpacity style={styles.logoutButton} onPress={logout}>
+          <Text style={styles.logoutText}>Cerrar sesión</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -148,5 +168,9 @@ const styles = StyleSheet.create({
   logoutText: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  safeContainer: {
+    flex: 1,
+    backgroundColor: "#f4f6f8",
   },
 });
