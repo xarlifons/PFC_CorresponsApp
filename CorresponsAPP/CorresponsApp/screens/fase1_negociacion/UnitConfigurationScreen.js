@@ -40,20 +40,12 @@ export default function UnitConfigurationScreen({ navigation, route }) {
   useRedirectByEstadoFase1("momento1", "SurveyParametersScreen");
 
   useEffect(() => {
-    console.log(
-      "🌀 useEffect de UnitConfigurationScreen ejecutado. unidadAsignada:",
-      state.user?.unidadAsignada
-    );
-
     const cargarDatos = async () => {
       try {
-        console.log("📡 Solicitando datos...");
         const [unidadData, modulosData] = await Promise.all([
           getUnidadInfoCompleta(state.user.unidadAsignada),
           getModulosYTareas(),
         ]);
-        console.log("✅ unidadData:", unidadData);
-        console.log("✅ modulosData:", modulosData);
 
         setUnidad(unidadData);
         setModulosTareas(modulosData);
@@ -70,7 +62,6 @@ export default function UnitConfigurationScreen({ navigation, route }) {
       }
     };
 
-    console.log("🔍 user actualizado:", state.user);
     if (state.user?.unidadAsignada) {
       cargarDatos();
     }
@@ -117,7 +108,6 @@ export default function UnitConfigurationScreen({ navigation, route }) {
         modulo: moduloId,
         personalizada: false,
       })) || [];
-    console.log("📦 Tareas predefinidas:", modulo?.tareas);
 
     const todasLasTareas = [
       ...tareasPredefinidas,
@@ -128,10 +118,9 @@ export default function UnitConfigurationScreen({ navigation, route }) {
         t.id !== null &&
         self.findIndex((o) => o.id === t.id) === index
     );
-    console.log("🧩 Tareas del módulo", todasLasTareas);
 
     const yaSeleccionadas = tareasUnidad.filter((t) => t.modulo === moduloId);
-    console.log("🧩 Tareas del módulo", todasLasTareas);
+
     setTareasDelModulo(todasLasTareas);
     setTareasSeleccionadas(yaSeleccionadas);
     setModalVisible(true);

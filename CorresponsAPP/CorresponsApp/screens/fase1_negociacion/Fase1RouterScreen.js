@@ -8,14 +8,10 @@ export default function Fase1RouterScreen() {
   const navigation = useNavigation();
 
   useEffect(() => {
-    console.log("🌀 useEffect ejecutado en Fase1RouterScreen");
     const unidadId = state.user.unidadAsignada;
     console.log("🔍 unidadId actual:", unidadId);
 
     const redirigirSegunEstadoFase1 = async () => {
-      console.log("🧠 Estado global:", state.user);
-      console.log("🔍 unidadId actual:", unidadId);
-
       if (!unidadId) {
         console.warn(
           "⚠️ Usuario sin unidad asignada. Redirigiendo a SelectUnitTypeScreen."
@@ -28,8 +24,6 @@ export default function Fase1RouterScreen() {
         try {
           const unidad = await getUnidadById(unidadId);
           const estado = unidad?.estadoFase1;
-
-          console.log("🧭 Estado actual de la unidad:", estado);
 
           switch (estado) {
             case "momento0":

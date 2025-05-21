@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { useAuth } from "../context/AuthContext";
 import NegotiationStack from "./NegotiationStack";
 import ExecutionDashboardScreen from "../screens/fase2_ejecucion/ExecutionDashboardScreen";
-//import ExecutionTabs from "./ExecutionTabs";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,11 +14,6 @@ export default function MainStack() {
       initialRouteName="NegotiationStack"
       screenOptions={{ headerShown: false }}
     >
-      {/* <Stack.Screen
-        name="ExecutionTabs"
-        component={ExecutionTabs}
-        options={{ headerShown: false }}
-      /> */}
       <Stack.Screen
         name="NegotiationStack"
         component={NegotiationStack}

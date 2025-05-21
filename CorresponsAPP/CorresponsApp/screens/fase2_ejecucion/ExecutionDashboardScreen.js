@@ -19,34 +19,10 @@ export default function ExecutionDashboardScreen() {
   const [expandedId, setExpandedId] = useState(null);
 
   useEffect(() => {
-    console.log("👤 Usuario cargado:", state.user);
     (async () => {
       try {
         const data = await getTareasInstanciadas(state.user.unidadAsignada);
-        console.log("🧠 Usuario actual:", state.user);
-        console.log("📦 Tareas instanciadas:", data);
 
-        data.forEach((t, index) => {
-          console.log(
-            `🔎 Tarea[${index}] → id=${t.id}, nombre=${t.nombre}, asignadaA=${t.asignadaA}`
-          );
-        });
-
-        console.log("🧩 ID usuario logueado:", state.user.id);
-        data.forEach((t) => {
-          if (t.asignadaA === state.user.id) {
-            console.log("✅ Coincide tarea:", t.nombre);
-          } else {
-            console.log(
-              "❌ No coincide:",
-              t.nombre,
-              "| asignadaA:",
-              t.asignadaA,
-              "| id: usuario:",
-              state.user.id
-            );
-          }
-        });
         const asignadasA = data.filter((t) => t.asignadaA === state.user.id);
         setTasks(asignadasA);
       } catch (e) {

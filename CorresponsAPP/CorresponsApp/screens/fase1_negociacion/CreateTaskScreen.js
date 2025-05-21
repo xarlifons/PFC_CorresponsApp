@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   View,
   Text,
@@ -36,40 +37,42 @@ export default function CreateTaskScreen({ route, navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Nueva tarea para el módulo:</Text>
-      <Text style={styles.moduleText}>{moduloId}</Text>
+    <SafeAreaView style={styles.safeContainer}>
+      <View style={styles.container}>
+        <Text style={styles.title}>Nueva tarea para el módulo:</Text>
+        <Text style={styles.moduleText}>{moduloId}</Text>
 
-      <Text style={styles.label}>Nombre de la tarea *</Text>
-      <TextInput
-        value={nombre}
-        onChangeText={setNombre}
-        style={styles.input}
-        placeholder="Ej: Limpiar ventilador de techo"
-      />
+        <Text style={styles.label}>Nombre de la tarea *</Text>
+        <TextInput
+          value={nombre}
+          onChangeText={setNombre}
+          style={styles.input}
+          placeholder="Ej: Limpiar ventilador de techo"
+        />
 
-      <Text style={styles.label}>Definición (opcional)</Text>
-      <TextInput
-        value={definicion}
-        onChangeText={setDefinicion}
-        style={[styles.input, { height: 100 }]}
-        multiline
-        placeholder="Describe la tarea si lo consideras útil"
-      />
+        <Text style={styles.label}>Definición (opcional)</Text>
+        <TextInput
+          value={definicion}
+          onChangeText={setDefinicion}
+          style={[styles.input, { height: 100 }]}
+          multiline
+          placeholder="Describe la tarea si lo consideras útil"
+        />
 
-      <Text style={styles.label}>Tiempo estimado (mins) *</Text>
-      <TextInput
-        value={tiempoEstimado}
-        onChangeText={setTiempoEstimado}
-        style={styles.input}
-        multiline
-        placeholder="30"
-      />
+        <Text style={styles.label}>Tiempo estimado (mins) *</Text>
+        <TextInput
+          value={tiempoEstimado}
+          onChangeText={setTiempoEstimado}
+          style={styles.input}
+          multiline
+          placeholder="30"
+        />
 
-      <TouchableOpacity style={styles.botonCrear} onPress={handleCrearTarea}>
-        <Text style={styles.botonTexto}>Crear tarea</Text>
-      </TouchableOpacity>
-    </View>
+        <TouchableOpacity style={styles.botonCrear} onPress={handleCrearTarea}>
+          <Text style={styles.botonTexto}>Crear tarea</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
 
@@ -113,5 +116,9 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  safeContainer: {
+    flex: 1,
+    backgroundColor: "#f4f6f8",
   },
 });

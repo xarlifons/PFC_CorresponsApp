@@ -38,7 +38,7 @@ public class GrupoTareasLoader {
     public void cargarDatos() {
         try {
             ObjectMapper mapper = new ObjectMapper();
-            InputStream is = getClass().getClassLoader().getResourceAsStream("grupos_tareas.json");
+            InputStream is = getClass().getClassLoader().getResourceAsStream("ajustes_tareas_grupos.json");
 
             List<GrupoTareas> grupos = mapper.readValue(is, new TypeReference<>() {});
 

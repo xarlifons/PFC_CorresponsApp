@@ -14,6 +14,7 @@ export default function SplashScreen({ navigation }) {
       }
     }
   }, [state.isLoading, state.isAuthenticated]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>CorresponsAPP</Text>

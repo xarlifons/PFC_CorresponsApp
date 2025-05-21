@@ -7,7 +7,6 @@ import {
   TextInput,
   Alert,
   TouchableOpacity,
-  Animated,
 } from "react-native";
 import LottieView from "lottie-react-native";
 import Icon from "react-native-vector-icons/Ionicons";

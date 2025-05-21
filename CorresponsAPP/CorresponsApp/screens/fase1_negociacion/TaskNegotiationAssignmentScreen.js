@@ -133,7 +133,6 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
 
   const onSave = async () => {
     try {
-      // 1) Construir el array de instancias
       const instances = Object.entries(zones)
         .filter(([zoneId]) => zoneId !== "unassigned")
         .flatMap(([zoneId, tasks]) =>
@@ -146,18 +145,10 @@ export default function TaskNegotiationAssignmentScreen({ navigation }) {
           }))
         );
 
-      console.log(
-        "📤 Payload enviado a instanciarTareas:",
-        JSON.stringify(instances, null, 2)
-      );
-
-      // 2) Persistir en backend todas las instancias
       await instanciarTareas(state.user.unidadAsignada, instances);
 
-      // 3) Actualizar estado de Fase1 para navegar al dashboard
       await actualizarEstadoFase1(state.user.unidadAsignada, "completada");
 
-      // 4) Disparar refresco/redirección
       setRefresh((prev) => !prev);
     } catch (e) {
       console.error("Error instanciando tareas:", e);

@@ -11,8 +11,6 @@ export default function ForgotPasswordScreen({ navigation }) {
       alert("Introduce un email válido.");
       return;
     }
-
-    // Aquí irá la llamada al backend para enviar el email de recuperación
     console.log("Enviar recuperación a:", email);
     setSubmitted(true);
   };

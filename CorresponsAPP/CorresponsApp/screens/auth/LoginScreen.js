@@ -23,7 +23,6 @@ export default function LoginScreen({ navigation }) {
     } catch (error) {
       alert("Error al iniciar sesión" + error.message);
       console.error("Login error:", error);
-      console.error("Prueba");
     }
 
     setLoading(false);
